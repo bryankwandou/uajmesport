@@ -7,8 +7,8 @@ const items = [
   { href: "#tentang", label: "Tentang" },
   { href: "#prestasi", label: "Prestasi" },
   { href: "#komunitas", label: "Komunitas" },
-  { href: "#perjalanan", label: "Perjalanan" },
   { href: "#pengurus", label: "Pengurus" },
+  { href: "#kontak", label: "Kontak" },
 ];
 
 export function Nav() {

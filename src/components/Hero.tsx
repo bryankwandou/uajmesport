@@ -1,6 +1,6 @@
 "use client";
 import { motion } from "framer-motion";
-import { org, stats, trophies } from "@/lib/content";
+import { org, stats, trophies, links } from "@/lib/content";
 import { CountUp } from "./CountUp";
 
 export function Hero() {
@@ -46,14 +46,14 @@ export function Hero() {
             transition={{ duration: 0.7, delay: 0.2 }}
             className="mt-8 flex flex-wrap items-center gap-3"
           >
-            <a href="#prestasi" className="btn-primary clip-corner px-6 py-3 text-sm">
-              Lihat Prestasi
+            <a href={links.register} target="_blank" rel="noopener noreferrer" className="btn-primary clip-corner px-6 py-3 text-sm">
+              Daftar Anggota 2026/2027
             </a>
             <a
-              href="#komunitas"
+              href="#prestasi"
               className="clip-corner border border-white/12 px-6 py-3 text-sm text-white/80 transition-colors hover:border-white/30 hover:text-white"
             >
-              Gabung komunitas →
+              Lihat prestasi →
             </a>
           </motion.div>
 
@@ -74,7 +74,7 @@ export function Hero() {
           </div>
         </div>
 
-        {/* Right — trophy HUD */}
+        {/* Right side: trophy HUD */}
         <motion.div
           initial={{ opacity: 0, scale: 0.94 }}
           animate={{ opacity: 1, scale: 1 }}

@@ -96,3 +96,20 @@ export const links = {
   // Membership registration, UKM E-Sport #2, period 2026/2027.
   register: "https://forms.gle/ed2zW5avK34mnLGF9",
 };
+
+// Verified from the official UKM E-Sport proposal letterhead (kop surat).
+export const contact = {
+  address: "Jl. Tanjung Alang No. 23, Makassar, Sulawesi Selatan 90134",
+  phone: "(0411) 871038",
+  whatsapp: "+62 813-5504-9802",
+  whatsappHref: "https://wa.me/6281355049802",
+  website: "www.uajm.ac.id",
+  websiteHref: "https://uajm.ac.id",
+};
+
+// Tournament certificates on file (Titans Organizer). Real scans.
+export const certificates = [
+  { src: "/certs/best-fighter-s7.jpg", title: "Best of Fighter", event: "Titans Organizer ML, Season 7", date: "12 Apr 2024" },
+  { src: "/certs/best-marksman-s6.jpg", title: "Best of Marksman", event: "Titans Organizer ML, Season 6", date: "07 Apr 2024" },
+  { src: "/certs/best-assassin-s8.jpg", title: "Best of Assassin", event: "Titans Organizer ML, Season 8", date: "14 Apr 2024" },
+];

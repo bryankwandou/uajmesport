@@ -1,9 +1,11 @@
+import Image from "next/image";
 import { Nav } from "@/components/Nav";
 import { Hero } from "@/components/Hero";
 import { Reveal, Stagger, StaggerItem } from "@/components/Reveal";
 import { LogoMark } from "@/components/Logo";
 import {
   org, vision, missions, trophies, games, ranks, faculties, timeline, structure, values, links,
+  contact, certificates,
 } from "@/lib/content";
 
 export default function Home() {
@@ -111,6 +113,39 @@ function Prestasi() {
           </StaggerItem>
         ))}
       </Stagger>
+
+      <Reveal className="mt-10">
+        <div className="mb-5 flex items-center gap-3">
+          <span className="text-[10px] uppercase tracking-[0.25em] text-white/40">Sertifikat resmi</span>
+          <span className="h-px flex-1 bg-white/8" />
+        </div>
+      </Reveal>
+      <Stagger className="grid gap-5 md:grid-cols-3">
+        {certificates.map((c) => (
+          <StaggerItem key={c.src}>
+            <figure className="glass clip-corner group overflow-hidden">
+              <div className="relative aspect-[16/9] w-full overflow-hidden bg-black/30">
+                <Image
+                  src={c.src}
+                  alt={`Sertifikat ${c.title}, ${c.event}`}
+                  fill
+                  sizes="(max-width: 768px) 100vw, 33vw"
+                  className="object-cover"
+                />
+              </div>
+              <figcaption className="flex items-center justify-between gap-3 border-t border-white/8 px-4 py-3">
+                <span className="font-display text-sm font-bold uppercase text-white">{c.title}</span>
+                <span className="font-mono text-[11px] text-white/45">{c.date}</span>
+              </figcaption>
+            </figure>
+          </StaggerItem>
+        ))}
+      </Stagger>
+      <Reveal className="mt-4">
+        <p className="text-center font-mono text-[11px] text-white/35">
+          Scan sertifikat Titans Organizer, atas nama {structure.lead.name}.
+        </p>
+      </Reveal>
     </section>
   );
 }
@@ -274,22 +309,50 @@ function CTA() {
 
 function Footer() {
   return (
-    <footer className="border-t border-white/6 px-5 py-12">
-      <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-6 md:flex-row">
-        <div className="flex items-center gap-3">
-          <LogoMark size={30} />
-          <div>
-            <div className="font-display text-sm font-extrabold text-white">{org.name}</div>
-            <div className="text-xs text-white/40">{org.location}</div>
+    <footer id="kontak" className="border-t border-white/6 px-5 py-14">
+      <div className="mx-auto grid max-w-6xl gap-10 md:grid-cols-[1.2fr_1fr_0.9fr]">
+        <div>
+          <div className="flex items-center gap-3">
+            <LogoMark size={34} />
+            <div>
+              <div className="font-display text-sm font-extrabold text-white">{org.name}</div>
+              <div className="text-xs text-white/40">{org.short}</div>
+            </div>
+          </div>
+          <p className="mt-4 max-w-xs text-xs leading-relaxed text-white/45">{org.full}.</p>
+        </div>
+
+        <div>
+          <div className="text-[10px] uppercase tracking-[0.2em] text-crimson-glow/80">Kontak & Alamat</div>
+          <address className="mt-3 space-y-2 text-sm not-italic text-white/60">
+            <div>{contact.address}</div>
+            <div>
+              Telp <a href={`tel:${contact.phone.replace(/[^0-9]/g, "")}`} className="hover:text-white">{contact.phone}</a>
+            </div>
+            <div>
+              WhatsApp{" "}
+              <a href={contact.whatsappHref} target="_blank" rel="noopener noreferrer" className="hover:text-white">
+                {contact.whatsapp}
+              </a>
+            </div>
+            <div>
+              <a href={contact.websiteHref} target="_blank" rel="noopener noreferrer" className="hover:text-white">
+                {contact.website}
+              </a>
+            </div>
+          </address>
+        </div>
+
+        <div>
+          <div className="text-[10px] uppercase tracking-[0.2em] text-white/40">Tautan</div>
+          <div className="mt-3 flex flex-col gap-2 text-sm text-white/60">
+            <a href={links.register} target="_blank" rel="noopener noreferrer" className="hover:text-white">Daftar Anggota 2026/2027</a>
+            <a href={links.instagram} target="_blank" rel="noopener noreferrer" className="hover:text-white">Instagram @uajm_esport</a>
+            <a href={`https://${org.domainBcc}`} target="_blank" rel="noopener noreferrer" className="hover:text-white">UAJM BCC ↗</a>
           </div>
         </div>
-        <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-sm text-white/50">
-          <a href={links.instagram} target="_blank" rel="noopener" className="hover:text-white">Instagram</a>
-          <a href={links.campus} target="_blank" rel="noopener" className="hover:text-white">UAJM</a>
-          <a href={`https://${org.domainBcc}`} target="_blank" rel="noopener" className="hover:text-white">UAJM BCC ↗</a>
-        </div>
       </div>
-      <div className="mx-auto mt-8 max-w-6xl border-t border-white/6 pt-6 text-center text-xs text-white/30">
+      <div className="mx-auto mt-10 max-w-6xl border-t border-white/6 pt-6 text-center text-xs text-white/30">
         © {new Date().getFullYear()} {org.full}. {org.period}.
       </div>
     </footer>
