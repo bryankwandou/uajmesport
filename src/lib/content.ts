@@ -93,4 +93,6 @@ export const links = {
   instagram: "https://instagram.com/uajm_esport",
   instagramBcc: "https://instagram.com/uajm_bcc",
   campus: "https://uajm.ac.id",
+  // Membership registration, UKM E-Sport #2, period 2026/2027.
+  register: "https://forms.gle/ed2zW5avK34mnLGF9",
 };

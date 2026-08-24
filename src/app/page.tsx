@@ -1,6 +1,7 @@
 import { Nav } from "@/components/Nav";
 import { Hero } from "@/components/Hero";
 import { Reveal, Stagger, StaggerItem } from "@/components/Reveal";
+import { InstagramFeed } from "@/components/InstagramFeed";
 import { LogoMark } from "@/components/Logo";
 import {
   org, vision, missions, trophies, games, ranks, faculties, timeline, structure, values, links,
@@ -17,6 +18,7 @@ export default function Home() {
       <Komunitas />
       <Journey />
       <Pengurus />
+      <InstagramFeed />
       <CTA />
       <Footer />
     </main>
@@ -99,7 +101,7 @@ function Prestasi() {
         {trophies.map((t) => (
           <StaggerItem key={t.title}>
             <div className="glass clip-corner group relative h-full overflow-hidden p-6">
-              <div className="pointer-events-none absolute -right-10 -top-10 h-28 w-28 rounded-full bg-crimson-glow/15 blur-2xl transition-all group-hover:bg-crimson-glow/30" />
+              <div className="pointer-events-none absolute -right-10 -top-10 h-28 w-28 rounded-full bg-crimson-glow/15 blur-2xl duration-300 [transition-property:background-color] group-hover:bg-crimson-glow/30" />
               <div className="font-display text-5xl">🏆</div>
               <h3 className="mt-4 font-display text-xl font-extrabold uppercase text-white">{t.title}</h3>
               <p className="mt-2 text-sm text-white/60">{t.event}</p>
@@ -247,14 +249,18 @@ function CTA() {
         <div className="glass clip-corner relative overflow-hidden p-10 text-center md:p-16">
           <div className="pointer-events-none absolute inset-0 bg-grid opacity-40" />
           <div className="relative">
-            <h2 className="font-display text-3xl font-extrabold uppercase tracking-tight text-white md:text-4xl">
+            <div className="text-[10px] uppercase tracking-[0.25em] text-crimson-glow/90">Pendaftaran Anggota 2026/2027</div>
+            <h2 className="mt-3 font-display text-3xl font-extrabold uppercase tracking-tight text-white md:text-4xl">
               Saatnya <span className="gradient-text">naik level</span>
             </h2>
             <p className="mx-auto mt-4 max-w-lg text-white/60">
-              Mahasiswa UAJM yang ingin berkompetisi, berlatih, atau membangun komunitas, silakan bergabung.
+              Mahasiswa UAJM yang ingin berkompetisi, berlatih, atau membangun komunitas, silakan mendaftar sebagai anggota UKM E-Sport.
             </p>
             <div className="mt-8 flex flex-wrap justify-center gap-3">
-              <a href={links.instagram} target="_blank" rel="noopener" className="btn-primary clip-corner px-6 py-3 text-sm">
+              <a href={links.register} target="_blank" rel="noopener noreferrer" className="btn-primary clip-corner px-6 py-3 text-sm">
+                Daftar Anggota 2026/2027
+              </a>
+              <a href={links.instagram} target="_blank" rel="noopener" className="clip-corner border border-white/12 px-6 py-3 text-sm text-white/80 transition-colors hover:border-white/30 hover:text-white">
                 Instagram @uajm_esport
               </a>
               <a href={`https://${org.domainBcc}`} target="_blank" rel="noopener" className="clip-corner border border-white/12 px-6 py-3 text-sm text-white/80 transition-colors hover:border-white/30 hover:text-white">

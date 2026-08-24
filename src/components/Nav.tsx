@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { Logo } from "./Logo";
+import { links } from "@/lib/content";
 
 const items = [
   { href: "#tentang", label: "Tentang" },
@@ -23,7 +24,7 @@ export function Nav() {
 
   return (
     <header
-      className={`fixed inset-x-0 top-0 z-50 transition-all duration-300 ${
+      className={`fixed inset-x-0 top-0 z-50 duration-300 [transition-property:background-color,border-color,backdrop-filter] ${
         scrolled ? "backdrop-blur-xl bg-ink-950/70 border-b border-white/5" : ""
       }`}
     >
@@ -37,8 +38,8 @@ export function Nav() {
               {i.label}
             </a>
           ))}
-          <a href="#komunitas" className="btn-primary clip-corner px-4 py-2 text-sm">
-            Gabung
+          <a href={links.register} target="_blank" rel="noopener noreferrer" className="btn-primary clip-corner px-4 py-2 text-sm">
+            Daftar Anggota
           </a>
         </div>
         <button className="md:hidden text-white/70" onClick={() => setOpen((v) => !v)} aria-label="Menu">
