@@ -2,6 +2,7 @@ import Image from "next/image";
 import { Nav } from "@/components/Nav";
 import { Hero } from "@/components/Hero";
 import { Reveal, Stagger, StaggerItem } from "@/components/Reveal";
+import { Letterhead } from "@/components/Letterhead";
 import { LogoMark } from "@/components/Logo";
 import {
   org, vision, missions, trophies, games, ranks, faculties, timeline, structure, values, links,
@@ -19,6 +20,7 @@ export default function Home() {
       <Komunitas />
       <Journey />
       <Pengurus />
+      <Letterhead />
       <CTA />
       <Footer />
     </main>
@@ -323,9 +325,14 @@ function Footer() {
         </div>
 
         <div>
-          <div className="text-[10px] uppercase tracking-[0.2em] text-crimson-glow/80">Kontak & Alamat</div>
-          <address className="mt-3 space-y-2 text-sm not-italic text-white/60">
+          <div className="text-[10px] uppercase tracking-[0.2em] text-crimson-glow/80">Sekretariat</div>
+          <address className="mt-3 space-y-2 text-sm not-italic leading-relaxed text-white/60">
+            <div>{contact.secretariat}</div>
             <div>{contact.address}</div>
+            <div>
+              Email{" "}
+              <a href={contact.emailHref} className="hover:text-white">{contact.email}</a>
+            </div>
             <div>
               Telp <a href={`tel:${contact.phone.replace(/[^0-9]/g, "")}`} className="hover:text-white">{contact.phone}</a>
             </div>
@@ -333,11 +340,6 @@ function Footer() {
               WhatsApp{" "}
               <a href={contact.whatsappHref} target="_blank" rel="noopener noreferrer" className="hover:text-white">
                 {contact.whatsapp}
-              </a>
-            </div>
-            <div>
-              <a href={contact.websiteHref} target="_blank" rel="noopener noreferrer" className="hover:text-white">
-                {contact.website}
               </a>
             </div>
           </address>

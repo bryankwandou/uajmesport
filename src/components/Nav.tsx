@@ -8,6 +8,7 @@ const items = [
   { href: "#prestasi", label: "Prestasi" },
   { href: "#komunitas", label: "Komunitas" },
   { href: "#pengurus", label: "Pengurus" },
+  { href: "#legalitas", label: "Legalitas" },
   { href: "#kontak", label: "Kontak" },
 ];
 

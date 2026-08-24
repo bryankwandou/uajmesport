@@ -97,9 +97,35 @@ export const links = {
   register: "https://forms.gle/ed2zW5avK34mnLGF9",
 };
 
-// Verified from the official UKM E-Sport proposal letterhead (kop surat).
+// Kop surat resmi UKM E-Sport, disalin persis dari header dokumen SK dan AD/ART.
+// Header aslinya memuat tiga baris nama organisasi beserta dua logo resmi.
+// Tidak ada baris alamat pada kop surat; alamat di bawah adalah alamat sekretariat
+// kampus sesuai Proposal Pembentukan UKM E-Sport tertanggal 10 Juni 2025.
+export const letterhead = {
+  line1: "UNIT KEGIATAN MAHASISWA",
+  line2: "E-SPORT",
+  line3: "UNIVERSITAS ATMA JAYA MAKASSAR",
+  secretariat: "Universitas Atma Jaya Makassar",
+  address: "Jl. Tanjung Alang No. 23, Makassar 90224",
+  email: "uajmesports@gmail.com",
+  sourceNote: "Disalin persis dari kop surat resmi pada dokumen SK dan AD/ART UKM E-Sport UAJM.",
+};
+
+// Dasar hukum organisasi, dikutip dari nomor surat pada dokumen resmi.
+export const legal = [
+  { label: "SK Kepengurusan", value: "Nomor 001/SK/UKM-ESPORT/UAJM/VI/2025" },
+  { label: "SK Penetapan AD/ART", value: "Nomor 002/SK/UKM-E-SPORT/UAJM/XII/2025" },
+  { label: "Proposal Pembentukan", value: "Disahkan 10 Juni 2025" },
+  { label: "Periode Kepengurusan", value: "2025/2026" },
+];
+
+// Alamat dan email resmi UKM diambil dari kop surat resmi UKM E-Sport.
+// Telepon dan WhatsApp dari Proposal Pembentukan UKM tertanggal 10 Juni 2025.
 export const contact = {
-  address: "Jl. Tanjung Alang No. 23, Makassar, Sulawesi Selatan 90134",
+  secretariat: "Universitas Atma Jaya Makassar",
+  address: "Jl. Tanjung Alang No. 23, Makassar 90224",
+  email: "uajmesports@gmail.com",
+  emailHref: "mailto:uajmesports@gmail.com",
   phone: "(0411) 871038",
   whatsapp: "+62 813-5504-9802",
   whatsappHref: "https://wa.me/6281355049802",
