@@ -1,7 +1,6 @@
 import { Nav } from "@/components/Nav";
 import { Hero } from "@/components/Hero";
 import { Reveal, Stagger, StaggerItem } from "@/components/Reveal";
-import { InstagramFeed } from "@/components/InstagramFeed";
 import { LogoMark } from "@/components/Logo";
 import {
   org, vision, missions, trophies, games, ranks, faculties, timeline, structure, values, links,
@@ -18,7 +17,6 @@ export default function Home() {
       <Komunitas />
       <Journey />
       <Pengurus />
-      <InstagramFeed />
       <CTA />
       <Footer />
     </main>
