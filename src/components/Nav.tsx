@@ -1,0 +1,63 @@
+"use client";
+import { useEffect, useState } from "react";
+import { Logo } from "./Logo";
+
+const items = [
+  { href: "#tentang", label: "Tentang" },
+  { href: "#prestasi", label: "Prestasi" },
+  { href: "#komunitas", label: "Komunitas" },
+  { href: "#perjalanan", label: "Perjalanan" },
+  { href: "#pengurus", label: "Pengurus" },
+];
+
+export function Nav() {
+  const [scrolled, setScrolled] = useState(false);
+  const [open, setOpen] = useState(false);
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 24);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  return (
+    <header
+      className={`fixed inset-x-0 top-0 z-50 transition-all duration-300 ${
+        scrolled ? "backdrop-blur-xl bg-ink-950/70 border-b border-white/5" : ""
+      }`}
+    >
+      <nav className="mx-auto flex max-w-6xl items-center justify-between px-5 py-3.5">
+        <a href="#top" aria-label="UKM E-Sport UAJM">
+          <Logo />
+        </a>
+        <div className="hidden items-center gap-7 md:flex">
+          {items.map((i) => (
+            <a key={i.href} href={i.href} className="text-sm text-white/60 transition-colors hover:text-white">
+              {i.label}
+            </a>
+          ))}
+          <a href="#komunitas" className="btn-primary clip-corner px-4 py-2 text-sm">
+            Gabung
+          </a>
+        </div>
+        <button className="md:hidden text-white/70" onClick={() => setOpen((v) => !v)} aria-label="Menu">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            {open ? <path d="M6 6l12 12M18 6L6 18" /> : <path d="M4 7h16M4 12h16M4 17h16" />}
+          </svg>
+        </button>
+      </nav>
+      {open && (
+        <div className="md:hidden border-t border-white/5 bg-ink-950/95 px-5 py-4">
+          <div className="flex flex-col gap-3">
+            {items.map((i) => (
+              <a key={i.href} href={i.href} onClick={() => setOpen(false)} className="text-sm text-white/70">
+                {i.label}
+              </a>
+            ))}
+          </div>
+        </div>
+      )}
+    </header>
+  );
+}
