@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Inter, Orbitron, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
+import { Providers, noFlashScript } from "@/components/Providers";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 const orbit = Orbitron({ subsets: ["latin"], weight: ["600", "700", "800", "900"], variable: "--font-orbit" });
@@ -20,8 +21,16 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="id" className={`${inter.variable} ${orbit.variable} ${mono.variable}`}>
-      <body className="font-sans">{children}</body>
+    <html lang="id" dir="ltr" className={`${inter.variable} ${orbit.variable} ${mono.variable}`} suppressHydrationWarning>
+      <head>
+        {/* Applies the stored theme and locale before first paint, so the page
+            never flashes the wrong theme. Values are checked against a fixed
+            allow-list and never interpolated into markup. */}
+        <script dangerouslySetInnerHTML={{ __html: noFlashScript }} />
+      </head>
+      <body className="font-sans">
+        <Providers>{children}</Providers>
+      </body>
     </html>
   );
 }

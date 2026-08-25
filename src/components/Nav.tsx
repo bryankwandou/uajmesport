@@ -1,20 +1,23 @@
 "use client";
 import { useEffect, useState } from "react";
 import { Logo } from "./Logo";
+import { Controls } from "./Controls";
+import { useApp } from "./Providers";
 import { links } from "@/lib/content";
 
-const items = [
-  { href: "#tentang", label: "Tentang" },
-  { href: "#prestasi", label: "Prestasi" },
-  { href: "#komunitas", label: "Komunitas" },
-  { href: "#pengurus", label: "Pengurus" },
-  { href: "#legalitas", label: "Legalitas" },
-  { href: "#kontak", label: "Kontak" },
-];
-
 export function Nav() {
+  const { t } = useApp();
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
+
+  const items = [
+    { href: "#tentang", label: t.nav.about },
+    { href: "#prestasi", label: t.nav.achievements },
+    { href: "#komunitas", label: t.nav.community },
+    { href: "#pengurus", label: t.nav.officers },
+    { href: "#legalitas", label: t.nav.legal },
+    { href: "#kontak", label: t.nav.contact },
+  ];
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 24);
@@ -23,37 +26,73 @@ export function Nav() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
+  // Close the mobile sheet once the viewport passes the breakpoint, so the
+  // panel can never linger behind the desktop bar.
+  useEffect(() => {
+    const mq = window.matchMedia("(min-width: 1024px)");
+    const onChange = () => mq.matches && setOpen(false);
+    mq.addEventListener("change", onChange);
+    return () => mq.removeEventListener("change", onChange);
+  }, []);
+
   return (
     <header
-      className={`fixed inset-x-0 top-0 z-50 duration-300 [transition-property:background-color,border-color,backdrop-filter] ${
-        scrolled ? "backdrop-blur-xl bg-ink-950/70 border-b border-white/5" : ""
+      className={`fixed inset-x-0 top-0 z-50 duration-300 ease-crisp [transition-property:background-color,border-color,backdrop-filter] ${
+        scrolled || open
+          ? "border-b border-[color:var(--border)] bg-[color:var(--bg)]/85 backdrop-blur-xl"
+          : "border-b border-transparent"
       }`}
     >
-      <nav className="mx-auto flex max-w-6xl items-center justify-between px-5 py-3.5">
-        <a href="#top" aria-label="UKM E-Sport UAJM">
+      <nav className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-5 py-3.5">
+        <a href="#top" aria-label="UKM E-Sport UAJM" className="min-w-0 shrink">
           <Logo />
         </a>
-        <div className="hidden items-center gap-7 md:flex">
+
+        <div className="hidden items-center gap-6 lg:flex">
           {items.map((i) => (
-            <a key={i.href} href={i.href} className="text-sm text-white/60 transition-colors hover:text-white">
+            <a
+              key={i.href}
+              href={i.href}
+              className="whitespace-nowrap text-[13px] text-[color:var(--muted)] duration-200 ease-crisp [transition-property:color] hover:text-[color:var(--text)]"
+            >
               {i.label}
             </a>
           ))}
-          <a href={links.register} target="_blank" rel="noopener noreferrer" className="btn-primary clip-corner px-4 py-2 text-sm">
-            Daftar Anggota
-          </a>
         </div>
-        <button className="md:hidden text-white/70" onClick={() => setOpen((v) => !v)} aria-label="Menu">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            {open ? <path d="M6 6l12 12M18 6L6 18" /> : <path d="M4 7h16M4 12h16M4 17h16" />}
-          </svg>
-        </button>
+
+        <div className="flex shrink-0 items-center gap-2">
+          <Controls />
+          <a
+            href={links.register}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="btn-primary clip-corner hidden px-4 py-2 text-[12px] sm:inline-block"
+          >
+            {t.nav.register}
+          </a>
+          <button
+            className="grid h-[30px] w-[30px] place-items-center rounded border border-[color:var(--border)] text-[color:var(--muted)] lg:hidden"
+            onClick={() => setOpen((v) => !v)}
+            aria-label={t.nav.menu}
+            aria-expanded={open}
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+              {open ? <path d="M6 6l12 12M18 6L6 18" /> : <path d="M4 8h16M4 16h16" />}
+            </svg>
+          </button>
+        </div>
       </nav>
+
       {open && (
-        <div className="md:hidden border-t border-white/5 bg-ink-950/95 px-5 py-4">
-          <div className="flex flex-col gap-3">
+        <div className="border-t border-[color:var(--border)] bg-[color:var(--bg)] px-5 py-4 lg:hidden">
+          <div className="flex flex-col gap-3.5">
             {items.map((i) => (
-              <a key={i.href} href={i.href} onClick={() => setOpen(false)} className="text-sm text-white/70">
+              <a
+                key={i.href}
+                href={i.href}
+                onClick={() => setOpen(false)}
+                className="text-sm text-[color:var(--muted)] duration-200 ease-crisp [transition-property:color] hover:text-[color:var(--text)]"
+              >
                 {i.label}
               </a>
             ))}

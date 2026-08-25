@@ -18,10 +18,10 @@ export function Logo() {
     <div className="flex items-center gap-2.5">
       <LogoMark />
       <div className="leading-none">
-        <div className="font-display text-[15px] font-extrabold tracking-tight text-white">
+        <div className="font-display text-[15px] font-extrabold tracking-tight text-[color:var(--text)]">
           UKM<span className="text-crimson-glow"> E-SPORT</span>
         </div>
-        <div className="text-[9px] uppercase tracking-[0.2em] text-white/40">Atma Jaya Makassar</div>
+        <div className="text-[9px] uppercase tracking-[0.2em] text-[color:var(--faint)]">Atma Jaya Makassar</div>
       </div>
     </div>
   );

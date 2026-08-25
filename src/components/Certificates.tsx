@@ -31,13 +31,13 @@ export function Certificates() {
         onClick={() => setOpen((v) => !v)}
         aria-expanded={open}
         aria-controls="cert-vault"
-        className="glass clip-corner mx-auto flex w-full max-w-md items-center justify-between gap-4 px-5 py-4 text-left duration-200 [transition-property:border-color] hover:border-white/20"
+        className="glass clip-corner mx-auto flex w-full max-w-md items-center justify-between gap-4 px-5 py-4 text-left duration-200 [transition-property:border-color] hover:border-[color:var(--border)]"
       >
         <span>
-          <span className="block font-display text-sm font-bold uppercase tracking-wide text-white">
+          <span className="block font-display text-sm font-bold uppercase tracking-wide text-[color:var(--text)]">
             Lihat sertifikat
           </span>
-          <span className="mt-0.5 block text-xs text-white/45">
+          <span className="mt-0.5 block text-xs text-[color:var(--faint)]">
             {total} dokumen asli tersimpan
           </span>
         </span>
@@ -67,13 +67,13 @@ export function Certificates() {
                   className="object-cover duration-500 [transition-property:transform] hover:scale-[1.03]"
                 />
               </button>
-              <figcaption className="border-t border-white/8 p-4">
+              <figcaption className="border-t border-[color:var(--border)] p-4">
                 <div className="flex items-baseline justify-between gap-3">
-                  <span className="font-display text-sm font-bold uppercase text-white">{c.title}</span>
-                  <span className="shrink-0 font-mono text-[10px] text-white/40">{c.date}</span>
+                  <span className="font-display text-sm font-bold uppercase text-[color:var(--text)]">{c.title}</span>
+                  <span className="shrink-0 font-mono text-[10px] text-[color:var(--faint)]">{c.date}</span>
                 </div>
-                <p className="mt-1.5 text-xs leading-relaxed text-white/50">{c.event}</p>
-                {c.ref && <p className="mt-1.5 font-mono text-[10px] text-white/30">No. {c.ref}</p>}
+                <p className="mt-1.5 text-xs leading-relaxed text-[color:var(--faint)]">{c.event}</p>
+                {c.ref && <p className="mt-1.5 font-mono text-[10px] text-[color:var(--faint)]">No. {c.ref}</p>}
               </figcaption>
             </figure>
           ))}
@@ -96,7 +96,7 @@ export function Certificates() {
               height={1000}
               className="h-auto w-full rounded-lg object-contain"
             />
-            <div className="mt-3 flex flex-wrap items-baseline justify-between gap-3 text-white/70">
+            <div className="mt-3 flex flex-wrap items-baseline justify-between gap-3 text-[color:var(--muted)]">
               <span className="font-display text-sm font-bold uppercase">{active.title}</span>
               <span className="font-mono text-xs">{active.event} · {active.date}</span>
             </div>
@@ -105,7 +105,7 @@ export function Certificates() {
             type="button"
             onClick={close}
             aria-label="Tutup"
-            className="absolute right-5 top-5 grid h-10 w-10 place-items-center rounded-full border border-white/20 text-white/80 hover:text-white"
+            className="absolute right-5 top-5 grid h-10 w-10 place-items-center rounded-full border border-[color:var(--border)] text-[color:var(--text)] hover:text-[color:var(--text)]"
           >
             ✕
           </button>

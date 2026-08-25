@@ -4,16 +4,34 @@ const config: Config = {
   content: ["./src/**/*.{js,ts,jsx,tsx,mdx}"],
   theme: {
     extend: {
+      /* Colours resolve through CSS custom properties so a single token swap
+         drives both themes. Nothing here is a fixed hex. */
       colors: {
         ink: {
-          950: "#070406",
-          900: "#0D0709",
-          800: "#160B10",
-          700: "#231017",
+          950: "var(--bg)",
+          900: "var(--surface-2)",
+          800: "var(--surface)",
+          700: "var(--border)",
         },
-        crimson: { glow: "#FF2D55" },
-        ember: { glow: "#FF7A18" },
-        volt: { glow: "#00E5FF" },
+        crimson: { glow: "var(--crimson)" },
+        ember: { glow: "var(--ember)" },
+        volt: { glow: "var(--volt)" },
+        tx: {
+          DEFAULT: "var(--text)",
+          muted: "var(--muted)",
+          faint: "var(--faint)",
+        },
+        line: {
+          DEFAULT: "var(--border)",
+          strong: "var(--border-strong)",
+        },
+        surface: {
+          DEFAULT: "var(--surface)",
+          2: "var(--surface-2)",
+        },
+      },
+      transitionTimingFunction: {
+        crisp: "cubic-bezier(0.2, 0.7, 0.3, 1)",
       },
       fontFamily: {
         display: ["var(--font-orbit)", "system-ui", "sans-serif"],

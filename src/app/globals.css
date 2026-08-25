@@ -2,45 +2,97 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
+/* Competitive arena palette. Crimson and ember carry the e-sport identity; the
+   light theme rebuilds every token against a cool paper ground rather than
+   inverting the dark one, so text never lands on a matching surface. */
+:root,
+:root[data-theme="dark"] {
   --bg: #070406;
+  --surface: rgba(255, 255, 255, 0.05);
+  --surface-2: rgba(255, 255, 255, 0.02);
   --border: rgba(255, 255, 255, 0.08);
+  --border-strong: rgba(255, 255, 255, 0.16);
+  --text: #f0e9ec;
+  --muted: rgba(240, 233, 236, 0.62);
+  --faint: rgba(240, 233, 236, 0.42);
   --crimson: #ff2d55;
   --ember: #ff7a18;
   --volt: #00e5ff;
+  --on-primary: #0a0203;
+  --grid-line: rgba(255, 255, 255, 0.05);
+  --halo-1: rgba(255, 45, 85, 0.20);
+  --halo-2: rgba(255, 122, 24, 0.14);
+  --halo-3: rgba(0, 229, 255, 0.10);
+  --paper: #ffffff;
+  color-scheme: dark;
+}
+
+:root[data-theme="light"] {
+  --bg: #f6f4f5;
+  --surface: #ffffff;
+  --surface-2: #fbf9fa;
+  --border: rgba(16, 6, 10, 0.13);
+  --border-strong: rgba(16, 6, 10, 0.26);
+  --text: #150a0e;
+  --muted: rgba(21, 10, 14, 0.7);
+  --faint: rgba(21, 10, 14, 0.52);
+  --crimson: #c2003a;
+  --ember: #a34500;
+  --volt: #00697a;
+  --on-primary: #ffffff;
+  --grid-line: rgba(16, 6, 10, 0.05);
+  --halo-1: rgba(194, 0, 58, 0.10);
+  --halo-2: rgba(163, 69, 0, 0.08);
+  --halo-3: rgba(0, 105, 122, 0.07);
+  --paper: #ffffff;
+  color-scheme: light;
 }
 
 * { border-color: var(--border); }
 html { scroll-behavior: smooth; }
+
+/* No colour transition on body: values resolved from custom properties that are
+   redefined on :root leave a stale paint in Chromium. The swap is cross-faded
+   with a view transition instead. */
 body {
-  background: var(--bg);
-  color: #f0e9ec;
+  background-color: var(--bg);
+  color: var(--text);
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
   overflow-x: hidden;
 }
 
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 300ms;
+  animation-timing-function: cubic-bezier(0.2, 0.7, 0.3, 1);
+}
+
 .bg-field {
   background:
-    radial-gradient(55% 45% at 15% 8%, rgba(255, 45, 85, 0.20), transparent 60%),
-    radial-gradient(50% 45% at 88% 12%, rgba(255, 122, 24, 0.14), transparent 60%),
-    radial-gradient(45% 40% at 55% 95%, rgba(0, 229, 255, 0.10), transparent 60%),
+    radial-gradient(55% 45% at 15% 8%, var(--halo-1), transparent 60%),
+    radial-gradient(50% 45% at 88% 12%, var(--halo-2), transparent 60%),
+    radial-gradient(45% 40% at 55% 95%, var(--halo-3), transparent 60%),
     var(--bg);
 }
 
 /* Angular HUD grid */
 .bg-grid {
   background-image:
-    linear-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+    linear-gradient(var(--grid-line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
   background-size: 48px 48px;
   mask-image: radial-gradient(ellipse 80% 60% at 50% 0%, black 40%, transparent 100%);
 }
 
 .glass {
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.02));
+  background: var(--surface);
   border: 1px solid var(--border);
   backdrop-filter: blur(12px);
+}
+:root[data-theme="light"] .glass {
+  background: var(--surface);
+  box-shadow: 0 1px 2px rgba(16, 6, 10, 0.04), 0 12px 30px rgba(16, 6, 10, 0.06);
 }
 
 /* angled clip for gaming cards */
@@ -49,7 +101,7 @@ body {
 }
 
 .gradient-text {
-  background: linear-gradient(100deg, #fff 5%, var(--ember) 45%, var(--crimson) 95%);
+  background: linear-gradient(100deg, var(--text) 5%, var(--ember) 45%, var(--crimson) 95%);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
@@ -57,28 +109,35 @@ body {
 
 .chip {
   border: 1px solid var(--border);
-  background: rgba(255, 255, 255, 0.03);
+  background: var(--surface-2);
 }
 
 .btn-primary {
   background: linear-gradient(100deg, var(--crimson), var(--ember));
-  color: #0a0203;
+  color: var(--on-primary);
   font-weight: 700;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 .btn-primary:hover {
   transform: translateY(-2px);
-  box-shadow: 0 12px 40px -12px rgba(255, 45, 85, 0.7);
+  box-shadow: 0 12px 40px -12px color-mix(in srgb, var(--crimson) 70%, transparent);
 }
 
 .marquee-track { animation: marquee 26s linear infinite; }
 @keyframes marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
 
-::selection { background: rgba(255, 45, 85, 0.4); color: #fff; }
+::selection { background: color-mix(in srgb, var(--crimson) 40%, transparent); color: var(--text); }
 ::-webkit-scrollbar { width: 10px; }
-::-webkit-scrollbar-track { background: #070406; }
+::-webkit-scrollbar-track { background: var(--bg); }
 ::-webkit-scrollbar-thumb {
   background: linear-gradient(var(--crimson), var(--ember));
   border-radius: 9999px;
-  border: 2px solid #070406;
+  border: 2px solid var(--bg);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .marquee-track { animation: none; }
+  * { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+  ::view-transition-old(root),
+  ::view-transition-new(root) { animation: none; }
 }

@@ -11,13 +11,13 @@ export function Letterhead() {
   return (
     <section id="legalitas" className="mx-auto max-w-6xl px-5 py-24">
       <div className="mx-auto max-w-2xl text-center">
-        <span className="chip clip-corner inline-block px-3 py-1 text-xs uppercase tracking-wider text-white/60">
+        <span className="chip clip-corner inline-block px-3 py-1 text-xs uppercase tracking-wider text-[color:var(--muted)]">
           Legalitas
         </span>
-        <h2 className="mt-4 font-display text-3xl font-extrabold uppercase tracking-tight text-white md:text-4xl">
+        <h2 className="mt-4 font-display text-3xl font-extrabold uppercase tracking-tight text-[color:var(--text)] md:text-4xl">
           Kop surat <span className="gradient-text">resmi</span>
         </h2>
-        <p className="mt-4 normal-case text-white/55">
+        <p className="mt-4 normal-case text-[color:var(--faint)]">
           Identitas persuratan resmi organisasi beserta dasar hukum penetapannya.
         </p>
       </div>
@@ -67,12 +67,12 @@ export function Letterhead() {
         <div className="grid gap-3 sm:grid-cols-2">
           {legal.map((l) => (
             <div key={l.label} className="glass flex items-baseline justify-between gap-4 p-4">
-              <span className="text-[10px] uppercase tracking-widest text-white/40">{l.label}</span>
-              <span className="text-end font-mono text-[11px] text-white/75">{l.value}</span>
+              <span className="text-[10px] uppercase tracking-widest text-[color:var(--faint)]">{l.label}</span>
+              <span className="text-end font-mono text-[11px] text-[color:var(--muted)]">{l.value}</span>
             </div>
           ))}
         </div>
-        <p className="mt-4 text-center font-mono text-[10.5px] leading-relaxed text-white/35">
+        <p className="mt-4 text-center font-mono text-[10.5px] leading-relaxed text-[color:var(--faint)]">
           {letterhead.sourceNote}
         </p>
       </Reveal>
