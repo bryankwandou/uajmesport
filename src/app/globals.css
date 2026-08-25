@@ -163,3 +163,12 @@ address a {
 header nav a {
   padding-block: 5px;
 }
+
+/* Small inline links and toggles keep a 24px minimum hit area. Written with
+   :where() so any explicit padding utility still overrides it. */
+:where(a[href], button):where(.font-mono, .link-quiet, .inline-block) {
+  padding-block: 4px;
+}
+header nav a {
+  padding-inline: 3px;
+}
