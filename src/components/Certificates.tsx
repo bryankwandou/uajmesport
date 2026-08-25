@@ -7,7 +7,9 @@ import { certificates, type Certificate } from "@/lib/content";
    opens each one full size. The count is derived from the data, so it is always
    the true number of documents held, never a claimed figure. */
 export function Certificates() {
-  const [open, setOpen] = useState(false);
+  // Open by default. The scans are the evidence, so they must be on screen
+  // without the reader having to discover a control first.
+  const [open, setOpen] = useState(true);
   const [active, setActive] = useState<Certificate | null>(null);
   const total = certificates.length;
 

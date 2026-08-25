@@ -42,13 +42,13 @@ export type Dict = {
 const id: Dict = {
   nav: { about: "Tentang", achievements: "Prestasi", community: "Komunitas", officers: "Pengurus", legal: "Legalitas", contact: "Kontak", register: "Daftar Anggota", menu: "Menu" },
   hero: {
-    title1: "Resmi.", title2: "Terstruktur.", title3: "Kompetitif.",
+    title1: "Unit kegiatan", title2: "mahasiswa e-sport", title3: "Atma Jaya Makassar.",
     lede: "UKM E-Sport pertama yang lahir dari mahasiswa FTI, kini menaungi komunitas lintas fakultas dan divisi Web3 UAJM BCC.",
     ctaPrimary: "Daftar Anggota 2026/2027", ctaSecondary: "Lihat prestasi",
     cabinet: "Lemari Trofi", cabinetNote: "Titans Organizer, Mobile Legends Championship",
   },
   stats: ["Anggota terdaftar", "Gelar turnamen 1v1", "Divisi aktif", "Divisi Web3 (BCC)"],
-  about: { kicker: "Visi & Misi", title: "Wadah", titleEm: "resmi", visionLabel: "Visi", visionRef: "AD/ART Pasal 6 · SK No. 002/XII/2025" },
+  about: { kicker: "Visi & Misi", title: "Visi dan misi", titleEm: "organisasi", visionLabel: "Visi", visionRef: "AD/ART Pasal 6 · SK No. 002/XII/2025" },
   values: [
     { title: "Edukatif", body: "Bermain sebagai sarana belajar disiplin, strategi, dan manajemen waktu." },
     { title: "Sportif", body: "Etika kompetitif dan rasa hormat pada lawan di atas segalanya." },
@@ -56,24 +56,24 @@ const id: Dict = {
     { title: "Berkelanjutan", body: "Kepengurusan terstruktur yang menjaga kesinambungan antar-periode." },
   ],
   ach: {
-    kicker: "Prestasi", title: "Gelar yang", titleEm: "terbukti",
+    kicker: "Prestasi", title: "Tiga gelar 1v1", titleEm: "Mobile Legends",
     sub: "Tiga gelar 1v1 Mobile Legends dari Titans Organizer: Fighter, Marksman, dan Assassin.",
     certToggle: "Lihat sertifikat", certCount: "dokumen asli tersimpan",
     note: "Klik untuk memperbesar dan memeriksa.",
   },
   com: {
-    kicker: "Komunitas", title: "Satu klub,", titleEm: "banyak arena",
+    kicker: "Komunitas", title: "15 anggota,", titleEm: "tiga fakultas",
     sub: "Komposisi game dan rank tertinggi dari data pendaftaran resmi, lintas tiga fakultas.",
     games: "Game paling dimainkan", ranks: "Rank tertinggi anggota", faculties: "Lintas fakultas",
     note: "Data agregat dari formulir pendaftaran resmi. Identitas anggota tidak dipublikasikan.",
   },
   officers: {
-    kicker: "Pengurus 2025/2026", title: "Struktur", titleEm: "kepengurusan",
+    kicker: "Pengurus", title: "Kepengurusan periode", titleEm: "2025/2026",
     president: "Ketua Umum", secretary: "Sekretaris", treasurer: "Bendahara",
     division: "Divisi", coordinator: "Koordinator",
   },
   legal: {
-    kicker: "Legalitas", title: "Kop surat", titleEm: "resmi",
+    kicker: "Legalitas", title: "Kop surat dan", titleEm: "dasar hukum",
     sub: "Identitas persuratan resmi organisasi beserta dasar hukum penetapannya.",
     secretariat: "Sekretariat", address: "Alamat", email: "Email",
     decree: "SK Kepengurusan", charter: "SK Penetapan AD/ART",
@@ -81,7 +81,7 @@ const id: Dict = {
     note: "Disalin persis dari kop surat resmi pada dokumen SK dan AD/ART UKM E-Sport UAJM.",
   },
   cta: {
-    kicker: "Pendaftaran Anggota 2026/2027", title: "Saatnya", titleEm: "naik level",
+    kicker: "Pendaftaran Anggota 2026/2027", title: "Pendaftaran anggota", titleEm: "dibuka",
     lede: "Mahasiswa UAJM yang ingin berkompetisi, berlatih, atau membangun komunitas, silakan mendaftar sebagai anggota UKM E-Sport.",
     register: "Daftar Anggota 2026/2027", instagram: "Instagram @uajm_esport", bcc: "Divisi Web3 (BCC)",
   },
@@ -92,13 +92,13 @@ const id: Dict = {
 const en: Dict = {
   nav: { about: "About", achievements: "Achievements", community: "Community", officers: "Board", legal: "Legal", contact: "Contact", register: "Register", menu: "Menu" },
   hero: {
-    title1: "Official.", title2: "Structured.", title3: "Competitive.",
+    title1: "The student", title2: "e-sport unit of", title3: "Atma Jaya Makassar.",
     lede: "The first student e-sport unit born from the Faculty of Information Technology, now home to a cross-faculty community and the UAJM BCC Web3 division.",
     ctaPrimary: "Register for 2026/2027", ctaSecondary: "See achievements",
     cabinet: "Trophy Cabinet", cabinetNote: "Titans Organizer, Mobile Legends Championship",
   },
   stats: ["Registered members", "1v1 tournament titles", "Active divisions", "Web3 division (BCC)"],
-  about: { kicker: "Vision & Mission", title: "An", titleEm: "official", visionLabel: "Vision", visionRef: "Charter Article 6 · Decree No. 002/XII/2025" },
+  about: { kicker: "Vision & Mission", title: "Vision and", titleEm: "mission", visionLabel: "Vision", visionRef: "Charter Article 6 · Decree No. 002/XII/2025" },
   values: [
     { title: "Educational", body: "Play as a way to learn discipline, strategy, and time management." },
     { title: "Sporting", body: "Competitive ethics and respect for the opponent above everything." },
@@ -106,24 +106,24 @@ const en: Dict = {
     { title: "Sustainable", body: "A structured board that carries continuity between terms." },
   ],
   ach: {
-    kicker: "Achievements", title: "Titles that are", titleEm: "proven",
+    kicker: "Achievements", title: "Three 1v1", titleEm: "Mobile Legends titles",
     sub: "Three 1v1 Mobile Legends titles from Titans Organizer: Fighter, Marksman, and Assassin.",
     certToggle: "View certificates", certCount: "original documents on file",
     note: "Click to enlarge and inspect.",
   },
   com: {
-    kicker: "Community", title: "One club,", titleEm: "many arenas",
+    kicker: "Community", title: "15 members,", titleEm: "three faculties",
     sub: "Game mix and highest ranks drawn from official registration data, across three faculties.",
     games: "Most played games", ranks: "Highest member ranks", faculties: "Across faculties",
     note: "Aggregate data from the official registration form. No member identity is published.",
   },
   officers: {
-    kicker: "Board 2025/2026", title: "Organisation", titleEm: "structure",
+    kicker: "Board", title: "Board for the", titleEm: "2025/2026 term",
     president: "President", secretary: "Secretary", treasurer: "Treasurer",
     division: "Division", coordinator: "Coordinator",
   },
   legal: {
-    kicker: "Legal basis", title: "Official", titleEm: "letterhead",
+    kicker: "Legal basis", title: "Letterhead and", titleEm: "founding decrees",
     sub: "The organisation's formal correspondence identity and its founding decrees.",
     secretariat: "Secretariat", address: "Address", email: "Email",
     decree: "Board decree", charter: "Charter decree",
@@ -131,7 +131,7 @@ const en: Dict = {
     note: "Reproduced exactly from the official letterhead on the UKM E-Sport UAJM decree and charter documents.",
   },
   cta: {
-    kicker: "Membership 2026/2027", title: "Time to", titleEm: "level up",
+    kicker: "Membership 2026/2027", title: "Membership", titleEm: "registration is open",
     lede: "UAJM students who want to compete, train, or help build the community are welcome to register as members of UKM E-Sport.",
     register: "Register for 2026/2027", instagram: "Instagram @uajm_esport", bcc: "Web3 division (BCC)",
   },
