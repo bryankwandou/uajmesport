@@ -25,7 +25,7 @@ export function dirFor(code: Locale): "ltr" | "rtl" {
 }
 
 export type Dict = {
-  nav: { about: string; achievements: string; community: string; officers: string; legal: string; contact: string; register: string; menu: string };
+  nav: { about: string; achievements: string; community: string; officers: string; legal: string; contact: string; deck: string; register: string; menu: string };
   hero: { title1: string; title2: string; title3: string; lede: string; ctaPrimary: string; ctaSecondary: string; cabinet: string; cabinetNote: string };
   stats: string[];
   about: { kicker: string; title: string; titleEm: string; visionLabel: string; visionRef: string };
@@ -40,7 +40,7 @@ export type Dict = {
 };
 
 const id: Dict = {
-  nav: { about: "Tentang", achievements: "Prestasi", community: "Komunitas", officers: "Pengurus", legal: "Legalitas", contact: "Kontak", register: "Daftar Anggota", menu: "Menu" },
+  nav: { about: "Tentang", achievements: "Prestasi", community: "Komunitas", officers: "Pengurus", legal: "Legalitas", contact: "Kontak", deck: "Profil Organisasi", register: "Daftar Anggota", menu: "Menu" },
   hero: {
     title1: "Unit kegiatan", title2: "mahasiswa e-sport", title3: "Atma Jaya Makassar.",
     lede: "UKM E-Sport pertama yang lahir dari mahasiswa FTI, kini menaungi komunitas lintas fakultas dan divisi Web3 UAJM BCC.",
@@ -90,7 +90,7 @@ const id: Dict = {
 };
 
 const en: Dict = {
-  nav: { about: "About", achievements: "Achievements", community: "Community", officers: "Board", legal: "Legal", contact: "Contact", register: "Register", menu: "Menu" },
+  nav: { about: "About", achievements: "Achievements", community: "Community", officers: "Board", legal: "Legal", contact: "Contact", deck: "Organisation Profile", register: "Register", menu: "Menu" },
   hero: {
     title1: "The student", title2: "e-sport unit of", title3: "Atma Jaya Makassar.",
     lede: "The first student e-sport unit born from the Faculty of Information Technology, now home to a cross-faculty community and the UAJM BCC Web3 division.",
@@ -141,7 +141,7 @@ const en: Dict = {
 
 const zh: Dict = {
   ...en,
-  nav: { about: "关于", achievements: "成绩", community: "社群", officers: "干部", legal: "合法性", contact: "联系", register: "报名", menu: "菜单" },
+  nav: { about: "关于", achievements: "成绩", community: "社群", officers: "干部", legal: "合法性", contact: "联系", deck: "组织简介", register: "报名", menu: "菜单" },
   hero: { ...en.hero, title1: "正式。", title2: "有组织。", title3: "有竞争力。",
     lede: "由信息技术学院学生创立的首个电竞学生组织，如今涵盖跨院系社群与 UAJM BCC Web3 部门。",
     ctaPrimary: "报名 2026/2027", ctaSecondary: "查看成绩", cabinet: "奖杯陈列" },
@@ -157,7 +157,7 @@ const zh: Dict = {
 
 const ja: Dict = {
   ...en,
-  nav: { about: "概要", achievements: "実績", community: "コミュニティ", officers: "役員", legal: "法的根拠", contact: "連絡先", register: "登録", menu: "メニュー" },
+  nav: { about: "概要", achievements: "実績", community: "コミュニティ", officers: "役員", legal: "法的根拠", contact: "連絡先", deck: "団体概要", register: "登録", menu: "メニュー" },
   hero: { ...en.hero, title1: "公式。", title2: "組織的。", title3: "競技志向。",
     lede: "情報技術学部の学生から生まれた最初の e スポーツ団体。現在は学部横断のコミュニティと UAJM BCC の Web3 部門を擁します。",
     ctaPrimary: "2026/2027 登録", ctaSecondary: "実績を見る", cabinet: "トロフィー棚" },
@@ -173,7 +173,7 @@ const ja: Dict = {
 
 const ko: Dict = {
   ...en,
-  nav: { about: "소개", achievements: "성과", community: "커뮤니티", officers: "임원", legal: "법적 근거", contact: "문의", register: "가입", menu: "메뉴" },
+  nav: { about: "소개", achievements: "성과", community: "커뮤니티", officers: "임원", legal: "법적 근거", contact: "문의", deck: "단체 소개", register: "가입", menu: "메뉴" },
   hero: { ...en.hero, title1: "공식.", title2: "체계적.", title3: "경쟁적.",
     lede: "정보기술학부 학생들이 만든 최초의 e스포츠 단체로, 현재 학부를 아우르는 커뮤니티와 UAJM BCC Web3 부문을 운영합니다.",
     ctaPrimary: "2026/2027 가입", ctaSecondary: "성과 보기", cabinet: "트로피 진열장" },
@@ -189,7 +189,7 @@ const ko: Dict = {
 
 const es: Dict = {
   ...en,
-  nav: { about: "Nosotros", achievements: "Logros", community: "Comunidad", officers: "Directiva", legal: "Legalidad", contact: "Contacto", register: "Inscribirse", menu: "Menú" },
+  nav: { about: "Nosotros", achievements: "Logros", community: "Comunidad", officers: "Directiva", legal: "Legalidad", contact: "Contacto", deck: "Perfil de la organización", register: "Inscribirse", menu: "Menú" },
   hero: { ...en.hero, title1: "Oficial.", title2: "Estructurado.", title3: "Competitivo.",
     lede: "La primera unidad estudiantil de e-sport nacida en la Facultad de Tecnología de la Información, hoy sede de una comunidad multifacultad y de la división Web3 UAJM BCC.",
     ctaPrimary: "Inscríbete 2026/2027", ctaSecondary: "Ver logros", cabinet: "Vitrina de trofeos" },
@@ -205,7 +205,7 @@ const es: Dict = {
 
 const fr: Dict = {
   ...en,
-  nav: { about: "À propos", achievements: "Palmarès", community: "Communauté", officers: "Bureau", legal: "Légalité", contact: "Contact", register: "S'inscrire", menu: "Menu" },
+  nav: { about: "À propos", achievements: "Palmarès", community: "Communauté", officers: "Bureau", legal: "Légalité", contact: "Contact", deck: "Profil de l'association", register: "S'inscrire", menu: "Menu" },
   hero: { ...en.hero, title1: "Officiel.", title2: "Structuré.", title3: "Compétitif.",
     lede: "La première association étudiante d'e-sport née de la Faculté des technologies de l'information, qui réunit aujourd'hui une communauté pluridisciplinaire et la division Web3 UAJM BCC.",
     ctaPrimary: "S'inscrire 2026/2027", ctaSecondary: "Voir le palmarès", cabinet: "Vitrine des trophées" },
@@ -221,7 +221,7 @@ const fr: Dict = {
 
 const de: Dict = {
   ...en,
-  nav: { about: "Über uns", achievements: "Erfolge", community: "Community", officers: "Vorstand", legal: "Rechtsgrundlage", contact: "Kontakt", register: "Anmelden", menu: "Menü" },
+  nav: { about: "Über uns", achievements: "Erfolge", community: "Community", officers: "Vorstand", legal: "Rechtsgrundlage", contact: "Kontakt", deck: "Organisationsprofil", register: "Anmelden", menu: "Menü" },
   hero: { ...en.hero, title1: "Offiziell.", title2: "Strukturiert.", title3: "Wettbewerbsstark.",
     lede: "Die erste studentische E-Sport-Gruppe aus der Fakultät für Informationstechnologie, heute Heimat einer fakultätsübergreifenden Community und der Web3-Abteilung UAJM BCC.",
     ctaPrimary: "Anmelden 2026/2027", ctaSecondary: "Erfolge ansehen", cabinet: "Pokalvitrine" },
@@ -237,7 +237,7 @@ const de: Dict = {
 
 const pt: Dict = {
   ...en,
-  nav: { about: "Sobre", achievements: "Conquistas", community: "Comunidade", officers: "Diretoria", legal: "Legalidade", contact: "Contato", register: "Inscrever-se", menu: "Menu" },
+  nav: { about: "Sobre", achievements: "Conquistas", community: "Comunidade", officers: "Diretoria", legal: "Legalidade", contact: "Contato", deck: "Perfil da organização", register: "Inscrever-se", menu: "Menu" },
   hero: { ...en.hero, title1: "Oficial.", title2: "Estruturado.", title3: "Competitivo.",
     lede: "A primeira entidade estudantil de e-sport nascida na Faculdade de Tecnologia da Informação, hoje lar de uma comunidade multifacultativa e da divisão Web3 UAJM BCC.",
     ctaPrimary: "Inscreva-se 2026/2027", ctaSecondary: "Ver conquistas", cabinet: "Vitrine de troféus" },
@@ -253,7 +253,7 @@ const pt: Dict = {
 
 const ar: Dict = {
   ...en,
-  nav: { about: "عن الوحدة", achievements: "الإنجازات", community: "المجتمع", officers: "الإدارة", legal: "الأساس القانوني", contact: "التواصل", register: "التسجيل", menu: "القائمة" },
+  nav: { about: "عن الوحدة", achievements: "الإنجازات", community: "المجتمع", officers: "الإدارة", legal: "الأساس القانوني", contact: "التواصل", deck: "ملف المنظمة", register: "التسجيل", menu: "القائمة" },
   hero: { ...en.hero, title1: "رسمي.", title2: "منظّم.", title3: "تنافسي.",
     lede: "أول وحدة طلابية للرياضات الإلكترونية انطلقت من كلية تقنية المعلومات، وتضم اليوم مجتمعاً من مختلف الكليات وقسم Web3 التابع لـ UAJM BCC.",
     ctaPrimary: "سجّل 2026/2027", ctaSecondary: "اطّلع على الإنجازات", cabinet: "خزانة الكؤوس" },

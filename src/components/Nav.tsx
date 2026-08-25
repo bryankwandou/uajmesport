@@ -17,6 +17,7 @@ export function Nav() {
     { href: "#pengurus", label: t.nav.officers },
     { href: "#legalitas", label: t.nav.legal },
     { href: "#kontak", label: t.nav.contact },
+    { href: "/deck.html", label: t.nav.deck },
   ];
 
   useEffect(() => {
