@@ -133,9 +133,18 @@ export const contact = {
   websiteHref: "https://uajm.ac.id",
 };
 
-// Tournament certificates on file (Titans Organizer). Real scans.
-export const certificates = [
-  { src: "/certs/best-fighter-s7.jpg", title: "Best of Fighter", event: "Titans Organizer ML, Season 7", date: "12 Apr 2024" },
-  { src: "/certs/best-marksman-s6.jpg", title: "Best of Marksman", event: "Titans Organizer ML, Season 6", date: "07 Apr 2024" },
-  { src: "/certs/best-assassin-s8.jpg", title: "Best of Assassin", event: "Titans Organizer ML, Season 8", date: "14 Apr 2024" },
+/* Real certificate scans on file. Every entry corresponds to a document held by
+   the organisation; nothing here is a placeholder. To publish more, drop the
+   scan into public/certs and add a row: the gallery counts and paginates itself. */
+export type Certificate = {
+  src: string; title: string; event: string; date: string;
+  ref?: string; category: "turnamen" | "kompetisi" | "pelatihan";
+};
+
+export const certificates: Certificate[] = [
+  { src: "/certs/best-fighter-s7.jpg", title: "Best of Fighter", event: "Titans Organizer, Mobile Legends Season 7", date: "12 Apr 2024", category: "turnamen" },
+  { src: "/certs/best-marksman-s6.jpg", title: "Best of Marksman", event: "Titans Organizer, Mobile Legends Season 6", date: "07 Apr 2024", category: "turnamen" },
+  { src: "/certs/best-assassin-s8.jpg", title: "Best of Assassin", event: "Titans Organizer, Mobile Legends Season 8", date: "14 Apr 2024", category: "turnamen" },
+  { src: "/certs/efortion-enspirit-2024.jpg", title: "E-Fortion 5.0, ENSPIRIT 5.0", event: "IBM Student Union, Universitas Ciputra", date: "25 Feb 2024", ref: "186/UC-SUIBM/CERTIFICATE/III/2024", category: "kompetisi" },
+  { src: "/certs/personal-branding-kadev.jpg", title: "Personal Branding Academy", event: "Kadev Co., Certificate of Completion", date: "31 Jul 2026", category: "pelatihan" },
 ];
