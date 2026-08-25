@@ -141,3 +141,19 @@ body {
   ::view-transition-old(root),
   ::view-transition-new(root) { animation: none; }
 }
+
+/* Keyboard focus must be visible on every control. Declared explicitly rather
+   than left to the user-agent default, which several resets suppress. */
+:where(a, button, select, input, textarea, summary, [tabindex]):focus-visible {
+  outline: 2px solid var(--crimson);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+/* Inline contact and footer links sit at text height, which leaves a tap target
+   under the 24px minimum on touch. Padding lifts them without changing layout. */
+footer a,
+address a {
+  display: inline-block;
+  padding-block: 4px;
+}
