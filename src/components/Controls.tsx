@@ -17,7 +17,7 @@ export function Controls({ compact = false }: { compact?: boolean }) {
             const v = e.target.value;
             if (isLocale(v)) setLocale(v);
           }}
-          className="cursor-pointer appearance-none rounded border border-[color:var(--border)] bg-transparent py-1.5 pl-2.5 pr-7 font-mono text-[11px] text-[color:var(--muted)] outline-none duration-200 ease-crisp [transition-property:color,border-color] hover:border-[color:var(--border-strong)] hover:text-[color:var(--text)] focus-visible:border-[color:var(--crimson)]"
+          className="cursor-pointer appearance-none rounded border border-[color:var(--border)] bg-transparent py-1.5 pl-2.5 pr-7 font-mono text-[11px] text-[color:var(--muted)] outline-none duration-200 ease-crisp [transition-property:opacity] hover:border-[color:var(--border-strong)] hover:text-[color:var(--text)] focus-visible:border-[color:var(--crimson)]"
         >
           {LOCALES.map((l) => (
             <option key={l.code} value={l.code} className="bg-[color:var(--bg)] text-[color:var(--text)]">
@@ -42,7 +42,7 @@ export function Controls({ compact = false }: { compact?: boolean }) {
         aria-label={t.a11y.theme}
         aria-pressed={theme === "light"}
         onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-        className={`grid place-items-center rounded border border-[color:var(--border)] text-[color:var(--muted)] duration-200 ease-crisp [transition-property:color,border-color,background-color] hover:border-[color:var(--border-strong)] hover:text-[color:var(--text)] focus-visible:border-[color:var(--crimson)] ${
+        className={`grid place-items-center rounded border border-[color:var(--border)] text-[color:var(--muted)] duration-200 ease-crisp [transition-property:opacity] hover:border-[color:var(--border-strong)] hover:text-[color:var(--text)] focus-visible:border-[color:var(--crimson)] ${
           compact ? "h-[30px] w-[30px]" : "h-[30px] w-[30px]"
         }`}
       >

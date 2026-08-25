@@ -260,10 +260,10 @@ function CTA() {
               <a href={links.register} target="_blank" rel="noopener noreferrer" className="btn-primary clip-corner px-6 py-3 text-sm">
                 {c.register}
               </a>
-              <a href={links.instagram} target="_blank" rel="noopener" className="clip-corner border border-[color:var(--border)] px-6 py-3 text-sm text-[color:var(--text)] transition-colors hover:border-[color:var(--border)] hover:text-[color:var(--text)]">
+              <a href={links.instagram} target="_blank" rel="noopener" className="clip-corner border border-[color:var(--border)] px-6 py-3 text-sm text-[color:var(--text)] [transition-property:opacity] duration-200 hover:border-[color:var(--border)] hover:text-[color:var(--text)]">
                 {c.instagram}
               </a>
-              <a href={`https://${org.domainBcc}`} target="_blank" rel="noopener" className="clip-corner border border-[color:var(--border)] px-6 py-3 text-sm text-[color:var(--text)] transition-colors hover:border-[color:var(--border)] hover:text-[color:var(--text)]">
+              <a href={`https://${org.domainBcc}`} target="_blank" rel="noopener" className="clip-corner border border-[color:var(--border)] px-6 py-3 text-sm text-[color:var(--text)] [transition-property:opacity] duration-200 hover:border-[color:var(--border)] hover:text-[color:var(--text)]">
                 {c.bcc} ↗
               </a>
             </div>

@@ -53,7 +53,7 @@ export function Hero() {
             </a>
             <a
               href="#prestasi"
-              className="clip-corner border border-[color:var(--border)] px-6 py-3 text-sm text-[color:var(--text)] transition-colors hover:border-[color:var(--border)] hover:text-[color:var(--text)]"
+              className="clip-corner border border-[color:var(--border)] px-6 py-3 text-sm text-[color:var(--text)] [transition-property:opacity] duration-200 hover:border-[color:var(--border)] hover:text-[color:var(--text)]"
             >
               {h.ctaSecondary} →
             </a>

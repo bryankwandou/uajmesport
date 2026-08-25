@@ -38,7 +38,7 @@ export function Nav() {
 
   return (
     <header
-      className={`fixed inset-x-0 top-0 z-50 duration-300 ease-crisp [transition-property:background-color,border-color,backdrop-filter] ${
+      className={`fixed inset-x-0 top-0 z-50 duration-300 ease-crisp [transition-property:opacity] ${
         scrolled || open
           ? "border-b border-[color:var(--border)] bg-[color:var(--bg)]/85 backdrop-blur-xl"
           : "border-b border-transparent"
@@ -54,7 +54,7 @@ export function Nav() {
             <a
               key={i.href}
               href={i.href}
-              className="whitespace-nowrap text-[13px] text-[color:var(--muted)] duration-200 ease-crisp [transition-property:color] hover:text-[color:var(--text)]"
+              className="whitespace-nowrap text-[13px] text-[color:var(--muted)] duration-200 ease-crisp [transition-property:opacity] hover:text-[color:var(--text)]"
             >
               {i.label}
             </a>
@@ -92,7 +92,7 @@ export function Nav() {
                 key={i.href}
                 href={i.href}
                 onClick={() => setOpen(false)}
-                className="text-sm text-[color:var(--muted)] duration-200 ease-crisp [transition-property:color] hover:text-[color:var(--text)]"
+                className="text-sm text-[color:var(--muted)] duration-200 ease-crisp [transition-property:opacity] hover:text-[color:var(--text)]"
               >
                 {i.label}
               </a>
