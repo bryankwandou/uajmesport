@@ -14,7 +14,7 @@
   --border-strong: rgba(255, 255, 255, 0.16);
   --text: #f0e9ec;
   --muted: rgba(240, 233, 236, 0.62);
-  --faint: rgba(240, 233, 236, 0.42);
+  --faint: rgba(240, 233, 236, 0.62);
   --crimson: #ff2d55;
   --ember: #ff7a18;
   --volt: #00e5ff;
@@ -35,7 +35,7 @@
   --border-strong: rgba(16, 6, 10, 0.26);
   --text: #150a0e;
   --muted: rgba(21, 10, 14, 0.7);
-  --faint: rgba(21, 10, 14, 0.52);
+  --faint: rgba(21, 10, 14, 0.62);
   --crimson: #c2003a;
   --ember: #a34500;
   --volt: #00697a;
