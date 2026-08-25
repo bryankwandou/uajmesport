@@ -165,8 +165,10 @@ header nav a {
 }
 
 /* Small inline links and toggles keep a 24px minimum hit area. Written with
-   :where() so any explicit padding utility still overrides it. */
-:where(a[href], button):where(.font-mono, .link-quiet, .inline-block) {
+   class specificity rather than :where(), which loses to the base reset's
+   `button { padding: 0 }` and left the control at text height. */
+a[href].font-mono, a[href].link-quiet, a[href].inline-block,
+button.font-mono, button.link-quiet, button.inline-block {
   padding-block: 4px;
 }
 header nav a {
