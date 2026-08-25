@@ -17,7 +17,6 @@
   --faint: rgba(240, 233, 236, 0.62);
   --crimson: #ff2d55;
   --ember: #ff7a18;
-  --volt: #00e5ff;
   --on-primary: #0a0203;
   --grid-line: rgba(255, 255, 255, 0.05);
   --halo-1: rgba(255, 45, 85, 0.20);
@@ -38,7 +37,6 @@
   --faint: rgba(21, 10, 14, 0.62);
   --crimson: #c2003a;
   --ember: #a34500;
-  --volt: #00697a;
   --on-primary: #ffffff;
   --grid-line: rgba(16, 6, 10, 0.05);
   --halo-1: rgba(194, 0, 58, 0.10);
@@ -85,10 +83,31 @@ body {
   mask-image: radial-gradient(ellipse 80% 60% at 50% 0%, black 40%, transparent 100%);
 }
 
+/* Surfaces carry role, not one frosted treatment everywhere.
+   .glass   floats over the halo field and is reserved for the hero HUD.
+   .panel   is the default content card.
+   .panel-feature raises the page's few loudest moments.
+   .panel-quiet is a data row that should recede.
+   All three use flat colours so their contrast stays measurable. */
 .glass {
   background: var(--surface);
   border: 1px solid var(--border);
   backdrop-filter: blur(12px);
+}
+
+.panel {
+  background-color: var(--surface);
+  border: 1px solid var(--border);
+}
+
+.panel-feature {
+  background-color: var(--surface-2);
+  border: 1px solid var(--border-strong);
+}
+
+.panel-quiet {
+  background: transparent;
+  border-top: 1px solid var(--border);
 }
 :root[data-theme="light"] .glass {
   background: var(--surface);

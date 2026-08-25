@@ -64,7 +64,7 @@ function About() {
     <section id="tentang" className="mx-auto max-w-6xl px-5 py-24">
       <SectionHead kicker={a.kicker} title={<>{a.title} <span className="gradient-text">{a.titleEm}</span></>} />
       <Reveal delay={0.05} className="mx-auto mt-10 max-w-3xl">
-        <div className="glass clip-corner p-8 text-center">
+        <div className="panel-feature clip-corner p-8 text-center">
           <div className="text-[10px] uppercase tracking-[0.25em] text-[color:var(--crimson)]">{a.visionLabel}</div>
           <p className="mt-3 text-lg leading-relaxed text-[color:var(--text)] md:text-xl">{vision}</p>
           <div className="mt-3 text-xs text-[color:var(--faint)]">{a.visionRef}</div>
@@ -73,8 +73,8 @@ function About() {
       <Stagger className="mt-6 grid gap-4 md:grid-cols-2">
         {missions.map((m, i) => (
           <StaggerItem key={i}>
-            <div className="glass flex h-full items-start gap-4 p-6">
-              <div className="grid h-9 w-9 shrink-0 place-items-center rounded-md border border-[color:var(--border)] bg-gradient-to-br from-crimson-glow/25 to-ember-glow/10 font-display text-sm font-bold text-[color:var(--text)]">
+            <div className="panel flex h-full items-start gap-4 p-6">
+              <div className="grid h-9 w-9 shrink-0 place-items-center rounded border border-[color:var(--border)] bg-gradient-to-br from-crimson-glow/25 to-ember-glow/10 font-display text-sm font-bold text-[color:var(--text)]">
                 {i + 1}
               </div>
               <p className="text-sm leading-relaxed text-[color:var(--muted)]">{m}</p>
@@ -85,7 +85,7 @@ function About() {
       <Stagger className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {values.map((v, i) => (
           <StaggerItem key={v.title}>
-            <div className="glass h-full p-5">
+            <div className="panel h-full p-5">
               <h3 className="font-display text-sm font-bold uppercase tracking-wide text-[color:var(--text)]">{t.values[i].title}</h3>
               <p className="mt-2 text-xs leading-relaxed text-[color:var(--faint)]">{t.values[i].body}</p>
             </div>
@@ -124,7 +124,7 @@ function Komunitas() {
       />
       <div className="mt-12 grid gap-6 lg:grid-cols-[1.2fr_0.8fr]">
         <Reveal>
-          <div className="glass p-7">
+          <div className="panel p-7">
             <h3 className="font-display text-sm font-bold uppercase tracking-wide text-[color:var(--muted)]">{c.games}</h3>
             <div className="mt-6 space-y-4">
               {games.map((g) => (
@@ -146,7 +146,7 @@ function Komunitas() {
         </Reveal>
         <div className="flex flex-col gap-6">
           <Reveal delay={0.1}>
-            <div className="glass p-7">
+            <div className="panel p-7">
               <h3 className="font-display text-sm font-bold uppercase tracking-wide text-[color:var(--muted)]">{c.ranks}</h3>
               <div className="mt-4 flex flex-wrap gap-2">
                 {ranks.map((r) => (
@@ -156,7 +156,7 @@ function Komunitas() {
             </div>
           </Reveal>
           <Reveal delay={0.15}>
-            <div className="glass p-7">
+            <div className="panel p-7">
               <h3 className="font-display text-sm font-bold uppercase tracking-wide text-[color:var(--muted)]">{c.faculties}</h3>
               <div className="mt-4 grid grid-cols-3 gap-3">
                 {faculties.map((f) => (
@@ -186,7 +186,7 @@ function Journey() {
                 <div className="font-mono text-sm font-semibold text-[color:var(--crimson)]">{t.date}</div>
               </div>
               <div className="relative border-l border-[color:var(--border)] pb-8 pl-6">
-                <span className="absolute -left-[7px] top-1.5 h-3.5 w-3.5 rounded-sm border-2 border-[color:var(--bg)] bg-gradient-to-br from-ember-glow to-crimson-glow" />
+                <span className="absolute -left-[7px] top-1.5 h-3.5 w-3.5 rounded border-2 border-[color:var(--bg)] bg-gradient-to-br from-ember-glow to-crimson-glow" />
                 <h3 className="font-display text-lg font-bold uppercase text-[color:var(--text)]">{t.title}</h3>
                 <p className="mt-1.5 normal-case text-sm leading-relaxed text-[color:var(--faint)]">{t.body}</p>
               </div>
@@ -209,7 +209,7 @@ function Pengurus() {
         sub={org.sk}
       />
       <Reveal delay={0.05} className="mx-auto mt-10 max-w-2xl">
-        <div className="glass clip-corner p-7 text-center">
+        <div className="panel-feature clip-corner p-7 text-center">
           <div className="text-[10px] uppercase tracking-[0.25em] text-[color:var(--faint)]">{structure.lead.role}</div>
           <div className="mt-2 font-display text-2xl font-extrabold text-[color:var(--text)]">{structure.lead.name}</div>
           <div className="mt-1 text-sm text-[color:var(--faint)]">{structure.lead.prodi}</div>
@@ -218,7 +218,7 @@ function Pengurus() {
       <div className="mx-auto mt-4 grid max-w-2xl gap-4 sm:grid-cols-2">
         {structure.core.map((c) => (
           <Reveal key={c.role}>
-            <div className="glass p-5 text-center">
+            <div className="panel p-5 text-center">
               <div className="text-[10px] uppercase tracking-widest text-[color:var(--faint)]">{c.role}</div>
               <div className="mt-1.5 font-display text-base font-bold text-[color:var(--text)]">{c.name}</div>
             </div>
@@ -228,7 +228,7 @@ function Pengurus() {
       <Stagger className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {structure.divisions.map((d) => (
           <StaggerItem key={d.name}>
-            <div className="glass h-full p-5">
+            <div className="panel h-full p-5">
               <div className="text-[10px] uppercase tracking-widest text-[color:var(--crimson)]">{o.division}</div>
               <h3 className="mt-1.5 font-display text-sm font-bold text-[color:var(--text)]">{d.name}</h3>
               <p className="mt-2 text-xs text-[color:var(--faint)]">{o.coordinator} · {d.coord}</p>
@@ -246,7 +246,7 @@ function CTA() {
   return (
     <section className="mx-auto max-w-6xl px-5 py-20">
       <Reveal>
-        <div className="glass clip-corner relative overflow-hidden p-10 text-center md:p-16">
+        <div className="panel-feature clip-corner relative overflow-hidden p-10 text-center md:p-16">
           <div className="pointer-events-none absolute inset-0 bg-grid opacity-40" />
           <div className="relative">
             <div className="text-[10px] uppercase tracking-[0.25em] text-[color:var(--crimson)]">{c.kicker}</div>

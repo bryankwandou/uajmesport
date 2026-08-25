@@ -24,7 +24,7 @@ export function Letterhead() {
 
       <Reveal className="mx-auto mt-12 max-w-3xl">
         {/* Rendered on paper white, the way the document itself prints. */}
-        <div className="clip-corner overflow-hidden rounded-lg bg-white p-8 ring-1 ring-black/10 md:p-10">
+        <div className="clip-corner overflow-hidden rounded bg-white p-8 ring-1 ring-black/10 md:p-10">
           <div className="flex items-center justify-between gap-4">
             <Image
               src="/uajm-logo.png"
@@ -66,7 +66,7 @@ export function Letterhead() {
       <Reveal className="mx-auto mt-6 max-w-3xl">
         <div className="grid gap-3 sm:grid-cols-2">
           {legal.map((l) => (
-            <div key={l.label} className="glass flex items-baseline justify-between gap-4 p-4">
+            <div key={l.label} className="panel-quiet flex items-baseline justify-between gap-4 p-4">
               <span className="text-[10px] uppercase tracking-widest text-[color:var(--faint)]">{l.label}</span>
               <span className="text-end font-mono text-[11px] text-[color:var(--muted)]">{l.value}</span>
             </div>

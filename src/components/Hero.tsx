@@ -96,9 +96,9 @@ export function Hero() {
                   initial={{ opacity: 0, x: 20 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: 0.5 + i * 0.15 }}
-                  className="flex items-center gap-3 rounded-lg border border-[color:var(--border)] bg-[color:var(--surface-2)] p-3"
+                  className="flex items-center gap-3 rounded border border-[color:var(--border)] bg-[color:var(--surface-2)] p-3"
                 >
-                  <div className="grid h-9 w-9 shrink-0 place-items-center rounded-md bg-gradient-to-br from-ember-glow/30 to-crimson-glow/20 font-display text-xs font-bold text-[color:var(--text)]">
+                  <div className="grid h-9 w-9 shrink-0 place-items-center rounded bg-gradient-to-br from-ember-glow/30 to-crimson-glow/20 font-display text-xs font-bold text-[color:var(--text)]">
                     ★
                   </div>
                   <div className="min-w-0">

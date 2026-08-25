@@ -26,7 +26,7 @@ export function Certificates({ note, attrib }: { note: string; attrib: string })
     <div className="mt-12">
       <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
         {certificates.map((c) => (
-          <figure key={c.src} className="glass clip-corner overflow-hidden">
+          <figure key={c.src} className="panel clip-corner overflow-hidden">
             <button
               type="button"
               onClick={() => setActive(c)}
@@ -71,7 +71,7 @@ export function Certificates({ note, attrib }: { note: string; attrib: string })
               alt={`Sertifikat ${active.title}, ${active.event}`}
               width={1600}
               height={1000}
-              className="h-auto w-full rounded-lg object-contain"
+              className="h-auto w-full rounded object-contain"
             />
             <div className="mt-3 flex flex-wrap items-baseline justify-between gap-3 text-white/80">
               <span className="font-display text-sm font-bold uppercase">{active.title}</span>

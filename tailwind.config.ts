@@ -15,7 +15,6 @@ const config: Config = {
         },
         crimson: { glow: "var(--crimson)" },
         ember: { glow: "var(--ember)" },
-        volt: { glow: "var(--volt)" },
         tx: {
           DEFAULT: "var(--text)",
           muted: "var(--muted)",
