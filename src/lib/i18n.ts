@@ -30,7 +30,7 @@ export type Dict = {
   stats: string[];
   about: { kicker: string; title: string; titleEm: string; visionLabel: string; visionRef: string };
   values: { title: string; body: string }[];
-  ach: { kicker: string; title: string; titleEm: string; sub: string; certToggle: string; certCount: string; note: string };
+  ach: { kicker: string; title: string; titleEm: string; sub: string; certToggle: string; certCount: string; note: string; attrib: string };
   com: { kicker: string; title: string; titleEm: string; sub: string; games: string; ranks: string; faculties: string; note: string };
   officers: { kicker: string; title: string; titleEm: string; president: string; secretary: string; treasurer: string; division: string; coordinator: string };
   legal: { kicker: string; title: string; titleEm: string; sub: string; secretariat: string; address: string; email: string; decree: string; charter: string; proposal: string; proposalVal: string; term: string; note: string };
@@ -47,7 +47,7 @@ const id: Dict = {
     ctaPrimary: "Daftar Anggota 2026/2027", ctaSecondary: "Lihat prestasi",
     cabinet: "Lemari Trofi", cabinetNote: "Titans Organizer, Mobile Legends Championship",
   },
-  stats: ["Anggota terdaftar", "Gelar turnamen 1v1", "Divisi aktif", "Divisi Web3 (BCC)"],
+  stats: ["Anggota terdaftar", "Sertifikat terdokumentasi", "Divisi aktif", "Divisi Web3 (BCC)"],
   about: { kicker: "Visi & Misi", title: "Visi dan misi", titleEm: "organisasi", visionLabel: "Visi", visionRef: "AD/ART Pasal 6 · SK No. 002/XII/2025" },
   values: [
     { title: "Edukatif", body: "Bermain sebagai sarana belajar disiplin, strategi, dan manajemen waktu." },
@@ -56,10 +56,11 @@ const id: Dict = {
     { title: "Berkelanjutan", body: "Kepengurusan terstruktur yang menjaga kesinambungan antar-periode." },
   ],
   ach: {
-    kicker: "Prestasi", title: "Tiga gelar 1v1", titleEm: "Mobile Legends",
-    sub: "Tiga gelar 1v1 Mobile Legends dari Titans Organizer: Fighter, Marksman, dan Assassin.",
+    kicker: "Prestasi", title: "Enam sertifikat", titleEm: "terdokumentasi",
+    sub: "Tiga gelar 1v1 Mobile Legends dari Titans Organizer, satu gelar tim di Maung ID Cup, dan dua sertifikasi kompetisi serta pelatihan.",
     certToggle: "Lihat sertifikat", certCount: "dokumen asli tersimpan",
     note: "Klik untuk memperbesar dan memeriksa.",
+    attrib: "Gelar perorangan atas nama Vincentius Bryan Kwandou, gelar tim atas nama Starboy Esport.",
   },
   com: {
     kicker: "Komunitas", title: "15 anggota,", titleEm: "tiga fakultas",
@@ -97,7 +98,7 @@ const en: Dict = {
     ctaPrimary: "Register for 2026/2027", ctaSecondary: "See achievements",
     cabinet: "Trophy Cabinet", cabinetNote: "Titans Organizer, Mobile Legends Championship",
   },
-  stats: ["Registered members", "1v1 tournament titles", "Active divisions", "Web3 division (BCC)"],
+  stats: ["Registered members", "Documented certificates", "Active divisions", "Web3 division (BCC)"],
   about: { kicker: "Vision & Mission", title: "Vision and", titleEm: "mission", visionLabel: "Vision", visionRef: "Charter Article 6 · Decree No. 002/XII/2025" },
   values: [
     { title: "Educational", body: "Play as a way to learn discipline, strategy, and time management." },
@@ -106,10 +107,11 @@ const en: Dict = {
     { title: "Sustainable", body: "A structured board that carries continuity between terms." },
   ],
   ach: {
-    kicker: "Achievements", title: "Three 1v1", titleEm: "Mobile Legends titles",
-    sub: "Three 1v1 Mobile Legends titles from Titans Organizer: Fighter, Marksman, and Assassin.",
+    kicker: "Achievements", title: "Six documented", titleEm: "certificates",
+    sub: "Three 1v1 Mobile Legends titles from Titans Organizer, one team title at Maung ID Cup, and two competition and training certifications.",
     certToggle: "View certificates", certCount: "original documents on file",
     note: "Click to enlarge and inspect.",
+    attrib: "Individual titles in the name of Vincentius Bryan Kwandou, team title in the name of Starboy Esport.",
   },
   com: {
     kicker: "Community", title: "15 members,", titleEm: "three faculties",

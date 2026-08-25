@@ -106,29 +106,7 @@ function Prestasi() {
         title={<>{a.title} <span className="gradient-text">{a.titleEm}</span></>}
         sub={a.sub}
       />
-      <Stagger className="mt-12 grid gap-5 md:grid-cols-3">
-        {trophies.map((t) => (
-          <StaggerItem key={t.title}>
-            <div className="glass clip-corner group relative h-full overflow-hidden p-6">
-              <div className="pointer-events-none absolute -right-10 -top-10 h-28 w-28 rounded-full bg-crimson-glow/15 blur-2xl duration-300 [transition-property:background-color] group-hover:bg-crimson-glow/30" />
-              <div className="font-display text-5xl">🏆</div>
-              <h3 className="mt-4 font-display text-xl font-extrabold uppercase text-[color:var(--text)]">{t.title}</h3>
-              <p className="mt-2 text-sm text-[color:var(--muted)]">{t.event}</p>
-              <div className="mt-4 flex items-center justify-between border-t border-[color:var(--border)] pt-4 text-xs text-[color:var(--faint)]">
-                <span className="chip px-2 py-0.5">{t.mode}</span>
-                <span className="font-mono">{t.date}</span>
-              </div>
-            </div>
-          </StaggerItem>
-        ))}
-      </Stagger>
-
-      <Certificates />
-      <Reveal className="mt-5">
-        <p className="text-center font-mono text-[11px] text-[color:var(--faint)]">
-          {structure.lead.name} · {a.note}
-        </p>
-      </Reveal>
+      <Certificates note={a.note} attrib={a.attrib} />
     </section>
   );
 }

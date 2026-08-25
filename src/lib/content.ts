@@ -15,7 +15,7 @@ export const org = {
 
 export const stats = [
   { value: 15, suffix: "+", label: "Anggota terdaftar", sub: "3 fakultas" },
-  { value: 3, suffix: "", label: "Gelar turnamen 1v1", sub: "Mobile Legends" },
+  { value: 6, suffix: "", label: "Sertifikat terdokumentasi", sub: "turnamen & pelatihan" },
   { value: 4, suffix: "", label: "Divisi aktif", sub: "struktur resmi" },
   { value: 1, suffix: "", label: "Divisi Web3 (BCC)", sub: "di bawah UKM" },
 ];
@@ -31,11 +31,13 @@ export const missions = [
   "Mendukung reputasi Universitas Atma Jaya Makassar melalui kegiatan kemahasiswaan yang positif.",
 ];
 
-// Tournament wins from Titans Organizer certificates (all: Vincentius Bryan K.)
+// Tournament results held on certificate. The 1v1 titles are in Vincentius
+// Bryan K.'s name; the Maung ID Cup result is a team award to Starboy Esport.
 export const trophies = [
   { title: "Best of Fighter", event: "Titans Organizer ML, Season 7", mode: "1v1 Fighter", date: "12 Apr 2024" },
   { title: "Best of Marksman", event: "Titans Organizer ML, Season 6", mode: "1v1 Marksman", date: "07 Apr 2024" },
   { title: "Best of Assassin", event: "Titans Organizer ML, Season 8", mode: "1v1 Assassin", date: "14 Apr 2024" },
+  { title: "Rising Star Team", event: "Maung ID Cup Season 104, Bandung", mode: "Tim, Starboy Esport", date: "05 Apr 2024" },
 ];
 
 // Games from member registration (aggregate, no PII)
@@ -147,4 +149,5 @@ export const certificates: Certificate[] = [
   { src: "/certs/best-assassin-s8.jpg", title: "Best of Assassin", event: "Titans Organizer, Mobile Legends Season 8", date: "14 Apr 2024", category: "turnamen" },
   { src: "/certs/efortion-enspirit-2024.jpg", title: "E-Fortion 5.0, ENSPIRIT 5.0", event: "IBM Student Union, Universitas Ciputra", date: "25 Feb 2024", ref: "186/UC-SUIBM/CERTIFICATE/III/2024", category: "kompetisi" },
   { src: "/certs/personal-branding-kadev.jpg", title: "Personal Branding Academy", event: "Kadev Co., Certificate of Completion", date: "31 Jul 2026", category: "pelatihan" },
+  { src: "/certs/starboy-maung-s104.png", title: "Rising Star Team", event: "Maung ID Cup Season 104, Mobile Legends, tim Starboy Esport, Bandung", date: "05 Apr 2024", category: "turnamen" },
 ];
