@@ -54,7 +54,7 @@ export function Nav() {
             <a
               key={i.href}
               href={i.href}
-              className="whitespace-nowrap text-[13px] text-[color:var(--muted)] duration-200 ease-crisp [transition-property:opacity] hover:text-[color:var(--text)]"
+              className="whitespace-nowrap text-xs text-[color:var(--muted)] duration-200 ease-crisp [transition-property:opacity] hover:text-[color:var(--text)]"
             >
               {i.label}
             </a>
@@ -67,7 +67,7 @@ export function Nav() {
             href={links.register}
             target="_blank"
             rel="noopener noreferrer"
-            className="btn-primary clip-corner hidden px-4 py-2 text-[12px] sm:inline-block"
+            className="btn-primary clip-corner hidden px-4 py-2 text-xs sm:inline-block"
           >
             {t.nav.register}
           </a>

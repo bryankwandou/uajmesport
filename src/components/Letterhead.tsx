@@ -34,13 +34,13 @@ export function Letterhead() {
               className="h-[58px] w-auto shrink-0 object-contain md:h-[84px]"
             />
             <div className="min-w-0 text-center font-serif leading-tight text-neutral-900">
-              <div className="text-[12px] font-bold uppercase tracking-[0.04em] md:text-[19px]">
+              <div className="text-xs font-bold uppercase tracking-[0.04em] md:text-lg">
                 {letterhead.line1}
               </div>
-              <div className="mt-1 text-[15px] font-bold uppercase tracking-[0.04em] md:text-[24px]">
+              <div className="mt-1 text-sm font-bold uppercase tracking-[0.04em] md:text-2xl">
                 {letterhead.line2}
               </div>
-              <div className="mt-1 text-[12px] font-bold uppercase tracking-[0.02em] md:text-[19px]">
+              <div className="mt-1 text-xs font-bold uppercase tracking-[0.02em] md:text-lg">
                 {letterhead.line3}
               </div>
             </div>
@@ -55,7 +55,7 @@ export function Letterhead() {
 
           {/* The document rules this block with a box, not a single line. */}
           <div className="mt-4 border border-neutral-800 px-4 py-2.5">
-            <p className="text-center font-serif text-[10.5px] leading-relaxed text-neutral-900 md:text-[13px]">
+            <p className="text-center font-serif text-[10px] leading-relaxed text-neutral-900 md:text-xs">
               Sekretariat : {letterhead.secretariat} &nbsp;|&nbsp; Alamat : {letterhead.address}
               &nbsp;|&nbsp; Email : {letterhead.email}
             </p>
@@ -72,7 +72,7 @@ export function Letterhead() {
             </div>
           ))}
         </div>
-        <p className="mt-4 text-center font-mono text-[10.5px] leading-relaxed text-[color:var(--faint)]">
+        <p className="mt-4 text-center font-mono text-[10px] leading-relaxed text-[color:var(--faint)]">
           {letterhead.sourceNote}
         </p>
       </Reveal>
