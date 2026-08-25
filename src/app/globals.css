@@ -157,3 +157,9 @@ address a {
   display: inline-block;
   padding-block: 4px;
 }
+
+/* Nav links sit at text height, leaving a target under the 24px minimum.
+   Padding raises the hit area without moving the bar's layout. */
+header nav a {
+  padding-block: 5px;
+}
