@@ -6,6 +6,7 @@ import {
   fileToDataUrl,
   newId,
   putRecord,
+  hasFile,
   publishedFileName,
   recordBytes,
   SLOTS,
@@ -195,6 +196,8 @@ function Dashboard({
   const [status, setStatus] = useState("");
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
+  const [roster, setRoster] = useState("");
+  const [dragId, setDragId] = useState<string | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
   const importRef = useRef<HTMLInputElement>(null);
 
@@ -216,10 +219,6 @@ function Dashboard({
       return;
     }
     const existing = draft.id ? records.find((r) => r.id === draft.id) : undefined;
-    if (!file && !existing) {
-      setError(d.admin.fFile);
-      return;
-    }
     setBusy(true);
     try {
       const base: CertRecord = existing ?? {
@@ -358,6 +357,65 @@ function Dashboard({
     }
   }
 
+  /* Dropping a file on a roster row is the whole upload. The board has the
+     certificates in a folder and the names already typed; opening an edit form
+     for each of 25 people would be the slower path by far. */
+  async function attach(rec: CertRecord, file: File) {
+    setError("");
+    try {
+      await putRecord({
+        ...rec,
+        data: await fileToDataUrl(file),
+        url: undefined,
+        fileName: file.name,
+        mime: file.type || "application/octet-stream",
+        size: file.size,
+      });
+      onChanged();
+      setStatus(d.admin.saved);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : d.err.generic);
+    }
+  }
+
+  /* One paste fills the roster. Each line is a name and a NIM separated by a
+     comma, a semicolon or a tab, which is what a copy out of the registration
+     spreadsheet already looks like. */
+  async function addRoster() {
+    const lines = roster.split(/\r?\n/).map((l) => l.trim()).filter(Boolean);
+    if (lines.length === 0) return;
+    setBusy(true);
+    setError("");
+    try {
+      let n = 0;
+      for (const line of lines) {
+        const [name, nim] = line.split(/[,;\t]/).map((v) => v.trim());
+        if (!name || !nim) continue;
+        await putRecord({
+          id: newId(),
+          fullName: name,
+          nim,
+          title: "Sertifikat UKM E-Sport UAJM",
+          event: "",
+          issuedAt: "",
+          fileName: "",
+          mime: "",
+          size: 0,
+          source: "local",
+          createdAt: Date.now() + n,
+        });
+        n++;
+      }
+      setRoster("");
+      onChanged();
+      setStatus(d.admin.saved);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : d.err.generic);
+    } finally {
+      setBusy(false);
+    }
+  }
+
   async function downloadFile(rec: CertRecord) {
     const bytes = await recordBytes(rec);
     saveBlob(new Blob([bytes.slice().buffer as ArrayBuffer], { type: rec.mime }), rec.fileName);
@@ -476,30 +534,78 @@ function Dashboard({
 
         <div className="panel clip-corner p-6">
           <div className="text-[10px] uppercase tracking-[0.2em] text-[color:var(--faint)]">{d.admin.list}</div>
+          <div className="mt-4 border-b border-[color:var(--border)] pb-5">
+            <label className="block">
+              <span className="mb-1.5 block text-[11px] uppercase tracking-wider text-[color:var(--faint)]">
+                {d.admin.rosterLabel}
+              </span>
+              <textarea
+                value={roster}
+                onChange={(e) => setRoster(e.target.value)}
+                rows={3}
+                placeholder={d.admin.rosterPh}
+                className={`${inputCls} resize-y font-mono text-xs`}
+              />
+            </label>
+            <div className="mt-2.5 flex flex-wrap items-center gap-3">
+              <ToolButton onClick={addRoster} disabled={busy || !roster.trim()}>
+                {d.admin.rosterAdd}
+              </ToolButton>
+              <span className="text-[11px] text-[color:var(--faint)]">{d.admin.rosterHint}</span>
+            </div>
+          </div>
           {records.length === 0 ? (
             <p className="mt-5 text-xs leading-relaxed text-[color:var(--faint)]">{d.admin.listEmpty}</p>
           ) : (
             <ul className="mt-4 divide-y divide-[color:var(--border)]">
               {records.map((r) => (
-                <li key={r.id} className="flex flex-wrap items-start justify-between gap-3 py-3.5">
+                <li
+                  key={r.id}
+                  onDragOver={(e) => {
+                    e.preventDefault();
+                    setDragId(r.id);
+                  }}
+                  onDragLeave={() => setDragId((v) => (v === r.id ? null : v))}
+                  onDrop={(e) => {
+                    e.preventDefault();
+                    setDragId(null);
+                    const f = e.dataTransfer.files?.[0];
+                    if (f) attach(r, f);
+                  }}
+                  className={`flex flex-wrap items-start justify-between gap-3 px-2 py-3.5 ${
+                    dragId === r.id
+                      ? "bg-[color:var(--surface)] outline-dashed outline-1 outline-[color:var(--crimson)]"
+                      : ""
+                  }`}
+                >
                   <div className="min-w-0">
                     <div className="truncate text-sm font-semibold text-[color:var(--text)]">{r.fullName}</div>
                     <div className="mt-0.5 font-mono text-[11px] text-[color:var(--faint)]">
-                      {r.nim} · {r.fileName}
+                      {r.nim}
+                      {hasFile(r) ? ` · ${r.fileName}` : ""}
                     </div>
                     <div className="mt-0.5 text-xs text-[color:var(--muted)]">{r.title}</div>
+                    {!hasFile(r) && (
+                      <div className="mt-1.5 text-[11px] text-[color:var(--crimson)]">{d.admin.dropHere}</div>
+                    )}
                   </div>
                   <div className="flex shrink-0 items-center gap-3">
                     <span className="chip px-2 py-0.5 font-mono text-[10px] text-[color:var(--faint)]">
-                      {r.source === "published" ? d.admin.published : d.admin.local}
+                      {hasFile(r)
+                        ? r.source === "published"
+                          ? d.admin.published
+                          : d.admin.local
+                        : d.admin.awaiting}
                     </span>
-                    <button
-                      type="button"
-                      onClick={() => downloadFile(r)}
-                      className="link-quiet text-xs text-[color:var(--muted)] hover:text-[color:var(--text)]"
-                    >
-                      ↓
-                    </button>
+                    {hasFile(r) && (
+                      <button
+                        type="button"
+                        onClick={() => downloadFile(r)}
+                        className="link-quiet text-xs text-[color:var(--muted)] hover:text-[color:var(--text)]"
+                      >
+                        ↓
+                      </button>
+                    )}
                     <button
                       type="button"
                       onClick={() => edit(r)}

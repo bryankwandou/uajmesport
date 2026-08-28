@@ -7,7 +7,7 @@ import { Reveal } from "@/components/Reveal";
 import { useApp } from "@/components/Providers";
 import { AdminPanel } from "@/components/cert/AdminPanel";
 import { CertCard } from "@/components/cert/CertCard";
-import { allRecords, findFor, SLOTS, type CertRecord } from "@/lib/certstore";
+import { allRecords, findFor, hasFile, SLOTS, type CertRecord } from "@/lib/certstore";
 import { certDict, fill } from "@/lib/certdict";
 import { contact } from "@/lib/content";
 
@@ -137,7 +137,9 @@ function Claim({
     setChecking(true);
     // The typed identity is hashed here, in this browser, and compared against
     // the registry. It is never put in a URL, a request body or storage.
-    const hits = await findFor(records, name, nim);
+    // A roster entry whose certificate has not been uploaded yet is a match on
+    // identity but has nothing to hand over, so it never reaches the member.
+    const hits = (await findFor(records, name, nim)).filter(hasFile);
     setChecking(false);
     if (hits.length === 0) {
       const next = tries + 1;

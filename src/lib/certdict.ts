@@ -76,6 +76,12 @@ export type CertDict = {
     signedInAs: string;
     roleLead: string;
     rolePembina: string;
+    dropHere: string;
+    awaiting: string;
+    rosterLabel: string;
+    rosterPh: string;
+    rosterAdd: string;
+    rosterHint: string;
     seed: string;
     wipe: string;
     wipeConfirm: string;
@@ -151,7 +157,7 @@ const id: CertDict = {
     wrong: "Nama pengguna atau kata sandi salah.",
     title: "Dasbor pengurus",
     slots: "{n} dari {t} slot terisi",
-    slotsNote: "Kapasitas rujukan 22 sertifikat. Menambah di atas itu tetap diizinkan.",
+    slotsNote: "Kapasitas rujukan 25 entri. Menambah di atas itu tetap diizinkan.",
     add: "Tambah sertifikat",
     edit: "Ubah sertifikat",
     fName: "Nama lengkap penerima",
@@ -160,13 +166,13 @@ const id: CertDict = {
     fEvent: "Kegiatan / penerbit",
     fDate: "Tanggal terbit",
     fRef: "Nomor sertifikat (opsional)",
-    fFile: "Berkas sertifikat (PDF, JPG, PNG, WEBP)",
+    fFile: "Berkas sertifikat (PDF, JPG, PNG, WEBP) — boleh dikosongkan dulu",
     fFileKeep: "Biarkan kosong untuk mempertahankan berkas lama.",
     save: "Simpan sertifikat",
     update: "Simpan perubahan",
     cancel: "Batal",
     list: "Sertifikat terdaftar",
-    listEmpty: "Belum ada sertifikat. Tambahkan lewat formulir di samping.",
+    listEmpty: "Belum ada entri. Tempel daftar nama di atas, lalu seret berkas sertifikat ke barisnya.",
     del: "Hapus",
     delConfirm: "Hapus sertifikat ini dari registry?",
     exportJson: "Ekspor registry (JSON)",
@@ -175,7 +181,13 @@ const id: CertDict = {
     signedInAs: "Masuk sebagai",
     roleLead: "Ketua Umum",
     rolePembina: "Dosen Pembina",
-    seed: "Muat 22 contoh",
+    dropHere: "Seret berkas sertifikat ke baris ini",
+    awaiting: "Menunggu berkas",
+    rosterLabel: "Tambah banyak anggota sekaligus",
+    rosterPh: "Nama Lengkap, NIM\nNama Lengkap, NIM",
+    rosterAdd: "Tambah dari daftar",
+    rosterHint: "Satu baris satu anggota, dipisah koma, titik koma, atau tab.",
+    seed: "Muat 25 contoh",
     wipe: "Kosongkan data perangkat ini",
     wipeConfirm: "Hapus semua sertifikat yang tersimpan di perangkat ini?",
     signOut: "Keluar",
@@ -251,7 +263,7 @@ const en: CertDict = {
     wrong: "Wrong username or password.",
     title: "Board dashboard",
     slots: "{n} of {t} slots filled",
-    slotsNote: "22 certificates is the reference capacity. Adding more is still allowed.",
+    slotsNote: "25 entries is the reference capacity. Adding more is still allowed.",
     add: "Add certificate",
     edit: "Edit certificate",
     fName: "Recipient full name",
@@ -260,13 +272,13 @@ const en: CertDict = {
     fEvent: "Event / issuer",
     fDate: "Issue date",
     fRef: "Certificate number (optional)",
-    fFile: "Certificate file (PDF, JPG, PNG, WEBP)",
+    fFile: "Certificate file (PDF, JPG, PNG, WEBP) — may be left empty for now",
     fFileKeep: "Leave empty to keep the existing file.",
     save: "Save certificate",
     update: "Save changes",
     cancel: "Cancel",
     list: "Registered certificates",
-    listEmpty: "No certificate yet. Add one with the form beside this list.",
+    listEmpty: "No entry yet. Paste a name list above, then drop each certificate file on its row.",
     del: "Delete",
     delConfirm: "Remove this certificate from the registry?",
     exportJson: "Export registry (JSON)",
@@ -275,7 +287,13 @@ const en: CertDict = {
     signedInAs: "Signed in as",
     roleLead: "Board chair",
     rolePembina: "Faculty supervisor",
-    seed: "Load 22 samples",
+    dropHere: "Drop the certificate file on this row",
+    awaiting: "Awaiting file",
+    rosterLabel: "Add several members at once",
+    rosterPh: "Full Name, NIM\nFull Name, NIM",
+    rosterAdd: "Add from list",
+    rosterHint: "One member per line, separated by a comma, semicolon or tab.",
+    seed: "Load 25 samples",
     wipe: "Clear this device",
     wipeConfirm: "Delete every certificate stored on this device?",
     signOut: "Sign out",

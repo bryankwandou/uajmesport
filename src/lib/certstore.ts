@@ -15,7 +15,7 @@
  * holds what the board puts in it.
  */
 
-export const SLOTS = 22;
+export const SLOTS = 25;
 
 export type CertSource = "published" | "local";
 
@@ -109,6 +109,10 @@ export function matches(rec: CertRecord, fullName: string, nim: string): boolean
    compared by hash. A published row that matches is handed back carrying the
    identity the member just typed, so the card can print it without the
    registry ever having stored it. */
+export function hasFile(rec: CertRecord): boolean {
+  return Boolean(rec.data || rec.url);
+}
+
 export async function findFor(
   records: CertRecord[],
   fullName: string,
