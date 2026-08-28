@@ -1,5 +1,5 @@
 "use client";
-import Image from "next/image";
+import Link from "next/link";
 import { Nav } from "@/components/Nav";
 import { Hero } from "@/components/Hero";
 import { Reveal, Stagger, StaggerItem } from "@/components/Reveal";
@@ -318,6 +318,7 @@ function Footer() {
             <a href={links.register} target="_blank" rel="noopener noreferrer" className="hover:text-[color:var(--text)]">{t.cta.register}</a>
             <a href={links.instagram} target="_blank" rel="noopener noreferrer" className="hover:text-[color:var(--text)]">Instagram @uajm_esport</a>
             <a href={`https://${org.domainBcc}`} target="_blank" rel="noopener noreferrer" className="hover:text-[color:var(--text)]">UAJM BCC ↗</a>
+            <Link href="/sertifikat" className="hover:text-[color:var(--text)]">Klaim sertifikat anggota</Link>
           </div>
         </div>
       </div>

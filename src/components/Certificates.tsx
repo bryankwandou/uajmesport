@@ -1,13 +1,18 @@
 "use client";
 import { useCallback, useEffect, useState } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import { certificates, type Certificate } from "@/lib/content";
+import { certDict } from "@/lib/certdict";
+import { useApp } from "./Providers";
 
 /* Every award is shown as its own certificate scan, always on screen. There is
    no toggle and no separate summary list: a claim and its proof are the same
    card, so the evidence cannot end up one interaction away from the assertion.
    Clicking a card opens the full-size scan. */
 export function Certificates({ note, attrib }: { note: string; attrib: string }) {
+  const { locale } = useApp();
+  const cd = certDict(locale);
   const [active, setActive] = useState<Certificate | null>(null);
   const close = useCallback(() => setActive(null), []);
 
@@ -56,6 +61,20 @@ export function Certificates({ note, attrib }: { note: string; attrib: string })
       <p className="mt-6 text-center font-mono text-[11px] leading-relaxed text-[color:var(--faint)]">
         {attrib} {note}
       </p>
+
+      {/* Members collect their own certificates elsewhere. The link stays plain
+          and unbranded: it is a service door for the fifteen people it concerns,
+          not a call to action for everyone reading the achievements section. */}
+      <div className="mt-8 flex flex-col items-center gap-2 border-t border-[color:var(--border)] pt-8">
+        <Link
+          href="/sertifikat"
+          className="clip-corner inline-flex items-center gap-2 border border-[color:var(--border)] px-4 py-2.5 text-xs text-[color:var(--muted)] duration-200 ease-crisp [transition-property:border-color] hover:border-[color:var(--border-strong)] hover:text-[color:var(--text)]"
+        >
+          {cd.entry.label}
+          <span aria-hidden="true">&#8594;</span>
+        </Link>
+        <span className="text-[11px] text-[color:var(--faint)]">{cd.entry.hint}</span>
+      </div>
 
       {active && (
         <div
