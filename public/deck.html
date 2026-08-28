@@ -684,7 +684,15 @@ var EN_COVER = "Student Activity Unit<br>E-Sport";
     // centre of the window at every scale.
     stage.style.transform="translate(-50%,-50%) scale("+Math.min(sx,sy)+")";
   }
+  /* Refit on every way the stage can change size: a resized window, a rotated
+     phone, the address bar sliding away, and entering or leaving fullscreen.
+     A projector that reports its size late would otherwise keep the scale the
+     deck was first drawn at. */
   window.addEventListener("resize",fit);
+  window.addEventListener("orientationchange",fit);
+  document.addEventListener("fullscreenchange",fit);
+  if(window.visualViewport) window.visualViewport.addEventListener("resize",fit);
+  if(window.ResizeObserver) new ResizeObserver(fit).observe(document.documentElement);
   fit();
 
   document.getElementById("prev").addEventListener("click",function(){show(i-1);});
