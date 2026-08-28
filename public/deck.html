@@ -36,9 +36,18 @@ h1,h2,h3{font-family:Archivo,system-ui,sans-serif;letter-spacing:-.025em;line-he
 .mono{font-family:"IBM Plex Mono",ui-monospace,monospace;}
 .num{font-variant-numeric:tabular-nums;}
 
-#viewport{position:fixed;inset:0;display:grid;place-items:center;background:var(--ground);}
+/* The stage is anchored by its own centre rather than by layout alignment.
+   place-items:center cannot centre a grid item that is larger than its
+   container: the browser falls back to start alignment to avoid clipping the
+   top-left, which left the 1600x900 box parked at 0,0. Scaling it around its
+   centre then pushed the visible deck right and down by half the difference,
+   so on any screen under 1600x900 the right edge and the bottom edge fell off
+   the window. Translating by -50% of the box after the scale removes the
+   layout box from the question entirely. */
+#viewport{position:fixed;inset:0;overflow:hidden;background:var(--ground);}
 #stage{
-  width:1600px;height:900px;position:relative;transform-origin:center center;
+  width:1600px;height:900px;position:absolute;left:50%;top:50%;
+  transform:translate(-50%,-50%);transform-origin:center center;
   background:var(--ground);overflow:hidden;
 }
 
@@ -669,9 +678,11 @@ var EN_COVER = "Student Activity Unit<br>E-Sport";
   /* The stage is a fixed 1600x900 canvas; scale it to fit the screen so the
      layout is identical on any projector. */
   function fit(){
-    var pad=0;
-    var sx=(window.innerWidth-pad)/1600, sy=(window.innerHeight-pad)/900;
-    stage.style.transform="scale("+Math.min(sx,sy)+")";
+    var sx=window.innerWidth/1600, sy=window.innerHeight/900;
+    // The translate must stay in front of the scale: it shifts the box by half
+    // its own rendered size, which is what keeps the centre pinned to the
+    // centre of the window at every scale.
+    stage.style.transform="translate(-50%,-50%) scale("+Math.min(sx,sy)+")";
   }
   window.addEventListener("resize",fit);
   fit();
