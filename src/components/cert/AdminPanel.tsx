@@ -6,6 +6,7 @@ import {
   fileToDataUrl,
   newId,
   putRecord,
+  publishedFileName,
   recordBytes,
   SLOTS,
   toPublishedJson,
@@ -22,9 +23,19 @@ import { fill, type CertDict } from "@/lib/certdict";
  * board from a visitor who wandered in, it is not a vault. Nothing secret sits
  * behind it — the registry it edits is the same registry the claim form reads.
  */
-export const ADMIN_USER = "nayrbryanGaming";
-export const ADMIN_PASS = "nayrbryanGaming";
+/* Two people put certificates on this site: the board chair and the faculty
+   supervisor. They get separate sign-ins so the dashboard can say who is
+   working and so one can be revoked without locking the other out.
+   To change a password, edit the line here and redeploy. */
+export type Account = { user: string; pass: string; role: "lead" | "pembina" };
+
+export const ACCOUNTS: Account[] = [
+  { user: "nayrbryanGaming", pass: "nayrbryanGaming", role: "lead" },
+  { user: "pembina.uajmesport", pass: "pembina.uajmesport", role: "pembina" },
+];
+
 const SESSION_KEY = "uajmesport.cert.admin";
+const ROLE_KEY = "uajmesport.cert.role";
 
 type Draft = {
   id: string | null;
@@ -58,19 +69,24 @@ export function AdminPanel({
   onClose: () => void;
 }) {
   const [authed, setAuthed] = useState(false);
+  const [role, setRole] = useState<Account["role"]>("lead");
 
   useEffect(() => {
     try {
       setAuthed(sessionStorage.getItem(SESSION_KEY) === "1");
+      const r = sessionStorage.getItem(ROLE_KEY);
+      if (r === "lead" || r === "pembina") setRole(r);
     } catch {
       /* storage unavailable, the gate simply asks again */
     }
   }, []);
 
-  const signIn = useCallback(() => {
+  const signIn = useCallback((account: Account) => {
     setAuthed(true);
+    setRole(account.role);
     try {
       sessionStorage.setItem(SESSION_KEY, "1");
+      sessionStorage.setItem(ROLE_KEY, account.role);
     } catch {
       /* in-memory session still applies */
     }
@@ -80,6 +96,7 @@ export function AdminPanel({
     setAuthed(false);
     try {
       sessionStorage.removeItem(SESSION_KEY);
+      sessionStorage.removeItem(ROLE_KEY);
     } catch {
       /* nothing to clear */
     }
@@ -87,13 +104,21 @@ export function AdminPanel({
   }, [onClose]);
 
   return authed ? (
-    <Dashboard d={d} records={records} onChanged={onChanged} onSignOut={signOut} />
+    <Dashboard d={d} records={records} role={role} onChanged={onChanged} onSignOut={signOut} />
   ) : (
     <SignIn d={d} onSignedIn={signIn} onClose={onClose} />
   );
 }
 
-function SignIn({ d, onSignedIn, onClose }: { d: CertDict; onSignedIn: () => void; onClose: () => void }) {
+function SignIn({
+  d,
+  onSignedIn,
+  onClose,
+}: {
+  d: CertDict;
+  onSignedIn: (account: Account) => void;
+  onClose: () => void;
+}) {
   const [user, setUser] = useState("");
   const [pass, setPass] = useState("");
   const [error, setError] = useState("");
@@ -102,7 +127,8 @@ function SignIn({ d, onSignedIn, onClose }: { d: CertDict; onSignedIn: () => voi
     <form
       onSubmit={(e) => {
         e.preventDefault();
-        if (user.trim() === ADMIN_USER && pass === ADMIN_PASS) onSignedIn();
+        const account = ACCOUNTS.find((a) => a.user === user.trim() && a.pass === pass);
+        if (account) onSignedIn(account);
         else setError(d.admin.wrong);
       }}
       className="panel-feature clip-corner mx-auto max-w-md p-7"
@@ -154,11 +180,13 @@ function SignIn({ d, onSignedIn, onClose }: { d: CertDict; onSignedIn: () => voi
 function Dashboard({
   d,
   records,
+  role,
   onChanged,
   onSignOut,
 }: {
   d: CertDict;
   records: CertRecord[];
+  role: Account["role"];
   onChanged: () => void;
   onSignOut: () => void;
 }) {
@@ -279,9 +307,35 @@ function Dashboard({
     onChanged();
   }
 
-  function exportJson() {
-    const blob = new Blob([toPublishedJson(records)], { type: "application/json" });
-    saveBlob(blob, "certificates.json");
+  async function exportJson() {
+    setError("");
+    try {
+      const json = await toPublishedJson(records);
+      saveBlob(new Blob([json], { type: "application/json" }), "certificates.json");
+      setStatus(d.admin.saved);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : d.err.generic);
+    }
+  }
+
+  /* The registry names each file by its record id, so the files have to leave
+     here under those names. Downloading them one by one under their original
+     names would guarantee a mismatch with the JSON. */
+  async function exportFiles() {
+    setError("");
+    setBusy(true);
+    try {
+      for (const r of records) {
+        const bytes = await recordBytes(r);
+        saveBlob(new Blob([bytes.slice().buffer as ArrayBuffer], { type: r.mime }), publishedFileName(r));
+        await new Promise((res) => setTimeout(res, 250));
+      }
+      setStatus(d.admin.saved);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : d.err.generic);
+    } finally {
+      setBusy(false);
+    }
   }
 
   async function importJson(e: React.ChangeEvent<HTMLInputElement>) {
@@ -320,6 +374,9 @@ function Dashboard({
             {fill(d.admin.slots, { n: filled, t: SLOTS })}
           </h2>
           <p className="mt-1.5 text-xs text-[color:var(--faint)]">{d.admin.slotsNote}</p>
+          <p className="mt-1 font-mono text-[11px] text-[color:var(--faint)]">
+            {d.admin.signedInAs} {role === "lead" ? d.admin.roleLead : d.admin.rolePembina}
+          </p>
         </div>
         <button
           type="button"
@@ -345,6 +402,9 @@ function Dashboard({
 
       <div className="mt-6 flex flex-wrap gap-2">
         <ToolButton onClick={exportJson}>{d.admin.exportJson}</ToolButton>
+        <ToolButton onClick={exportFiles} disabled={busy || records.length === 0}>
+          {d.admin.exportFiles}
+        </ToolButton>
         <ToolButton onClick={() => importRef.current?.click()}>{d.admin.importJson}</ToolButton>
         <ToolButton onClick={seed} disabled={busy}>
           {d.admin.seed}
@@ -469,7 +529,7 @@ function Dashboard({
 }
 
 const inputCls =
-  "w-full rounded border border-[color:var(--border)] bg-[color:var(--surface-2)] px-3 py-2.5 text-sm text-[color:var(--text)] outline-none duration-200 ease-crisp [transition-property:border-color] placeholder:text-[color:var(--faint)] hover:border-[color:var(--border-strong)] focus-visible:border-[color:var(--crimson)]";
+  "w-full rounded border border-[color:var(--border)] bg-[color:var(--surface-2)] px-3 py-2.5 text-sm text-[color:var(--text)] outline-none duration-200 ease-crisp [transition-property:opacity] placeholder:text-[color:var(--faint)] hover:border-[color:var(--border-strong)] focus-visible:border-[color:var(--crimson)]";
 
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
@@ -494,7 +554,7 @@ function ToolButton({
       type="button"
       onClick={onClick}
       disabled={disabled}
-      className="clip-corner border border-[color:var(--border)] px-3.5 py-2 text-xs text-[color:var(--muted)] duration-200 ease-crisp [transition-property:border-color] hover:border-[color:var(--border-strong)] hover:text-[color:var(--text)] disabled:opacity-60"
+      className="clip-corner border border-[color:var(--border)] px-3.5 py-2 text-xs text-[color:var(--muted)] duration-200 ease-crisp [transition-property:opacity] hover:border-[color:var(--border-strong)] hover:text-[color:var(--text)] disabled:opacity-60"
     >
       {children}
     </button>

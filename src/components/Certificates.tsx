@@ -68,8 +68,9 @@ export function Certificates({ note, attrib }: { note: string; attrib: string })
       <div className="mt-8 flex flex-col items-center gap-2 border-t border-[color:var(--border)] pt-8">
         <Link
           href="/sertifikat"
-          className="clip-corner inline-flex items-center gap-2 border border-[color:var(--border)] px-4 py-2.5 text-xs text-[color:var(--muted)] duration-200 ease-crisp [transition-property:border-color] hover:border-[color:var(--border-strong)] hover:text-[color:var(--text)]"
+          className="clip-corner inline-flex items-center gap-2.5 border border-[color:var(--crimson)] px-5 py-2.5 text-xs font-semibold text-[color:var(--crimson)] hover:bg-[color:var(--surface)]"
         >
+          <span aria-hidden="true" className="h-1.5 w-1.5 rounded-full bg-[color:var(--crimson)]" />
           {cd.entry.label}
           <span aria-hidden="true">&#8594;</span>
         </Link>

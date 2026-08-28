@@ -71,7 +71,11 @@ export type CertDict = {
     del: string;
     delConfirm: string;
     exportJson: string;
+    exportFiles: string;
     importJson: string;
+    signedInAs: string;
+    roleLead: string;
+    rolePembina: string;
     seed: string;
     wipe: string;
     wipeConfirm: string;
@@ -166,17 +170,21 @@ const id: CertDict = {
     del: "Hapus",
     delConfirm: "Hapus sertifikat ini dari registry?",
     exportJson: "Ekspor registry (JSON)",
+    exportFiles: "Unduh semua berkas",
     importJson: "Impor registry (JSON)",
+    signedInAs: "Masuk sebagai",
+    roleLead: "Ketua Umum",
+    rolePembina: "Dosen Pembina",
     seed: "Muat 22 contoh",
     wipe: "Kosongkan data perangkat ini",
     wipeConfirm: "Hapus semua sertifikat yang tersimpan di perangkat ini?",
     signOut: "Keluar",
     saved: "Tersimpan.",
-    note: "Gerbang masuk ini berjalan di peramban, bukan di server. Cukup untuk memisahkan pengurus dari pengunjung, bukan untuk menahan penyerang.",
+    note: "Gerbang masuk ini berjalan di peramban, bukan di server. Cukup untuk memisahkan pengurus dari pengunjung, bukan untuk menahan penyerang. Ketua Umum dan Dosen Pembina memakai akun terpisah.",
     published: "Terbit",
     local: "Perangkat ini",
     publishHelp:
-      "Sertifikat yang ditambahkan di sini tersimpan pada perangkat ini. Untuk membuatnya dapat diklaim dari perangkat mana pun, ekspor registry, letakkan berkasnya di public/sertifikat-berkas/ lalu tempelkan JSON ke public/data/certificates.json dan deploy ulang.",
+      "Sertifikat yang ditambahkan di sini tersimpan pada perangkat ini. Untuk membuatnya dapat diklaim dari perangkat mana pun: tekan Ekspor registry, tekan Unduh semua berkas, letakkan berkas di public/sertifikat-berkas/, tempelkan JSON ke public/data/certificates.json, lalu deploy ulang. Registry yang diekspor tidak memuat nama maupun NIM, hanya sidik SHA-256 dari keduanya, sehingga berkas publik itu bukan daftar anggota.",
   },
 };
 
@@ -262,17 +270,21 @@ const en: CertDict = {
     del: "Delete",
     delConfirm: "Remove this certificate from the registry?",
     exportJson: "Export registry (JSON)",
+    exportFiles: "Download every file",
     importJson: "Import registry (JSON)",
+    signedInAs: "Signed in as",
+    roleLead: "Board chair",
+    rolePembina: "Faculty supervisor",
     seed: "Load 22 samples",
     wipe: "Clear this device",
     wipeConfirm: "Delete every certificate stored on this device?",
     signOut: "Sign out",
     saved: "Saved.",
-    note: "This gate runs in the browser, not on a server. It separates the board from visitors; it does not hold off an attacker.",
+    note: "This gate runs in the browser, not on a server. It separates the board from visitors; it does not hold off an attacker. The board chair and the faculty supervisor sign in with separate accounts.",
     published: "Published",
     local: "This device",
     publishHelp:
-      "Certificates added here live on this device. To make them claimable from any device, export the registry, drop the files into public/sertifikat-berkas/, paste the JSON into public/data/certificates.json and redeploy.",
+      "Certificates added here live on this device. To make them claimable from any device: export the registry, download every file, drop the files into public/sertifikat-berkas/, paste the JSON into public/data/certificates.json and redeploy. The exported registry carries no name and no NIM, only a SHA-256 of the two, so the public file is not a member roster.",
   },
 };
 

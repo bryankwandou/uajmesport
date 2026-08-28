@@ -112,8 +112,12 @@ td .lk{font-family:"IBM Plex Mono";font-size:16px;color:var(--cyan);white-space:
 
 .bars{display:grid;gap:15px;}
 .brow{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:baseline;font-size:21px;}
-.btrack{grid-column:1/-1;height:13px;border-radius:99px;background:var(--panel-2);overflow:hidden;}
-.bfill{height:100%;border-radius:99px;background:linear-gradient(90deg,var(--solid),#5f9412);}
+/* Both of these are spans, so both need blockifying by hand. .btrack is a grid
+   item and the browser blockifies it for free; .bfill is not, so it stayed
+   display:inline, where width and height are ignored outright. Every bar was
+   drawing a 0x0 fill inside a visible track. */
+.btrack{display:block;grid-column:1/-1;height:13px;border-radius:99px;background:var(--panel-2);overflow:hidden;}
+.bfill{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,var(--solid),#5f9412);}
 
 .pill{display:inline-block;font-family:"IBM Plex Mono";font-size:15px;letter-spacing:.12em;text-transform:uppercase;
   padding:9px 15px;border-radius:9px;background:var(--solid);color:#fff;font-weight:600;}

@@ -7,7 +7,7 @@ import { Reveal } from "@/components/Reveal";
 import { useApp } from "@/components/Providers";
 import { AdminPanel } from "@/components/cert/AdminPanel";
 import { CertCard } from "@/components/cert/CertCard";
-import { allRecords, matches, SLOTS, type CertRecord } from "@/lib/certstore";
+import { allRecords, findFor, SLOTS, type CertRecord } from "@/lib/certstore";
 import { certDict, fill } from "@/lib/certdict";
 import { contact } from "@/lib/content";
 
@@ -122,7 +122,7 @@ function Claim({
 
   const remaining = Math.max(0, Math.ceil((lockedUntil - now) / 1000));
 
-  function submit(e: React.FormEvent) {
+  async function submit(e: React.FormEvent) {
     e.preventDefault();
     setError("");
     if (remaining > 0) {
@@ -135,7 +135,9 @@ function Claim({
       return;
     }
     setChecking(true);
-    const hits = records.filter((r) => matches(r, name, nim));
+    // The typed identity is hashed here, in this browser, and compared against
+    // the registry. It is never put in a URL, a request body or storage.
+    const hits = await findFor(records, name, nim);
     setChecking(false);
     if (hits.length === 0) {
       const next = tries + 1;
@@ -334,4 +336,4 @@ function Footer({ d, onAdmin, count }: { d: ReturnType<typeof certDict>; onAdmin
 }
 
 const inputCls =
-  "w-full rounded border border-[color:var(--border)] bg-[color:var(--surface-2)] px-3.5 py-3 text-sm text-[color:var(--text)] outline-none duration-200 ease-crisp [transition-property:border-color] placeholder:text-[color:var(--faint)] hover:border-[color:var(--border-strong)] focus-visible:border-[color:var(--crimson)]";
+  "w-full rounded border border-[color:var(--border)] bg-[color:var(--surface-2)] px-3.5 py-3 text-sm text-[color:var(--text)] outline-none duration-200 ease-crisp [transition-property:opacity] placeholder:text-[color:var(--faint)] hover:border-[color:var(--border-strong)] focus-visible:border-[color:var(--crimson)]";

@@ -34,11 +34,38 @@ export type CertRecord = {
   data?: string;
   /** Path under /public, held by published records. */
   url?: string;
+  /** Hashed identity, present on published rows instead of name and NIM. */
+  key?: string;
   source: CertSource;
   createdAt: number;
 };
 
-export type PublishedRecord = Omit<CertRecord, "source" | "data"> & { url: string };
+/* What actually ships in public/data/certificates.json.
+ *
+ * No name and no NIM. A published row identifies its owner only by
+ * `key` — a SHA-256 of the salt, the normalised name and the normalised NIM —
+ * so the file anyone can fetch is not a member roster. A visitor who opens it
+ * directly sees certificate titles and opaque hashes.
+ *
+ * Being straight about the limit: a hash is not a secret. Names are guessable
+ * and a NIM is a short number, so someone determined could grind candidate
+ * pairs offline against this file. What the hash buys is that reading the file
+ * no longer *hands over* the roster: an attacker must already know who they
+ * are looking for. Moving the lookup behind a server function with its own
+ * rate limit is the step that would make guessing expensive too. */
+export type PublishedRecord = {
+  id: string;
+  key: string;
+  title: string;
+  event: string;
+  issuedAt: string;
+  ref?: string;
+  fileName: string;
+  mime: string;
+  size: number;
+  url: string;
+  createdAt: number;
+};
 
 /* ── identity matching ─────────────────────────────────────────────────────
    A member types their name the way they remember it. Case, double spaces,
@@ -58,8 +85,44 @@ export function normNim(v: string): string {
   return v.toUpperCase().replace(/[^A-Z0-9]/g, "");
 }
 
+/* The salt is in the client bundle, and it is meant to be: it stops one
+   published registry from being matched against another site's leaked table,
+   which is all a public-file salt can honestly do. */
+const KEY_SALT = "ukm-esport-uajm/sertifikat/v1";
+
+export async function identityKey(fullName: string, nim: string): Promise<string> {
+  const subtle = globalThis.crypto?.subtle;
+  const material = `${KEY_SALT}|${normName(fullName)}|${normNim(nim)}`;
+  if (!subtle) return `plain:${material}`;
+  const digest = await subtle.digest("SHA-256", new TextEncoder().encode(material));
+  return Array.from(new Uint8Array(digest))
+    .map((b) => b.toString(16).padStart(2, "0"))
+    .join("");
+}
+
 export function matches(rec: CertRecord, fullName: string, nim: string): boolean {
   return normName(rec.fullName) === normName(fullName) && normNim(rec.nim) === normNim(nim);
+}
+
+/* One lookup across both sources. Records the board holds on this device still
+   carry the name in the clear and are compared directly; published records are
+   compared by hash. A published row that matches is handed back carrying the
+   identity the member just typed, so the card can print it without the
+   registry ever having stored it. */
+export async function findFor(
+  records: CertRecord[],
+  fullName: string,
+  nim: string,
+): Promise<CertRecord[]> {
+  const key = await identityKey(fullName, nim);
+  const name = fullName.trim().replace(/\s+/g, " ");
+  const student = normNim(nim);
+  const hits: CertRecord[] = [];
+  for (const rec of records) {
+    if (rec.key && rec.key === key) hits.push({ ...rec, fullName: name, nim: student });
+    else if (rec.fullName && matches(rec, fullName, nim)) hits.push(rec);
+  }
+  return hits;
 }
 
 /* ── IndexedDB ─────────────────────────────────────────────────────────────
@@ -146,8 +209,11 @@ async function fetchPublished(): Promise<CertRecord[]> {
     const raw: unknown = await res.json();
     if (!Array.isArray(raw)) return [];
     return raw
-      .filter((r): r is PublishedRecord => !!r && typeof r === "object" && typeof (r as PublishedRecord).url === "string")
-      .map((r) => ({ ...r, source: "published" as const }));
+      .filter(
+        (r): r is PublishedRecord =>
+          !!r && typeof r === "object" && typeof (r as PublishedRecord).url === "string",
+      )
+      .map((r) => ({ ...r, fullName: "", nim: "", source: "published" as const }));
   } catch {
     return [];
   }
@@ -194,21 +260,38 @@ export function newId(): string {
   return `c-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 10)}`;
 }
 
-/** The JSON shape that belongs in public/data/certificates.json. */
-export function toPublishedJson(records: CertRecord[]): string {
-  const rows = records.map((r) => ({
-    id: r.id,
-    fullName: r.fullName,
-    nim: r.nim,
-    title: r.title,
-    event: r.event,
-    issuedAt: r.issuedAt,
-    ...(r.ref ? { ref: r.ref } : {}),
-    fileName: r.fileName,
-    mime: r.mime,
-    size: r.size,
-    url: r.url ?? `/sertifikat-berkas/${r.fileName}`,
-    createdAt: r.createdAt,
-  }));
+export function extensionFor(rec: CertRecord): string {
+  const fromName = /\.([A-Za-z0-9]{1,5})$/.exec(rec.fileName)?.[1];
+  if (fromName) return fromName.toLowerCase();
+  if (rec.mime === "application/pdf") return "pdf";
+  return rec.mime.split("/")[1] || "bin";
+}
+
+/** The filename a published certificate takes. The record id is a UUID, so the
+    path cannot be guessed from a member's name the way "budi-santoso.pdf"
+    could. */
+export function publishedFileName(rec: CertRecord): string {
+  return `${rec.id}.${extensionFor(rec)}`;
+}
+
+/** The JSON that belongs in public/data/certificates.json: hashes, never
+    names. */
+export async function toPublishedJson(records: CertRecord[]): Promise<string> {
+  const rows: PublishedRecord[] = [];
+  for (const r of records) {
+    rows.push({
+      id: r.id,
+      key: r.key ?? (await identityKey(r.fullName, r.nim)),
+      title: r.title,
+      event: r.event,
+      issuedAt: r.issuedAt,
+      ...(r.ref ? { ref: r.ref } : {}),
+      fileName: publishedFileName(r),
+      mime: r.mime,
+      size: r.size,
+      url: `/sertifikat-berkas/${publishedFileName(r)}`,
+      createdAt: r.createdAt,
+    });
+  }
   return JSON.stringify(rows, null, 2);
 }
