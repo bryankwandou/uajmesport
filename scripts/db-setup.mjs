@@ -50,6 +50,11 @@ await sql`
 await sql`CREATE INDEX IF NOT EXISTS certificates_site_key_idx ON certificates (site, identity_key)`;
 await sql`CREATE INDEX IF NOT EXISTS certificates_site_created_idx ON certificates (site, created_at)`;
 
+// The claim path asks for one hash bucket at a time: identity_key LIKE 'ab12%'.
+// A plain btree cannot serve that under a non-C collation, so the prefix index
+// is declared with text_pattern_ops.
+await sql`CREATE INDEX IF NOT EXISTS certificates_key_prefix_idx ON certificates (site, identity_key text_pattern_ops)`;
+
 const [{ count }] = await sql`SELECT count(*)::int AS count FROM certificates`;
 const [{ version }] = await sql`SELECT version()`;
 console.log("schema ready on", version.split(",")[0]);

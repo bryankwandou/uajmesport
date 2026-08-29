@@ -153,7 +153,7 @@ function SignIn({
         </p>
       )}
       <div className="mt-6 flex items-center gap-3">
-        <button type="submit" disabled={busy} className="btn-primary clip-corner px-5 py-2.5 text-xs disabled:opacity-60">
+        <button type="submit" disabled={busy} className="btn-primary rounded px-5 py-2.5 text-xs disabled:opacity-60">
           {busy ? d.form.working : d.admin.enter}
         </button>
         <button
@@ -442,23 +442,21 @@ function Dashboard({
         <button
           type="button"
           onClick={onSignOut}
-          className="clip-corner border border-[color:var(--border)] px-4 py-2 text-xs text-[color:var(--text)] hover:border-[color:var(--border-strong)]"
+          className="rounded border border-[color:var(--muted)] px-4 py-2 text-xs font-medium text-[color:var(--text)] hover:bg-[color:var(--surface)]"
         >
           {d.admin.signOut}
         </button>
       </div>
 
-      <div className="mt-6 flex flex-wrap gap-1" aria-hidden="true">
-        {Array.from({ length: Math.max(SLOTS, filled) }, (_, i) => (
-          <span
-            key={i}
-            className={`h-2 w-2.5 rounded-sm ${
-              i < filled
-                ? "bg-gradient-to-r from-crimson-glow to-ember-glow"
-                : "border border-[color:var(--border)] bg-[color:var(--surface-2)]"
-            }`}
-          />
-        ))}
+      <div
+        className="mt-6 h-2 w-full overflow-hidden rounded-full border border-[color:var(--border-strong)]"
+        role="img"
+        aria-label={fill(d.admin.slots, { n: filled, t: SLOTS })}
+      >
+        <div
+          className="h-full bg-gradient-to-r from-crimson-glow to-ember-glow"
+          style={{ width: `${Math.min(100, (filled / SLOTS) * 100)}%` }}
+        />
       </div>
 
       <div className="mt-6 flex flex-wrap gap-2">
@@ -522,7 +520,7 @@ function Dashboard({
           {status && <p className="mt-4 text-xs text-[color:var(--muted)]">{status}</p>}
 
           <div className="mt-6 flex items-center gap-3">
-            <button type="submit" disabled={busy} className="btn-primary clip-corner px-5 py-2.5 text-xs disabled:opacity-60">
+            <button type="submit" disabled={busy} className="btn-primary rounded px-5 py-2.5 text-xs disabled:opacity-60">
               {draft.id ? d.admin.update : d.admin.save}
             </button>
             {draft.id && (
@@ -670,7 +668,7 @@ function ToolButton({
       type="button"
       onClick={onClick}
       disabled={disabled}
-      className="clip-corner border border-[color:var(--border)] px-3.5 py-2 text-xs text-[color:var(--muted)] hover:border-[color:var(--border-strong)] hover:text-[color:var(--text)] disabled:opacity-60"
+      className="rounded border border-[color:var(--muted)] px-3.5 py-2 text-xs font-medium text-[color:var(--text)] hover:bg-[color:var(--surface)] disabled:border-[color:var(--border-strong)] disabled:text-[color:var(--faint)] disabled:opacity-100"
     >
       {children}
     </button>

@@ -7,7 +7,7 @@ import { Reveal } from "@/components/Reveal";
 import { useApp } from "@/components/Providers";
 import { AdminPanel } from "@/components/cert/AdminPanel";
 import { CertCard } from "@/components/cert/CertCard";
-import { allRecords, findFor, hasFile, SLOTS, type CertRecord } from "@/lib/certstore";
+import { lookup, registryCount, SLOTS, type CertRecord } from "@/lib/certstore";
 import { certDict, fill } from "@/lib/certdict";
 import { contact } from "@/lib/content";
 
@@ -31,13 +31,15 @@ export default function CertificatePage() {
   const { locale } = useApp();
   const d = useMemo(() => certDict(locale), [locale]);
 
-  const [records, setRecords] = useState<CertRecord[]>([]);
+  const [count, setCount] = useState(0);
   const [loaded, setLoaded] = useState(false);
   const [admin, setAdmin] = useState(false);
 
+  // One integer, not the registry. The lookup fetches only the bucket it needs,
+  // so this page costs the same whether there are 20 certificates or 2000.
   const refresh = useCallback(() => {
-    allRecords()
-      .then(setRecords)
+    registryCount()
+      .then(setCount)
       .finally(() => setLoaded(true));
   }, []);
 
@@ -85,21 +87,21 @@ export default function CertificatePage() {
           <AdminPanel d={d} onChanged={refresh} onClose={() => setAdmin(false)} />
         </section>
       ) : (
-        <Claim d={d} records={records} loaded={loaded} />
+        <Claim d={d} count={count} loaded={loaded} />
       )}
 
-      <Footer d={d} onAdmin={() => setAdmin(true)} count={records.length} />
+      <Footer d={d} onAdmin={() => setAdmin(true)} count={count} />
     </main>
   );
 }
 
 function Claim({
   d,
-  records,
+  count,
   loaded,
 }: {
   d: ReturnType<typeof certDict>;
-  records: CertRecord[];
+  count: number;
   loaded: boolean;
 }) {
   const [name, setName] = useState("");
@@ -135,11 +137,11 @@ function Claim({
       return;
     }
     setChecking(true);
-    // The typed identity is hashed here, in this browser, and compared against
-    // the registry. It is never put in a URL, a request body or storage.
-    // A roster entry whose certificate has not been uploaded yet is a match on
-    // identity but has nothing to hand over, so it never reaches the member.
-    const hits = (await findFor(records, name, nim)).filter(hasFile);
+    // Only four hex characters of the identity hash leave this browser; the
+    // full comparison happens back here. The name and NIM are never put in a
+    // URL, a request body or storage. A roster entry whose certificate is not
+    // uploaded yet is excluded by the route, so it never reaches the member.
+    const hits = await lookup(name, nim);
     setChecking(false);
     if (hits.length === 0) {
       const next = tries + 1;
@@ -234,7 +236,7 @@ function Claim({
           </form>
         </Reveal>
 
-        {loaded && records.length === 0 && (
+        {loaded && count === 0 && (
           <div className="panel clip-corner mt-5 p-6">
             <h2 className="font-display text-sm font-bold uppercase tracking-wide text-[color:var(--text)]">
               {d.empty.title}
