@@ -332,6 +332,18 @@ function Footer({ d, onAdmin, count }: { d: ReturnType<typeof certDict>; onAdmin
         <Link href="/" className="hover:text-[color:var(--muted)]">
           {d.meta.back}
         </Link>
+        <span aria-hidden="true">·</span>
+        {/* The knock on the dot above still works, but a door nobody can find
+            is not a door. This is the same door with its name written on it:
+            plain footer text, at the weight of a legal stamp, which the board
+            can point at and the public has no reason to press. */}
+        <button
+          type="button"
+          onClick={onAdmin}
+          className="underline decoration-dotted underline-offset-4 hover:text-[color:var(--muted)]"
+        >
+          {d.admin.signIn}
+        </button>
       </div>
     </footer>
   );
