@@ -24,14 +24,19 @@ import { fill, type CertDict } from "@/lib/certdict";
  * board from a visitor who wandered in, it is not a vault. Nothing secret sits
  * behind it — the registry it edits is the same registry the claim form reads.
  */
-/* Two people put certificates on this site: the board chair and the faculty
-   supervisor. They get separate sign-ins so the dashboard can say who is
-   working and so one can be revoked without locking the other out.
+/* Three people put certificates on this site: the chair, the secretary and
+   the faculty supervisor. They share one dashboard with identical rights —
+   every control below is reachable by all three — but sign in separately, so
+   the panel can say who is working and one account can be revoked without
+   locking the other two out.
    To change a password, edit the line here and redeploy. */
-export type Account = { user: string; pass: string; role: "lead" | "pembina" };
+export type Account = { user: string; pass: string; role: Role };
+
+export type Role = "lead" | "sekretaris" | "pembina";
 
 export const ACCOUNTS: Account[] = [
   { user: "nayrbryanGaming", pass: "nayrbryanGaming", role: "lead" },
+  { user: "sekretaris.uajmesport", pass: "sekretaris.uajmesport", role: "sekretaris" },
   { user: "pembina.uajmesport", pass: "pembina.uajmesport", role: "pembina" },
 ];
 
@@ -70,13 +75,13 @@ export function AdminPanel({
   onClose: () => void;
 }) {
   const [authed, setAuthed] = useState(false);
-  const [role, setRole] = useState<Account["role"]>("lead");
+  const [role, setRole] = useState<Role>("lead");
 
   useEffect(() => {
     try {
       setAuthed(sessionStorage.getItem(SESSION_KEY) === "1");
       const r = sessionStorage.getItem(ROLE_KEY);
-      if (r === "lead" || r === "pembina") setRole(r);
+      if (r === "lead" || r === "sekretaris" || r === "pembina") setRole(r);
     } catch {
       /* storage unavailable, the gate simply asks again */
     }
@@ -187,7 +192,7 @@ function Dashboard({
 }: {
   d: CertDict;
   records: CertRecord[];
-  role: Account["role"];
+  role: Role;
   onChanged: () => void;
   onSignOut: () => void;
 }) {
@@ -433,7 +438,7 @@ function Dashboard({
           </h2>
           <p className="mt-1.5 text-xs text-[color:var(--faint)]">{d.admin.slotsNote}</p>
           <p className="mt-1 font-mono text-[11px] text-[color:var(--faint)]">
-            {d.admin.signedInAs} {role === "lead" ? d.admin.roleLead : d.admin.rolePembina}
+            {d.admin.signedInAs} {roleLabel(d, role)}
           </p>
         </div>
         <button
@@ -636,6 +641,14 @@ function Dashboard({
 
 const inputCls =
   "w-full rounded border border-[color:var(--border)] bg-[color:var(--surface-2)] px-3 py-2.5 text-sm text-[color:var(--text)] outline-none duration-200 ease-crisp [transition-property:opacity] placeholder:text-[color:var(--faint)] hover:border-[color:var(--border-strong)] focus-visible:border-[color:var(--crimson)]";
+
+/* Role decides the label on the panel and nothing else: the three accounts
+   reach exactly the same controls and the same registry. */
+function roleLabel(d: CertDict, role: Role): string {
+  if (role === "lead") return d.admin.roleLead;
+  if (role === "sekretaris") return d.admin.roleSekretaris;
+  return d.admin.rolePembina;
+}
 
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
