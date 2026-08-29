@@ -90,7 +90,7 @@ export type CertDict = {
     saved: string;
     note: string;
     published: string;
-    local: string;
+    storage: string;
     publishHelp: string;
   };
 };
@@ -158,7 +158,7 @@ const id: CertDict = {
     wrong: "Nama pengguna atau kata sandi salah.",
     title: "Dasbor pengurus",
     slots: "{n} dari {t} slot terisi",
-    slotsNote: "Kapasitas rujukan 25 entri. Menambah di atas itu tetap diizinkan.",
+    slotsNote: "Kapasitas 200 sertifikat pada database Neon Postgres.",
     add: "Tambah sertifikat",
     edit: "Ubah sertifikat",
     fName: "Nama lengkap penerima",
@@ -195,10 +195,10 @@ const id: CertDict = {
     signOut: "Keluar",
     saved: "Tersimpan.",
     note: "Gerbang masuk ini berjalan di peramban, bukan di server. Cukup untuk memisahkan pengurus dari pengunjung, bukan untuk menahan penyerang. Ketua Umum, Sekretaris, dan Dosen Pembina memakai akun terpisah dengan hak yang sama persis.",
-    published: "Terbit",
-    local: "Perangkat ini",
+    published: "Tersimpan",
+    storage: "{mb} MB terpakai",
     publishHelp:
-      "Sertifikat yang ditambahkan di sini tersimpan pada perangkat ini. Untuk membuatnya dapat diklaim dari perangkat mana pun: tekan Ekspor registry, tekan Unduh semua berkas, letakkan berkas di public/sertifikat-berkas/, tempelkan JSON ke public/data/certificates.json, lalu deploy ulang. Registry yang diekspor tidak memuat nama maupun NIM, hanya sidik SHA-256 dari keduanya, sehingga berkas publik itu bukan daftar anggota.",
+      "Sertifikat tersimpan di database Neon Postgres, jadi apa yang diunggah di satu perangkat langsung dapat diklaim dari perangkat mana pun. Ekspor registry dan Unduh semua berkas hanya untuk arsip cadangan; berkas JSON itu tidak memuat nama maupun NIM, hanya sidik SHA-256.",
   },
 };
 
@@ -265,7 +265,7 @@ const en: CertDict = {
     wrong: "Wrong username or password.",
     title: "Board dashboard",
     slots: "{n} of {t} slots filled",
-    slotsNote: "25 entries is the reference capacity. Adding more is still allowed.",
+    slotsNote: "200 certificates of capacity on the Neon Postgres database.",
     add: "Add certificate",
     edit: "Edit certificate",
     fName: "Recipient full name",
@@ -302,10 +302,10 @@ const en: CertDict = {
     signOut: "Sign out",
     saved: "Saved.",
     note: "This gate runs in the browser, not on a server. It separates the board from visitors; it does not hold off an attacker. The chair, the secretary and the faculty supervisor sign in separately and share one dashboard with identical rights.",
-    published: "Published",
-    local: "This device",
+    published: "Stored",
+    storage: "{mb} MB used",
     publishHelp:
-      "Certificates added here live on this device. To make them claimable from any device: export the registry, download every file, drop the files into public/sertifikat-berkas/, paste the JSON into public/data/certificates.json and redeploy. The exported registry carries no name and no NIM, only a SHA-256 of the two, so the public file is not a member roster.",
+      "Certificates live in the Neon Postgres database, so what is uploaded on one device is claimable from any other straight away. Export registry and Download every file are for an offline backup only; that JSON carries no name and no NIM, just a SHA-256.",
   },
 };
 

@@ -1,17 +1,20 @@
 "use client";
 import { useCallback, useEffect, useRef, useState } from "react";
 import {
-  clearLocal,
+  adminList,
+  clearAll,
   deleteRecord,
-  fileToDataUrl,
-  newId,
-  putRecord,
+  fileToBase64,
   hasFile,
+  login,
+  newId,
   publishedFileName,
   recordBytes,
+  saveRecord,
   SLOTS,
   toPublishedJson,
   type CertRecord,
+  type Session,
 } from "@/lib/certstore";
 import { saveBlob } from "@/lib/convert";
 import { sampleRecords } from "@/lib/demoCerts";
@@ -19,29 +22,18 @@ import { fill, type CertDict } from "@/lib/certdict";
 
 /* Board dashboard.
  *
- * The gate below compares against a fixed pair of credentials in the client
- * bundle. That is deliberate and it is stated in the panel: this separates the
- * board from a visitor who wandered in, it is not a vault. Nothing secret sits
- * behind it — the registry it edits is the same registry the claim form reads.
+ * Three people put certificates on this site: the chair, the secretary and the
+ * faculty supervisor. They share one dashboard with identical rights — every
+ * control below is reachable by all three — but sign in separately, so the
+ * panel can say who is working and one account can be revoked without locking
+ * the other two out.
+ *
+ * The passwords are no longer in this file. CERT_ACCOUNTS lives in the server
+ * environment and /api/admin/login does the comparison; what comes back is a
+ * bearer token that every write below carries. Reading the page source no
+ * longer hands anyone the keys.
  */
-/* Three people put certificates on this site: the chair, the secretary and
-   the faculty supervisor. They share one dashboard with identical rights —
-   every control below is reachable by all three — but sign in separately, so
-   the panel can say who is working and one account can be revoked without
-   locking the other two out.
-   To change a password, edit the line here and redeploy. */
-export type Account = { user: string; pass: string; role: Role };
-
-export type Role = "lead" | "sekretaris" | "pembina";
-
-export const ACCOUNTS: Account[] = [
-  { user: "nayrbryanGaming", pass: "nayrbryanGaming", role: "lead" },
-  { user: "sekretaris.uajmesport", pass: "sekretaris.uajmesport", role: "sekretaris" },
-  { user: "pembina.uajmesport", pass: "pembina.uajmesport", role: "pembina" },
-];
-
-const SESSION_KEY = "uajmesport.cert.admin";
-const ROLE_KEY = "uajmesport.cert.role";
+const SESSION_KEY = "uajmesport.cert.session";
 
 type Draft = {
   id: string | null;
@@ -65,52 +57,45 @@ const emptyDraft: Draft = {
 
 export function AdminPanel({
   d,
-  records,
   onChanged,
   onClose,
 }: {
   d: CertDict;
-  records: CertRecord[];
   onChanged: () => void;
   onClose: () => void;
 }) {
-  const [authed, setAuthed] = useState(false);
-  const [role, setRole] = useState<Role>("lead");
+  const [session, setSession] = useState<Session | null>(null);
 
   useEffect(() => {
     try {
-      setAuthed(sessionStorage.getItem(SESSION_KEY) === "1");
-      const r = sessionStorage.getItem(ROLE_KEY);
-      if (r === "lead" || r === "sekretaris" || r === "pembina") setRole(r);
+      const raw = sessionStorage.getItem(SESSION_KEY);
+      if (raw) setSession(JSON.parse(raw) as Session);
     } catch {
       /* storage unavailable, the gate simply asks again */
     }
   }, []);
 
-  const signIn = useCallback((account: Account) => {
-    setAuthed(true);
-    setRole(account.role);
+  const signIn = useCallback((s: Session) => {
+    setSession(s);
     try {
-      sessionStorage.setItem(SESSION_KEY, "1");
-      sessionStorage.setItem(ROLE_KEY, account.role);
+      sessionStorage.setItem(SESSION_KEY, JSON.stringify(s));
     } catch {
       /* in-memory session still applies */
     }
   }, []);
 
   const signOut = useCallback(() => {
-    setAuthed(false);
+    setSession(null);
     try {
       sessionStorage.removeItem(SESSION_KEY);
-      sessionStorage.removeItem(ROLE_KEY);
     } catch {
       /* nothing to clear */
     }
     onClose();
   }, [onClose]);
 
-  return authed ? (
-    <Dashboard d={d} records={records} role={role} onChanged={onChanged} onSignOut={signOut} />
+  return session ? (
+    <Dashboard d={d} session={session} onChanged={onChanged} onSignOut={signOut} />
   ) : (
     <SignIn d={d} onSignedIn={signIn} onClose={onClose} />
   );
@@ -122,32 +107,35 @@ function SignIn({
   onClose,
 }: {
   d: CertDict;
-  onSignedIn: (account: Account) => void;
+  onSignedIn: (s: Session) => void;
   onClose: () => void;
 }) {
   const [user, setUser] = useState("");
   const [pass, setPass] = useState("");
   const [error, setError] = useState("");
+  const [busy, setBusy] = useState(false);
+
+  async function submit(e: React.FormEvent) {
+    e.preventDefault();
+    setError("");
+    setBusy(true);
+    try {
+      const s = await login(user.trim(), pass);
+      if (s?.token) onSignedIn(s);
+      else setError(d.admin.wrong);
+    } catch {
+      setError(d.err.generic);
+    } finally {
+      setBusy(false);
+    }
+  }
 
   return (
-    <form
-      onSubmit={(e) => {
-        e.preventDefault();
-        const account = ACCOUNTS.find((a) => a.user === user.trim() && a.pass === pass);
-        if (account) onSignedIn(account);
-        else setError(d.admin.wrong);
-      }}
-      className="panel-feature clip-corner mx-auto max-w-md p-7"
-    >
+    <form onSubmit={submit} className="panel-feature clip-corner mx-auto max-w-md p-7">
       <div className="text-[10px] uppercase tracking-[0.25em] text-[color:var(--crimson)]">{d.admin.signIn}</div>
       <div className="mt-5 space-y-4">
         <Field label={d.admin.user}>
-          <input
-            value={user}
-            onChange={(e) => setUser(e.target.value)}
-            autoComplete="username"
-            className={inputCls}
-          />
+          <input value={user} onChange={(e) => setUser(e.target.value)} autoComplete="username" className={inputCls} />
         </Field>
         <Field label={d.admin.pass}>
           <input
@@ -165,8 +153,8 @@ function SignIn({
         </p>
       )}
       <div className="mt-6 flex items-center gap-3">
-        <button type="submit" className="btn-primary clip-corner px-5 py-2.5 text-xs">
-          {d.admin.enter}
+        <button type="submit" disabled={busy} className="btn-primary clip-corner px-5 py-2.5 text-xs disabled:opacity-60">
+          {busy ? d.form.working : d.admin.enter}
         </button>
         <button
           type="button"
@@ -185,26 +173,41 @@ function SignIn({
 
 function Dashboard({
   d,
-  records,
-  role,
+  session,
   onChanged,
   onSignOut,
 }: {
   d: CertDict;
-  records: CertRecord[];
-  role: Role;
+  session: Session;
   onChanged: () => void;
   onSignOut: () => void;
 }) {
+  const [records, setRecords] = useState<CertRecord[]>([]);
+  const [bytes, setBytes] = useState(0);
   const [draft, setDraft] = useState<Draft>(emptyDraft);
   const [file, setFile] = useState<File | null>(null);
+  const [roster, setRoster] = useState("");
+  const [dragId, setDragId] = useState<string | null>(null);
   const [status, setStatus] = useState("");
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
-  const [roster, setRoster] = useState("");
-  const [dragId, setDragId] = useState<string | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
   const importRef = useRef<HTMLInputElement>(null);
+
+  const reload = useCallback(async () => {
+    try {
+      const { records: rows, bytes: used } = await adminList(session.token);
+      setRecords(rows);
+      setBytes(used);
+      onChanged();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : d.err.generic);
+    }
+  }, [session.token, onChanged, d.err.generic]);
+
+  useEffect(() => {
+    reload();
+  }, [reload]);
 
   const set = (k: keyof Draft) => (e: React.ChangeEvent<HTMLInputElement>) =>
     setDraft((v) => ({ ...v, [k]: e.target.value }));
@@ -223,42 +226,25 @@ function Dashboard({
       setError(d.err.empty);
       return;
     }
-    const existing = draft.id ? records.find((r) => r.id === draft.id) : undefined;
     setBusy(true);
     try {
-      const base: CertRecord = existing ?? {
-        id: newId(),
-        fullName: "",
-        nim: "",
-        title: "",
-        event: "",
-        issuedAt: "",
-        fileName: "",
-        mime: "",
-        size: 0,
-        source: "local",
-        createdAt: Date.now(),
-      };
+      const existing = draft.id ? records.find((r) => r.id === draft.id) : undefined;
       const rec: CertRecord = {
-        ...base,
+        id: existing?.id ?? newId(),
         fullName: draft.fullName.trim(),
         nim: draft.nim.trim(),
         title: draft.title.trim() || "Sertifikat UKM E-Sport UAJM",
         event: draft.event.trim(),
         issuedAt: draft.issuedAt.trim(),
         ref: draft.ref.trim() || undefined,
-        source: "local",
+        fileName: file ? file.name : existing?.fileName ?? "",
+        mime: file ? file.type || "application/octet-stream" : existing?.mime ?? "",
+        size: file ? file.size : existing?.size ?? 0,
+        createdAt: existing?.createdAt ?? Date.now(),
       };
-      if (file) {
-        rec.data = await fileToDataUrl(file);
-        rec.url = undefined;
-        rec.fileName = file.name;
-        rec.mime = file.type || "application/octet-stream";
-        rec.size = file.size;
-      }
-      await putRecord(rec);
+      await saveRecord(session.token, rec, file ? await fileToBase64(file) : null);
       reset();
-      onChanged();
+      await reload();
       setStatus(d.admin.saved);
     } catch (err) {
       setError(err instanceof Error ? err.message : d.err.generic);
@@ -285,101 +271,33 @@ function Dashboard({
 
   async function remove(rec: CertRecord) {
     if (!window.confirm(d.admin.delConfirm)) return;
-    await deleteRecord(rec.id);
-    if (draft.id === rec.id) reset();
-    onChanged();
-  }
-
-  async function seed() {
-    setBusy(true);
-    setError("");
     try {
-      for (const rec of sampleRecords()) await putRecord(rec);
-      onChanged();
-      setStatus(d.admin.saved);
+      await deleteRecord(session.token, rec.id);
+      if (draft.id === rec.id) reset();
+      await reload();
     } catch (err) {
       setError(err instanceof Error ? err.message : d.err.generic);
-    } finally {
-      setBusy(false);
-    }
-  }
-
-  async function wipe() {
-    if (!window.confirm(d.admin.wipeConfirm)) return;
-    await clearLocal();
-    reset();
-    onChanged();
-  }
-
-  async function exportJson() {
-    setError("");
-    try {
-      const json = await toPublishedJson(records);
-      saveBlob(new Blob([json], { type: "application/json" }), "certificates.json");
-      setStatus(d.admin.saved);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : d.err.generic);
-    }
-  }
-
-  /* The registry names each file by its record id, so the files have to leave
-     here under those names. Downloading them one by one under their original
-     names would guarantee a mismatch with the JSON. */
-  async function exportFiles() {
-    setError("");
-    setBusy(true);
-    try {
-      for (const r of records) {
-        const bytes = await recordBytes(r);
-        saveBlob(new Blob([bytes.slice().buffer as ArrayBuffer], { type: r.mime }), publishedFileName(r));
-        await new Promise((res) => setTimeout(res, 250));
-      }
-      setStatus(d.admin.saved);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : d.err.generic);
-    } finally {
-      setBusy(false);
-    }
-  }
-
-  async function importJson(e: React.ChangeEvent<HTMLInputElement>) {
-    const f = e.target.files?.[0];
-    if (!f) return;
-    setError("");
-    try {
-      const rows: unknown = JSON.parse(await f.text());
-      if (!Array.isArray(rows)) throw new Error("JSON harus berupa larik sertifikat.");
-      for (const row of rows as CertRecord[]) {
-        if (!row?.fullName || !row?.nim) continue;
-        await putRecord({ ...row, id: row.id || newId(), source: "local", createdAt: row.createdAt || Date.now() });
-      }
-      onChanged();
-      setStatus(d.admin.saved);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : d.err.generic);
-    } finally {
-      if (importRef.current) importRef.current.value = "";
     }
   }
 
   /* Dropping a file on a roster row is the whole upload. The board has the
      certificates in a folder and the names already typed; opening an edit form
-     for each of 25 people would be the slower path by far. */
-  async function attach(rec: CertRecord, file: File) {
+     for each of two hundred people would be the slower path by far. */
+  async function attach(rec: CertRecord, f: File) {
     setError("");
+    setBusy(true);
     try {
-      await putRecord({
-        ...rec,
-        data: await fileToDataUrl(file),
-        url: undefined,
-        fileName: file.name,
-        mime: file.type || "application/octet-stream",
-        size: file.size,
-      });
-      onChanged();
+      await saveRecord(
+        session.token,
+        { ...rec, fileName: f.name, mime: f.type || "application/octet-stream", size: f.size },
+        await fileToBase64(f),
+      );
+      await reload();
       setStatus(d.admin.saved);
     } catch (err) {
       setError(err instanceof Error ? err.message : d.err.generic);
+    } finally {
+      setBusy(false);
     }
   }
 
@@ -396,23 +314,26 @@ function Dashboard({
       for (const line of lines) {
         const [name, nim] = line.split(/[,;\t]/).map((v) => v.trim());
         if (!name || !nim) continue;
-        await putRecord({
-          id: newId(),
-          fullName: name,
-          nim,
-          title: "Sertifikat UKM E-Sport UAJM",
-          event: "",
-          issuedAt: "",
-          fileName: "",
-          mime: "",
-          size: 0,
-          source: "local",
-          createdAt: Date.now() + n,
-        });
+        await saveRecord(
+          session.token,
+          {
+            id: newId(),
+            fullName: name,
+            nim,
+            title: "Sertifikat UKM E-Sport UAJM",
+            event: "",
+            issuedAt: "",
+            fileName: "",
+            mime: "",
+            size: 0,
+            createdAt: Date.now() + n,
+          },
+          null,
+        );
         n++;
       }
       setRoster("");
-      onChanged();
+      await reload();
       setStatus(d.admin.saved);
     } catch (err) {
       setError(err instanceof Error ? err.message : d.err.generic);
@@ -421,12 +342,89 @@ function Dashboard({
     }
   }
 
+  async function seed() {
+    setBusy(true);
+    setError("");
+    try {
+      for (const rec of sampleRecords()) {
+        const { data, ...rest } = rec;
+        await saveRecord(session.token, rest, data);
+      }
+      await reload();
+      setStatus(d.admin.saved);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : d.err.generic);
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function wipe() {
+    if (!window.confirm(d.admin.wipeConfirm)) return;
+    setBusy(true);
+    try {
+      await clearAll(session.token);
+      reset();
+      await reload();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : d.err.generic);
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  function exportJson() {
+    saveBlob(new Blob([toPublishedJson(records)], { type: "application/json" }), "certificates.json");
+    setStatus(d.admin.saved);
+  }
+
+  async function exportFiles() {
+    setError("");
+    setBusy(true);
+    try {
+      for (const r of records) {
+        if (!hasFile(r)) continue;
+        const out = await recordBytes(r);
+        saveBlob(new Blob([out.slice().buffer as ArrayBuffer], { type: r.mime }), publishedFileName(r));
+        await new Promise((res) => setTimeout(res, 250));
+      }
+      setStatus(d.admin.saved);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : d.err.generic);
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function importJson(e: React.ChangeEvent<HTMLInputElement>) {
+    const f = e.target.files?.[0];
+    if (!f) return;
+    setError("");
+    setBusy(true);
+    try {
+      const rows: unknown = JSON.parse(await f.text());
+      if (!Array.isArray(rows)) throw new Error("JSON harus berupa larik sertifikat.");
+      for (const row of rows as CertRecord[]) {
+        if (!row?.fullName || !row?.nim) continue;
+        await saveRecord(session.token, { ...row, id: row.id || newId() }, null);
+      }
+      await reload();
+      setStatus(d.admin.saved);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : d.err.generic);
+    } finally {
+      setBusy(false);
+      if (importRef.current) importRef.current.value = "";
+    }
+  }
+
   async function downloadFile(rec: CertRecord) {
-    const bytes = await recordBytes(rec);
-    saveBlob(new Blob([bytes.slice().buffer as ArrayBuffer], { type: rec.mime }), rec.fileName);
+    const b = await recordBytes(rec);
+    saveBlob(new Blob([b.slice().buffer as ArrayBuffer], { type: rec.mime }), rec.fileName);
   }
 
   const filled = records.length;
+  const mb = (bytes / (1024 * 1024)).toFixed(1);
 
   return (
     <div>
@@ -438,7 +436,7 @@ function Dashboard({
           </h2>
           <p className="mt-1.5 text-xs text-[color:var(--faint)]">{d.admin.slotsNote}</p>
           <p className="mt-1 font-mono text-[11px] text-[color:var(--faint)]">
-            {d.admin.signedInAs} {roleLabel(d, role)}
+            {d.admin.signedInAs} {roleLabel(d, session.role)} · {fill(d.admin.storage, { mb })}
           </p>
         </div>
         <button
@@ -450,11 +448,11 @@ function Dashboard({
         </button>
       </div>
 
-      <div className="mt-6 flex flex-wrap gap-1.5" aria-hidden="true">
+      <div className="mt-6 flex flex-wrap gap-1" aria-hidden="true">
         {Array.from({ length: Math.max(SLOTS, filled) }, (_, i) => (
           <span
             key={i}
-            className={`h-2.5 w-6 rounded-sm ${
+            className={`h-2 w-2.5 rounded-sm ${
               i < filled
                 ? "bg-gradient-to-r from-crimson-glow to-ember-glow"
                 : "border border-[color:var(--border)] bg-[color:var(--surface-2)]"
@@ -472,7 +470,9 @@ function Dashboard({
         <ToolButton onClick={seed} disabled={busy}>
           {d.admin.seed}
         </ToolButton>
-        <ToolButton onClick={wipe}>{d.admin.wipe}</ToolButton>
+        <ToolButton onClick={wipe} disabled={busy}>
+          {d.admin.wipe}
+        </ToolButton>
         <input ref={importRef} type="file" accept="application/json,.json" onChange={importJson} className="hidden" />
       </div>
 
@@ -559,6 +559,7 @@ function Dashboard({
               <span className="text-[11px] text-[color:var(--faint)]">{d.admin.rosterHint}</span>
             </div>
           </div>
+
           {records.length === 0 ? (
             <p className="mt-5 text-xs leading-relaxed text-[color:var(--faint)]">{d.admin.listEmpty}</p>
           ) : (
@@ -596,11 +597,7 @@ function Dashboard({
                   </div>
                   <div className="flex shrink-0 items-center gap-3">
                     <span className="chip px-2 py-0.5 font-mono text-[10px] text-[color:var(--faint)]">
-                      {hasFile(r)
-                        ? r.source === "published"
-                          ? d.admin.published
-                          : d.admin.local
-                        : d.admin.awaiting}
+                      {hasFile(r) ? d.admin.published : d.admin.awaiting}
                     </span>
                     {hasFile(r) && (
                       <button
@@ -639,16 +636,16 @@ function Dashboard({
   );
 }
 
-const inputCls =
-  "w-full rounded border border-[color:var(--border)] bg-[color:var(--surface-2)] px-3 py-2.5 text-sm text-[color:var(--text)] outline-none duration-200 ease-crisp [transition-property:opacity] placeholder:text-[color:var(--faint)] hover:border-[color:var(--border-strong)] focus-visible:border-[color:var(--crimson)]";
-
 /* Role decides the label on the panel and nothing else: the three accounts
    reach exactly the same controls and the same registry. */
-function roleLabel(d: CertDict, role: Role): string {
+function roleLabel(d: CertDict, role: Session["role"]): string {
   if (role === "lead") return d.admin.roleLead;
   if (role === "sekretaris") return d.admin.roleSekretaris;
   return d.admin.rolePembina;
 }
+
+const inputCls =
+  "w-full rounded border border-[color:var(--border)] bg-[color:var(--surface-2)] px-3 py-2.5 text-sm text-[color:var(--text)] outline-none placeholder:text-[color:var(--faint)] hover:border-[color:var(--border-strong)] focus-visible:border-[color:var(--crimson)]";
 
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
@@ -673,11 +670,9 @@ function ToolButton({
       type="button"
       onClick={onClick}
       disabled={disabled}
-      className="clip-corner border border-[color:var(--border)] px-3.5 py-2 text-xs text-[color:var(--muted)] duration-200 ease-crisp [transition-property:opacity] hover:border-[color:var(--border-strong)] hover:text-[color:var(--text)] disabled:opacity-60"
+      className="clip-corner border border-[color:var(--border)] px-3.5 py-2 text-xs text-[color:var(--muted)] hover:border-[color:var(--border-strong)] hover:text-[color:var(--text)] disabled:opacity-60"
     >
       {children}
     </button>
   );
 }
-
-
