@@ -185,12 +185,15 @@ function Dashboard({
   const [draft, setDraft] = useState<Draft>(emptyDraft);
   const [file, setFile] = useState<File | null>(null);
   const [roster, setRoster] = useState("");
+  const [query, setQuery] = useState("");
   const [dragId, setDragId] = useState<string | null>(null);
   const [status, setStatus] = useState("");
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
   const importRef = useRef<HTMLInputElement>(null);
+  const formRef = useRef<HTMLFormElement>(null);
+  const nameRef = useRef<HTMLInputElement>(null);
 
   const reload = useCallback(async () => {
     try {
@@ -265,6 +268,11 @@ function Dashboard({
     if (fileRef.current) fileRef.current.value = "";
     setStatus("");
     setError("");
+    // On a wide screen the form is already pinned in view; on a narrow one it
+    // is not, and a board member editing the last of two hundred rows should
+    // not have to hunt back up the page for it.
+    formRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+    window.setTimeout(() => nameRef.current?.focus(), 260);
   }
 
   async function remove(rec: CertRecord) {
@@ -392,6 +400,20 @@ function Dashboard({
     saveBlob(new Blob([b.slice().buffer as ArrayBuffer], { type: rec.mime }), rec.fileName);
   }
 
+  /* Matching the way the claim page does: case, spacing and punctuation must
+     not decide whether a row is found. */
+  const needle = query.normalize("NFKD").toLowerCase().replace(/[^a-z0-9]+/g, " ").trim();
+  const shown = needle
+    ? records.filter((r) =>
+        [r.fullName, r.nim, r.title, r.event]
+          .join(" ")
+          .normalize("NFKD")
+          .toLowerCase()
+          .replace(/[^a-z0-9]+/g, " ")
+          .includes(needle),
+      )
+    : records;
+
   const filled = records.length;
   const mb = (bytes / (1024 * 1024)).toFixed(1);
 
@@ -443,14 +465,18 @@ function Dashboard({
         <input ref={importRef} type="file" accept="application/json,.json" onChange={importJson} className="hidden" />
       </div>
 
-      <div className="mt-8 grid gap-6 lg:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)]">
-        <form onSubmit={save} className="panel clip-corner h-fit p-6">
+      <div className="mt-8 grid items-start gap-6 lg:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)]">
+        <form
+          ref={formRef}
+          onSubmit={save}
+          className="panel clip-corner h-fit p-6 lg:sticky lg:top-6 lg:max-h-[calc(100vh-3rem)] lg:overflow-y-auto"
+        >
           <div className="text-[10px] uppercase tracking-[0.2em] text-[color:var(--faint)]">
             {draft.id ? d.admin.edit : d.admin.add}
           </div>
           <div className="mt-5 space-y-4">
             <Field label={d.admin.fName}>
-              <input value={draft.fullName} onChange={set("fullName")} className={inputCls} required />
+              <input ref={nameRef} value={draft.fullName} onChange={set("fullName")} className={inputCls} required />
             </Field>
             <Field label={d.admin.fNim}>
               <input value={draft.nim} onChange={set("nim")} className={`${inputCls} font-mono`} required />
@@ -527,11 +553,26 @@ function Dashboard({
             </div>
           </div>
 
+          {records.length > 0 && (
+            <div className="mt-4 flex flex-wrap items-center gap-3">
+              <input
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                placeholder={d.admin.search}
+                aria-label={d.admin.search}
+                className={`${inputCls} max-w-xs`}
+              />
+              <span className="text-[11px] text-[color:var(--faint)]">
+                {fill(d.admin.searchCount, { n: shown.length, t: records.length })}
+              </span>
+            </div>
+          )}
+
           {records.length === 0 ? (
             <p className="mt-5 text-xs leading-relaxed text-[color:var(--faint)]">{d.admin.listEmpty}</p>
           ) : (
             <ul className="mt-4 divide-y divide-[color:var(--border)]">
-              {records.map((r) => (
+              {shown.map((r) => (
                 <li
                   key={r.id}
                   onDragOver={(e) => {
