@@ -79,11 +79,21 @@ export function unauthorized() {
   return Response.json({ error: "Tidak berwenang." }, { status: 401 });
 }
 
-/** Everything the claim page is allowed to see: no name, no NIM. */
+/* Everything the claim page is allowed to see.
+ *
+ * No name, no NIM — and, just as importantly, nothing that can address a
+ * stored file. The row id is gone and the identity hash is truncated to 16 hex
+ * characters, which is plenty for the browser to recognise its own row after
+ * it has computed the full hash locally, and useless for fetching anything.
+ *
+ * That matters because the certificate itself carries the name. An earlier
+ * shape published the id, and the id alone opened the document: walking the
+ * 65,536 hash buckets would have handed a stranger every member's sheet. The
+ * file route now demands the full 64-character hash, which cannot be derived
+ * from anything on this response. */
 export function publicShape(r: Row) {
   return {
-    id: r.id,
-    key: r.identity_key,
+    k16: r.identity_key.slice(0, 16),
     title: r.title,
     event: r.event,
     issuedAt: r.issued_at,
@@ -97,5 +107,18 @@ export function publicShape(r: Row) {
 
 /** What the dashboard sees once an account has signed in. */
 export function adminShape(r: Row) {
-  return { ...publicShape(r), fullName: r.full_name, nim: r.nim };
+  return {
+    id: r.id,
+    key: r.identity_key,
+    fullName: r.full_name,
+    nim: r.nim,
+    title: r.title,
+    event: r.event,
+    issuedAt: r.issued_at,
+    ref: r.ref ?? undefined,
+    fileName: r.file_name,
+    mime: r.mime,
+    size: r.size,
+    createdAt: Number(r.created_at),
+  };
 }

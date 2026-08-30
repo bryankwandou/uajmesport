@@ -84,17 +84,3 @@ export async function POST(req: Request) {
     );
   }
 }
-
-/** Clears every certificate for this site. */
-export async function DELETE(req: Request) {
-  if (!verifyToken(req.headers.get("authorization"))) return unauthorized();
-  try {
-    await db()`DELETE FROM certificates WHERE site = ${SITE}`;
-    return Response.json({ ok: true });
-  } catch (e) {
-    return Response.json(
-      { error: e instanceof Error ? e.message : "Data tidak dapat dihapus." },
-      { status: 500 },
-    );
-  }
-}

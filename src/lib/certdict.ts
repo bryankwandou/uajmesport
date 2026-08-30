@@ -83,9 +83,6 @@ export type CertDict = {
     rosterPh: string;
     rosterAdd: string;
     rosterHint: string;
-    seed: string;
-    wipe: string;
-    wipeConfirm: string;
     signOut: string;
     saved: string;
     note: string;
@@ -189,9 +186,6 @@ const id: CertDict = {
     rosterPh: "Nama Lengkap, NIM\nNama Lengkap, NIM",
     rosterAdd: "Tambah dari daftar",
     rosterHint: "Satu baris satu anggota, dipisah koma, titik koma, atau tab.",
-    seed: "Muat 25 contoh",
-    wipe: "Kosongkan data perangkat ini",
-    wipeConfirm: "Hapus semua sertifikat yang tersimpan di perangkat ini?",
     signOut: "Keluar",
     saved: "Tersimpan.",
     note: "Gerbang masuk ini berjalan di peramban, bukan di server. Cukup untuk memisahkan pengurus dari pengunjung, bukan untuk menahan penyerang. Ketua Umum, Sekretaris, dan Dosen Pembina memakai akun terpisah dengan hak yang sama persis.",
@@ -296,9 +290,6 @@ const en: CertDict = {
     rosterPh: "Full Name, NIM\nFull Name, NIM",
     rosterAdd: "Add from list",
     rosterHint: "One member per line, separated by a comma, semicolon or tab.",
-    seed: "Load 25 samples",
-    wipe: "Clear this device",
-    wipeConfirm: "Delete every certificate stored on this device?",
     signOut: "Sign out",
     saved: "Saved.",
     note: "This gate runs in the browser, not on a server. It separates the board from visitors; it does not hold off an attacker. The chair, the secretary and the faculty supervisor sign in separately and share one dashboard with identical rights.",

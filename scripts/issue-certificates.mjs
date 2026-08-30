@@ -6,7 +6,8 @@
  * so it stays crisp at any zoom and weighs a few kilobytes instead of the
  * megabyte a rasterised canvas costs.
  *
- *   node scripts/issue-certificates.mjs "<path to csv>"    # write
+ *   node scripts/issue-certificates.mjs "<path to csv>"    # members
+ *   node scripts/issue-certificates.mjs --board            # the board
  *   node scripts/issue-certificates.mjs --clean            # remove
  *
  * The organisation is the issuer. What the sheet asserts is exactly what the
@@ -23,6 +24,27 @@ const TITLE = "Sertifikat Anggota Terdaftar";
 const EVENT = "Kepengurusan UKM E-Sport UAJM Periode 2025/2026";
 const ISSUED = "20 Desember 2025";
 const DECREE = "001/SK/UKM-ESPORT/UAJM/VI/2025";
+
+const BOARD_TITLE = "Sertifikat Pengurus";
+const BOARD_EVENT = "Susunan Pengurus UKM E-Sport UAJM Periode 2025-2026";
+const BOARD_DECREE = "032/UAJM/Rek/Kep/VI/2025";
+const BOARD_ISSUED = "10 Juni 2025";
+
+/* Taken from the annex to Rector's Decree 032/UAJM/Rek/Kep/VI/2025, which is
+   the formal document; the informally circulated list disagrees with it on
+   three postings, so the decree wins and the difference is reported rather
+   than quietly resolved. Full spellings come from the board's own roster,
+   where the annex abbreviates. */
+const BOARD = [
+  ["Vincentius Bryan Kwandou", "2361021", "Ketua"],
+  ["Anneliese Trevina Wijaya", "2361001", "Sekretaris"],
+  ["Felisitas Natasya Lady Claudia", "2361024", "Bendahara"],
+  ["Deagustino Lallo", "2261021", "Koordinator Divisi Latihan & Kesekretariatan"],
+  ["Athallah Eriel", "2361002", "Koordinator Divisi Kreatif dan Konten Digital"],
+  ["Marvel Harjosetio", "2361013", "Koordinator Divisi LITBANG"],
+  ["Venilia Dina Minarti", "2361020", "Divisi Humas dan Relasi"],
+  ["Avelita Jaquline Ampulembang", "2361004", "Divisi Humas dan Relasi"],
+];
 
 function dbUrl() {
   if (process.env.DATABASE_URL) return process.env.DATABASE_URL;
@@ -92,7 +114,7 @@ function esc(s) {
     .replace(/[^\x20-\x7e\xa0-\xff]/g, "");
 }
 
-function certificatePdf(name, nim, ref) {
+function certificatePdf(name, nim, ref, sheet) {
   const W = 842;
   const H = 595;
   const M = 74;
@@ -111,18 +133,18 @@ function certificatePdf(name, nim, ref) {
   c += "0.76 0 0.23 rg\n";
   c += line("F2", 40, M, H - 178, "SERTIFIKAT");
   c += "0 0 0 rg\n";
-  c += line("F1", 15, M, H - 202, "Anggota Terdaftar Periode 2025/2026");
+  c += line("F1", 15, M, H - 202, sheet.subtitle);
 
   c += line("F1", 11, M, H - 264, "Diberikan kepada");
   c += line("F2", 28, M, H - 302, name);
   c += line("F1", 13, M, H - 324, "NIM " + nim);
 
-  c += line("F1", 11, M, H - 374, "atas keanggotaannya yang tercatat pada Unit Kegiatan Mahasiswa E-Sport");
-  c += line("F1", 11, M, H - 392, "Universitas Atma Jaya Makassar untuk periode kepengurusan 2025/2026,");
-  c += line("F1", 11, M, H - 410, "sebagaimana ditetapkan dalam SK Nomor " + DECREE + ".");
+  sheet.body.forEach((t, i) => {
+    c += line("F1", 11, M, H - 374 - i * 18, t);
+  });
 
-  c += line("F1", 11, M, H - 472, "Makassar, " + ISSUED);
-  c += line("F2", 11, M, H - 494, "Ketua Umum UKM E-Sport UAJM");
+  c += line("F1", 11, M, H - 472, "Makassar, " + sheet.issued);
+  c += line("F2", 11, M, H - 494, sheet.signer);
   c += line("F1", 9, M, 44, "No. " + ref);
 
   const objs = [
@@ -167,8 +189,40 @@ function certificatePdf(name, nim, ref) {
 const sql = neon(dbUrl());
 
 if (process.argv.includes("--clean")) {
-  const gone = await sql`DELETE FROM certificates WHERE site = ${SITE} AND title = ${TITLE} RETURNING id`;
+  const gone = await sql`DELETE FROM certificates WHERE site = ${SITE} AND title IN (${TITLE}, ${BOARD_TITLE}) RETURNING id`;
   console.log("removed issued certificates:", gone.length);
+  process.exit(0);
+}
+
+if (process.argv.includes("--board")) {
+  let bn = 0;
+  let bbytes = 0;
+  for (const [name, nim, role] of BOARD) {
+    const no = String(++bn).padStart(3, "0");
+    const ref = no + "/PENG/UKM-ESPORT/UAJM/2025";
+    const pdf = certificatePdf(name, nim, ref, {
+      subtitle: "Pengurus Periode 2025-2026",
+      issued: BOARD_ISSUED,
+      signer: "Rektor Universitas Atma Jaya Makassar",
+      body: [
+        "sebagai " + role + " Unit Kegiatan Mahasiswa E-Sport",
+        "Universitas Atma Jaya Makassar untuk periode kepengurusan 2025-2026,",
+        "sebagaimana tercantum dalam Lampiran Surat Keputusan Rektor",
+        "Nomor " + BOARD_DECREE + ".",
+      ],
+    });
+    bbytes += pdf.length;
+    await sql`
+      INSERT INTO certificates
+        (id, site, identity_key, full_name, nim, title, event, issued_at, ref,
+         file_name, mime, size, data, created_at)
+      VALUES (${randomUUID()}, ${SITE}, ${identityKey(name, nim)}, ${name}, ${nim},
+              ${BOARD_TITLE}, ${BOARD_EVENT}, ${BOARD_ISSUED}, ${ref},
+              ${"sertifikat-pengurus-" + no + ".pdf"}, 'application/pdf', ${pdf.length},
+              ${pdf.toString("base64")}, ${Date.now() + bn})
+    `;
+  }
+  console.log("issued " + bn + " board certificates, " + (bbytes / 1024).toFixed(1) + " KB total");
   process.exit(0);
 }
 
@@ -197,7 +251,16 @@ let bytes = 0;
 for (const m of members) {
   const no = String(++n).padStart(3, "0");
   const ref = no + "/ANG/UKM-ESPORT/UAJM/2026";
-  const pdf = certificatePdf(m.name, m.nim, ref);
+  const pdf = certificatePdf(m.name, m.nim, ref, {
+    subtitle: "Anggota Terdaftar Periode 2025/2026",
+    issued: ISSUED,
+    signer: "Ketua Umum UKM E-Sport UAJM",
+    body: [
+      "atas keanggotaannya yang tercatat pada Unit Kegiatan Mahasiswa E-Sport",
+      "Universitas Atma Jaya Makassar untuk periode kepengurusan 2025/2026,",
+      "sebagaimana ditetapkan dalam SK Nomor " + DECREE + ".",
+    ],
+  });
   bytes += pdf.length;
   await sql`
     INSERT INTO certificates

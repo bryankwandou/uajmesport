@@ -136,14 +136,22 @@ export async function lookup(fullName: string, nim: string): Promise<CertRecord[
   if (!Array.isArray(rows)) return [];
   const name = fullName.trim().replace(/\s+/g, " ");
   const student = normNim(nim);
-  return (rows as CertRecord[])
-    .filter((r) => r.key === key)
-    .map((r) => ({ ...r, fullName: name, nim: student }));
+  const stub = key.slice(0, 16);
+  // The row arrives with a 16-character stub of its hash and no id. The full
+  // hash is attached here, on the machine that knows the identity, and it is
+  // what opens the document.
+  return (rows as (CertRecord & { k16?: string })[])
+    .filter((r) => r.k16 === stub)
+    .map((r) => ({ ...r, id: `${r.k16}-${r.createdAt}`, key, fullName: name, nim: student }));
 }
 
 /* ── files ─────────────────────────────────────────────────────────────── */
+/* The document is addressed by the full identity hash, never by row id. The
+   browser already holds that hash — it computed it to make the match — and
+   nothing on the public registry response can produce it. */
 export async function recordBytes(rec: CertRecord): Promise<Uint8Array> {
-  const res = await fetch(`/api/file/${rec.id}`, { cache: "no-store" });
+  if (!rec.key) throw new Error("Sertifikat ini tidak dapat dibuka tanpa identitas.");
+  const res = await fetch(`/api/file?k=${rec.key}&c=${rec.createdAt}`, { cache: "no-store" });
   if (!res.ok) throw new Error(`Berkas sertifikat tidak dapat dimuat (${res.status}).`);
   return new Uint8Array(await res.arrayBuffer());
 }
@@ -210,10 +218,6 @@ export async function deleteRecord(token: string, id: string): Promise<void> {
   if (!res.ok) throw new Error(`Gagal menghapus (${res.status}).`);
 }
 
-export async function clearAll(token: string): Promise<void> {
-  const res = await fetch("/api/admin/records", { method: "DELETE", headers: auth(token) });
-  if (!res.ok) throw new Error(`Gagal mengosongkan (${res.status}).`);
-}
 
 export function extensionFor(rec: CertRecord): string {
   const fromName = /\.([A-Za-z0-9]{1,5})$/.exec(rec.fileName)?.[1];

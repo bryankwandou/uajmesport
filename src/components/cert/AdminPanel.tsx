@@ -2,7 +2,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import {
   adminList,
-  clearAll,
   deleteRecord,
   fileToBase64,
   hasFile,
@@ -17,7 +16,6 @@ import {
   type Session,
 } from "@/lib/certstore";
 import { saveBlob } from "@/lib/convert";
-import { sampleRecords } from "@/lib/demoCerts";
 import { fill, type CertDict } from "@/lib/certdict";
 
 /* Board dashboard.
@@ -342,36 +340,7 @@ function Dashboard({
     }
   }
 
-  async function seed() {
-    setBusy(true);
-    setError("");
-    try {
-      for (const rec of sampleRecords()) {
-        const { data, ...rest } = rec;
-        await saveRecord(session.token, rest, data);
-      }
-      await reload();
-      setStatus(d.admin.saved);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : d.err.generic);
-    } finally {
-      setBusy(false);
-    }
-  }
 
-  async function wipe() {
-    if (!window.confirm(d.admin.wipeConfirm)) return;
-    setBusy(true);
-    try {
-      await clearAll(session.token);
-      reset();
-      await reload();
-    } catch (err) {
-      setError(err instanceof Error ? err.message : d.err.generic);
-    } finally {
-      setBusy(false);
-    }
-  }
 
   function exportJson() {
     saveBlob(new Blob([toPublishedJson(records)], { type: "application/json" }), "certificates.json");
@@ -465,12 +434,12 @@ function Dashboard({
           {d.admin.exportFiles}
         </ToolButton>
         <ToolButton onClick={() => importRef.current?.click()}>{d.admin.importJson}</ToolButton>
-        <ToolButton onClick={seed} disabled={busy}>
-          {d.admin.seed}
-        </ToolButton>
-        <ToolButton onClick={wipe} disabled={busy}>
-          {d.admin.wipe}
-        </ToolButton>
+        {/* No seed button and no bulk wipe. This registry holds documents the
+            organisation has actually issued: a one-click injector of sample
+            rows has no business next to them, and a button that deletes every
+            certificate for everyone is not something a dashboard should offer.
+            Corrections go through the per-row Ubah and Hapus. A genuine reset
+            is a database task for whoever holds the credentials. */}
         <input ref={importRef} type="file" accept="application/json,.json" onChange={importJson} className="hidden" />
       </div>
 
