@@ -24,6 +24,7 @@ export type CertDict = {
   err: {
     empty: string;
     notFound: string;
+    emptyRegistry: string;
     cooldown: string;
     generic: string;
   };
@@ -43,7 +44,7 @@ export type CertDict = {
     noPreview: string;
   };
   help: { title: string; body: string; email: string; wa: string };
-  empty: { title: string; body: string };
+  empty: { title: string; body: string; sibling: string; siblingHref: string };
   admin: {
     signIn: string;
     user: string;
@@ -110,9 +111,9 @@ const id: CertDict = {
   form: {
     legend: "Verifikasi identitas",
     name: "Nama lengkap",
-    namePh: "Contoh: Vincentius Bryan Kwandou",
+    namePh: "Nama lengkap sesuai data keanggotaan",
     nim: "NIM / stambuk",
-    nimPh: "Contoh: 210211001",
+    nimPh: "NIM / stambuk Anda",
     submit: "Buka sertifikat saya",
     working: "Memeriksa…",
     hint: "Huruf besar-kecil, spasi ganda dan tanda baca tidak berpengaruh.",
@@ -120,6 +121,7 @@ const id: CertDict = {
   err: {
     empty: "Isi nama lengkap dan NIM/stambuk terlebih dahulu.",
     notFound: "Tidak ada sertifikat atas nama dan NIM tersebut. Periksa ejaan nama dan angka NIM, lalu coba lagi.",
+    emptyRegistry: "Registry situs ini masih kosong, jadi belum ada berkas yang bisa dicocokkan. Ejaan nama Anda bukan penyebabnya.",
     cooldown: "Terlalu banyak percobaan. Coba lagi dalam {s} detik.",
     generic: "Terjadi kesalahan saat membuka berkas.",
   },
@@ -147,6 +149,8 @@ const id: CertDict = {
   empty: {
     title: "Registry sertifikat masih kosong",
     body: "Belum ada sertifikat yang dimasukkan pengurus. Formulir di atas tetap berfungsi dan akan menemukan berkas begitu registry terisi.",
+    sibling: "Sertifikat kegiatan UAJM Blockchain Club ada di halaman klaim BCC.",
+    siblingHref: "https://uajmbcc.vercel.app/sertifikat",
   },
   admin: {
     signIn: "Masuk pengurus",
@@ -215,9 +219,9 @@ const en: CertDict = {
   form: {
     legend: "Identity check",
     name: "Full name",
-    namePh: "e.g. Vincentius Bryan Kwandou",
+    namePh: "Full name as held in the membership record",
     nim: "Student number (NIM)",
-    nimPh: "e.g. 210211001",
+    nimPh: "Your NIM / student number",
     submit: "Open my certificate",
     working: "Checking…",
     hint: "Letter case, double spaces and punctuation make no difference.",
@@ -225,6 +229,7 @@ const en: CertDict = {
   err: {
     empty: "Enter both your full name and your student number.",
     notFound: "No certificate is registered to that name and student number. Check the spelling and the digits, then try again.",
+    emptyRegistry: "This site's registry is still empty, so there is nothing to match against. Your spelling is not the problem.",
     cooldown: "Too many attempts. Try again in {s} seconds.",
     generic: "Something went wrong while opening the file.",
   },
@@ -252,6 +257,8 @@ const en: CertDict = {
   empty: {
     title: "The certificate registry is still empty",
     body: "The board has not entered any certificate yet. The form above already works and will find a file the moment the registry is filled.",
+    sibling: "UAJM Blockchain Club event certificates live on the BCC claim page.",
+    siblingHref: "https://uajmbcc.vercel.app/sertifikat",
   },
   admin: {
     signIn: "Board sign-in",

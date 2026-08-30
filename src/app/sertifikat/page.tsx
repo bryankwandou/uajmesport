@@ -154,7 +154,7 @@ function Claim({
         setTries(0);
         setError(fill(d.err.cooldown, { s: COOLDOWN_S }));
       } else {
-        setError(d.err.notFound);
+        setError(count === 0 ? d.err.emptyRegistry : d.err.notFound);
       }
       return;
     }
@@ -242,6 +242,12 @@ function Claim({
               {d.empty.title}
             </h2>
             <p className="mt-2 text-xs leading-relaxed text-[color:var(--muted)]">{d.empty.body}</p>
+            <a
+              href={d.empty.siblingHref}
+              className="mt-3 inline-block text-xs text-[color:var(--crimson)] underline decoration-dotted underline-offset-4"
+            >
+              {d.empty.sibling}
+            </a>
           </div>
         )}
       </section>
