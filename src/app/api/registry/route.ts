@@ -17,7 +17,13 @@ export const dynamic = "force-dynamic";
  * makes, and it turns an O(registry) payload into an O(1) one.
  *
  * With no prefix the route answers with a count only, which is all the page
- * needs to print "Registry n/200".
+ * needs to print the registry size.
+ *
+ * The cap bounds one response, and it is the one number that decides whether a
+ * person can be shown every certificate they hold: everything under one
+ * identity lands in the same bucket. At 500 a member could hold five hundred
+ * certificates and still see all of them, which is far past anything this
+ * organisation will issue to one person.
  */
 export async function GET(req: Request) {
   try {
@@ -41,7 +47,7 @@ export async function GET(req: Request) {
       FROM certificates
       WHERE site = ${SITE} AND data IS NOT NULL AND identity_key LIKE ${p + "%"}
       ORDER BY created_at ASC
-      LIMIT 200
+      LIMIT 500
     `) as unknown as Row[];
 
     return Response.json(rows.map(publicShape), { headers: { "cache-control": "no-store" } });
