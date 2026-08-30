@@ -545,7 +545,7 @@ function Dashboard({
                     const f = e.dataTransfer.files?.[0];
                     if (f) attach(r, f);
                   }}
-                  className={`flex flex-wrap items-start justify-between gap-3 px-2 py-3.5 ${
+                  className={`grid grid-cols-1 gap-x-5 gap-y-2 px-2 py-3.5 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center ${
                     dragId === r.id
                       ? "bg-[color:var(--surface)] outline-dashed outline-1 outline-[color:var(--crimson)]"
                       : ""
@@ -553,7 +553,7 @@ function Dashboard({
                 >
                   <div className="min-w-0">
                     <div className="truncate text-sm font-semibold text-[color:var(--text)]">{r.fullName}</div>
-                    <div className="mt-0.5 font-mono text-[11px] text-[color:var(--faint)]">
+                    <div className="mt-0.5 truncate font-mono text-[11px] text-[color:var(--faint)]">
                       {r.nim}
                       {hasFile(r) ? ` · ${r.fileName}` : ""}
                     </div>
@@ -562,17 +562,21 @@ function Dashboard({
                       <div className="mt-1.5 text-[11px] text-[color:var(--crimson)]">{d.admin.dropHere}</div>
                     )}
                   </div>
-                  <div className="flex shrink-0 items-center gap-3">
-                    <span className="chip px-2 py-0.5 font-mono text-[10px] text-[color:var(--faint)]">
+                  <div className="flex items-center gap-4 sm:justify-end">
+                    {/* A status, not a control. The bordered pill it used to wear
+                        read as a fourth button sitting among three real ones. */}
+                    <span className="font-mono text-[10px] uppercase tracking-wider text-[color:var(--faint)]">
                       {hasFile(r) ? d.admin.published : d.admin.awaiting}
                     </span>
                     {hasFile(r) && (
                       <button
                         type="button"
                         onClick={() => downloadFile(r)}
+                        aria-label={`${d.admin.download} ${r.fileName}`}
+                        title={d.admin.download}
                         className="link-quiet text-xs text-[color:var(--muted)] hover:text-[color:var(--text)]"
                       >
-                        ↓
+                        {d.admin.download}
                       </button>
                     )}
                     <button
@@ -582,10 +586,12 @@ function Dashboard({
                     >
                       {d.admin.edit.split(" ")[0]}
                     </button>
+                    {/* The destructive one is set off by a rule, so it is never the
+                        thing a hurried thumb lands on next to Ubah. */}
                     <button
                       type="button"
                       onClick={() => remove(r)}
-                      className="link-quiet text-xs text-[color:var(--crimson)]"
+                      className="link-quiet border-l border-[color:var(--border)] pl-4 text-xs text-[color:var(--crimson)]"
                     >
                       {d.admin.del}
                     </button>

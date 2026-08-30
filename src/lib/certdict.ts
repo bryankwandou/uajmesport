@@ -68,6 +68,7 @@ export type CertDict = {
     cancel: string;
     list: string;
     listEmpty: string;
+    download: string;
     del: string;
     delConfirm: string;
     exportJson: string;
@@ -171,6 +172,7 @@ const id: CertDict = {
     cancel: "Batal",
     list: "Sertifikat terdaftar",
     listEmpty: "Belum ada entri. Tempel daftar nama di atas, lalu seret berkas sertifikat ke barisnya.",
+    download: "Unduh",
     del: "Hapus",
     delConfirm: "Hapus sertifikat ini dari registry?",
     exportJson: "Ekspor registry (JSON)",
@@ -275,6 +277,7 @@ const en: CertDict = {
     cancel: "Cancel",
     list: "Registered certificates",
     listEmpty: "No entry yet. Paste a name list above, then drop each certificate file on its row.",
+    download: "Download",
     del: "Delete",
     delConfirm: "Remove this certificate from the registry?",
     exportJson: "Export registry (JSON)",
