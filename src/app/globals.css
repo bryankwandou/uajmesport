@@ -57,7 +57,12 @@ body {
   color: var(--text);
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
-  overflow-x: hidden;
+  /* clip, not hidden. When one axis is hidden the other computes to auto, which
+     turns body into a scroll container — and a scroll container that is exactly
+     as tall as its content never scrolls, so every position:sticky inside it
+     silently stops sticking. clip contains the overflow without creating that
+     scrollport. */
+  overflow-x: clip;
 }
 
 ::view-transition-old(root),
