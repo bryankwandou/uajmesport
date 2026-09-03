@@ -4,9 +4,10 @@ import { Logo } from "./Logo";
 import { Controls } from "./Controls";
 import { useApp } from "./Providers";
 import { links } from "@/lib/content";
+import { marsDict } from "@/lib/marsdict";
 
 export function Nav() {
-  const { t } = useApp();
+  const { t, locale } = useApp();
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
 
@@ -17,6 +18,9 @@ export function Nav() {
     { href: "#pengurus", label: t.nav.officers },
     { href: "#legalitas", label: t.nav.legal },
     { href: "#kontak", label: t.nav.contact },
+    // Halaman lagu resmi. Rutenya sendiri, jadi membukanya tidak membebani
+    // beranda; ditaruh sejajar dengan menu lain supaya mudah ditemukan.
+    { href: "/mars", label: marsDict(locale).entry.label },
     { href: "/deck.html", label: t.nav.deck },
   ];
 
