@@ -28,11 +28,10 @@ type Ctx = {
   playing: boolean;
   /** Memulai (atau menjeda, kalau versi yang sama sedang berbunyi). */
   toggle: (v: MarsVersion, trackTitle: string, format?: Format) => void;
-  openVideo: (v: MarsVersion, trackTitle: string) => void;
-  /* Video digambar oleh baris lagunya sendiri, bukan oleh lapisan melayang,
-     jadi keadaannya perlu terbaca dari sana. */
-  video: { version: MarsVersion; trackTitle: string } | null;
-  closeVideo: () => void;
+  /* Videonya kini selalu tampak dan diputar sendiri oleh <video>. Yang masih
+     perlu dibagi hanyalah cara menghentikan audio, supaya tidak ada dua suara
+     berbunyi bersamaan saat seseorang menekan putar di videonya. */
+  pauseAudio: () => void;
 };
 
 const PlayerCtx = createContext<Ctx | null>(null);
@@ -64,7 +63,6 @@ export function MarsPlayerProvider({ tracks, children }: { tracks: MarsTrack[]; 
   const [loop, setLoop] = useState(false);
   const [scrubbing, setScrubbing] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [video, setVideo] = useState<{ version: MarsVersion; trackTitle: string } | null>(null);
 
   // Urutan datar dipakai tombol lagu sebelumnya / berikutnya.
   const flat = useMemo(
@@ -201,20 +199,7 @@ export function MarsPlayerProvider({ tracks, children }: { tracks: MarsTrack[]; 
   }, [volume]);
 
   // Video dan audio tidak pernah berbunyi bersamaan.
-  const openVideo = useCallback((version: MarsVersion, trackTitle: string) => {
-    if (!version.mp4) return;
-    audioRef.current?.pause();
-    setVideo({ version, trackTitle });
-  }, []);
-
-  useEffect(() => {
-    if (!video) return;
-    const onKey = (e: KeyboardEvent) => e.key === "Escape" && setVideo(null);
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, [video]);
-
-  const closeVideo = useCallback(() => setVideo(null), []);
+  const pauseAudio = useCallback(() => audioRef.current?.pause(), []);
 
   const seekTo = useCallback(
     (clientX: number) => {
@@ -231,8 +216,8 @@ export function MarsPlayerProvider({ tracks, children }: { tracks: MarsTrack[]; 
   );
 
   const ctx = useMemo<Ctx>(
-    () => ({ loaded, playing, toggle, openVideo, video, closeVideo }),
-    [loaded, playing, toggle, openVideo, video, closeVideo],
+    () => ({ loaded, playing, toggle, pauseAudio }),
+    [loaded, playing, toggle, pauseAudio],
   );
   const pct = duration ? (current / duration) * 100 : 0;
 

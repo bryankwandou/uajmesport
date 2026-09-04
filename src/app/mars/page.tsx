@@ -1,5 +1,4 @@
 "use client";
-import { useState } from "react";
 import Link from "next/link";
 import { Controls } from "@/components/Controls";
 import { LogoMark } from "@/components/Logo";
@@ -166,167 +165,93 @@ function TrackSection({ track, index }: { track: MarsTrack; index: number }) {
 }
 
 function VersionRow({ version, track }: { version: MarsVersion; track: MarsTrack }) {
-  const trackTitle = track.title;
-  const [openDesc, setOpenDesc] = useState(false);
   const { locale } = useApp();
   const d = marsDict(locale);
-  const { loaded, playing, toggle, openVideo, video, closeVideo } = useMarsPlayer();
-  const showingVideo = video?.version.id === version.id;
+  const { loaded, playing, toggle, pauseAudio } = useMarsPlayer();
   const active = loaded?.version.id === version.id;
   const isPlaying = active && playing;
   const mins = Math.floor(version.duration / 60);
   const secs = Math.round(version.duration % 60);
+  const length = `${mins}:${secs.toString().padStart(2, "0")}`;
 
   return (
-    <div
-      className={`panel flex flex-wrap items-center gap-x-4 gap-y-3 p-4 duration-200 ease-crisp [transition-property:border-color] ${
-        active ? "border-[color:var(--crimson)]" : ""
-      }`}
-    >
-      <button
-        type="button"
-        onClick={() => toggle(version, trackTitle)}
-        aria-label={`${isPlaying ? d.track.pause : d.track.play} ${trackTitle} ${version.label}`}
-        className="btn-primary grid h-10 w-10 shrink-0 place-items-center rounded-full"
+    <div className="panel overflow-hidden">
+      {/* Videonya berdiri di atas kartunya sendiri, tidak di balik tombol.
+          preload="metadata" berarti yang terambil saat halaman dibuka hanya
+          kepala berkas -- gambar dan suaranya baru mengalir, potongan demi
+          potongan, setelah tombol putar ditekan. */}
+      {version.mp4 && (
+        <video
+          src={version.mp4}
+          controls
+          playsInline
+          preload="metadata"
+          onPlay={pauseAudio}
+          aria-label={`${track.fullTitle} ${version.label}`}
+          className="aspect-video w-full bg-black"
+        />
+      )}
+
+      <div
+        className={`flex flex-wrap items-center gap-x-4 gap-y-3 border-t border-[color:var(--border)] p-4 duration-200 ease-crisp [transition-property:border-color] ${
+          version.mp4 ? "" : "border-t-0"
+        } ${active ? "border-[color:var(--crimson)]" : ""}`}
       >
-        {isPlaying ? (
-          <svg viewBox="0 0 24 24" className="h-4 w-4" fill="currentColor">
-            <path d="M7 5h4v14H7zM13 5h4v14h-4z" />
-          </svg>
-        ) : (
-          <svg viewBox="0 0 24 24" className="ms-0.5 h-4 w-4" fill="currentColor">
-            <path d="M7 4l13 8-13 8z" />
-          </svg>
-        )}
-      </button>
-
-      <div className="min-w-[12rem] flex-1">
-        <div className="flex items-center gap-2">
-          <span className="font-display text-sm font-bold uppercase tracking-wide text-[color:var(--text)]">
-            {version.label}
-          </span>
-          <span className="font-mono text-[11px] text-[color:var(--faint)]">
-            {mins}:{secs.toString().padStart(2, "0")}
-          </span>
-          {active && (
-            <span className="font-mono text-[10px] uppercase tracking-wider text-[color:var(--crimson)]">
-              {d.track.nowPlaying}
-            </span>
+        <button
+          type="button"
+          onClick={() => toggle(version, track.title)}
+          aria-label={`${isPlaying ? d.track.pause : d.track.play} ${track.title} ${version.label}`}
+          className="btn-primary grid h-10 w-10 shrink-0 place-items-center rounded-full"
+        >
+          {isPlaying ? (
+            <svg viewBox="0 0 24 24" className="h-4 w-4" fill="currentColor">
+              <path d="M7 5h4v14H7zM13 5h4v14h-4z" />
+            </svg>
+          ) : (
+            <svg viewBox="0 0 24 24" className="ms-0.5 h-4 w-4" fill="currentColor">
+              <path d="M7 4l13 8-13 8z" />
+            </svg>
           )}
-        </div>
-        <p className="mt-1 text-xs leading-relaxed text-[color:var(--faint)]">{version.note}</p>
-      </div>
+        </button>
 
-      <div className="flex flex-wrap items-center gap-1.5">
-        {version.mp4 && (
-          <button
-            type="button"
-            onClick={() => (showingVideo ? closeVideo() : openVideo(version, trackTitle))}
-            aria-expanded={showingVideo}
-            className={`rounded border px-2.5 py-1.5 font-mono text-[10px] uppercase duration-200 ease-crisp [transition-property:opacity] ${
-              showingVideo
-                ? "border-[color:var(--crimson)] text-[color:var(--text)]"
-                : "border-[color:var(--border)] text-[color:var(--muted)] hover:border-[color:var(--border-strong)] hover:text-[color:var(--text)]"
-            }`}
-          >
-            {showingVideo ? d.track.videoClose : d.track.video}
-          </button>
-        )}
-        <span className="ms-1 font-mono text-[10px] uppercase text-[color:var(--faint)]">{d.track.download}</span>
-        {(
-          [
-            ["mp3", version.mp3],
-            ["wav", version.wav],
-            ...(version.mp4 ? ([["mp4", version.mp4]] as const) : []),
-          ] as [string, string][]
-        ).map(([label, href]) => (
-          <a
-            key={label}
-            href={href}
-            download
-            className="rounded border border-[color:var(--border)] px-2.5 py-1.5 font-mono text-[10px] uppercase text-[color:var(--muted)] duration-200 ease-crisp [transition-property:opacity] hover:border-[color:var(--border-strong)] hover:text-[color:var(--text)]"
-          >
-            {label}
-          </a>
-        ))}
-      </div>
-
-      {/* Video diputar di tempatnya, di dalam kartu versi ini. Sebelumnya ia
-          membuka lapisan yang menutupi halaman; sekarang halaman tetap utuh dan
-          pembaca tidak kehilangan posisi bacanya.
-          preload="metadata": hanya header berkas yang diambil sampai tombol
-          putar ditekan, lalu CDN mengalirkan sisanya potongan demi potongan. */}
-      {showingVideo && version.mp4 && (
-        <div className="order-last w-full">
-          <video
-            key={version.id}
-            src={version.mp4}
-            controls
-            autoPlay
-            playsInline
-            preload="metadata"
-            aria-label={`${d.track.video} ${trackTitle} ${version.label}`}
-            className="aspect-video w-full rounded border border-[color:var(--border)] bg-black"
-          />
-
-          {/* Judul dan deskripsi disusun sendiri dari data lagu yang sudah ada,
-              jadi tidak ada naskah kedua yang harus dijaga tetap sinkron.
-              Deskripsinya terpotong dua baris dulu dan baru terbuka penuh saat
-              diminta, seperti keterangan di bawah pemutar video pada umumnya. */}
-          <div className="mt-3 rounded border border-[color:var(--border)] p-4">
-            <h4 className="font-display text-base font-extrabold uppercase tracking-tight text-[color:var(--text)] md:text-lg">
+        <div className="min-w-[14rem] flex-1">
+          <div className="flex flex-wrap items-baseline gap-x-2 gap-y-1">
+            <h4 className="font-display text-sm font-extrabold uppercase tracking-wide text-[color:var(--text)]">
               {track.fullTitle} — {version.label}
             </h4>
-            <p className="mt-1.5 font-mono text-[11px] text-[color:var(--faint)]">
-              {d.track.videoQuality} · {mins}:{secs.toString().padStart(2, "0")}
-            </p>
-
-            <p
-              className={`mt-3 text-sm leading-relaxed text-[color:var(--muted)] ${
-                openDesc ? "" : "line-clamp-2"
-              }`}
-            >
-              {track.tagline} {version.note} {d.track.videoAbout}
-            </p>
-
-            {openDesc && (
-              <dl className="mt-4 space-y-3 border-t border-[color:var(--border)] pt-4">
-                {track.spec.map((sp) => (
-                  <div key={sp.label} className="grid gap-1 sm:grid-cols-[10rem_1fr] sm:gap-4">
-                    <dt className="text-[10px] uppercase tracking-[0.22em] text-[color:var(--faint)]">
-                      {sp.label}
-                    </dt>
-                    <dd className="text-sm leading-relaxed text-[color:var(--muted)]">{sp.value}</dd>
-                  </div>
-                ))}
-                <div className="grid gap-1 sm:grid-cols-[10rem_1fr] sm:gap-4">
-                  <dt className="text-[10px] uppercase tracking-[0.22em] text-[color:var(--faint)]">
-                    {d.track.usage}
-                  </dt>
-                  <dd className="text-sm leading-relaxed text-[color:var(--muted)]">{track.usage}</dd>
-                </div>
-                <div className="grid gap-1 sm:grid-cols-[10rem_1fr] sm:gap-4">
-                  <dt className="text-[10px] uppercase tracking-[0.22em] text-[color:var(--faint)]">
-                    {d.docs.composer}
-                  </dt>
-                  <dd className="text-sm leading-relaxed text-[color:var(--muted)]">
-                    {marsCredit.composer} · {marsCredit.owner}
-                  </dd>
-                </div>
-              </dl>
+            {active && (
+              <span className="font-mono text-[10px] uppercase tracking-wider text-[color:var(--crimson)]">
+                {d.track.nowPlaying}
+              </span>
             )}
-
-            <button
-              type="button"
-              onClick={() => setOpenDesc((v) => !v)}
-              aria-expanded={openDesc}
-              className="mt-3 font-mono text-[11px] uppercase tracking-wider text-[color:var(--crimson)] duration-200 ease-crisp [transition-property:opacity] hover:opacity-70"
-            >
-              {openDesc ? d.track.videoLess : d.track.videoMore}
-            </button>
           </div>
+          <p className="mt-1 font-mono text-[11px] text-[color:var(--faint)]">
+            {length}
+            {version.mp4 ? ` · ${d.track.videoQuality}` : ""}
+          </p>
+          <p className="mt-1.5 text-xs leading-relaxed text-[color:var(--faint)]">{version.note}</p>
         </div>
-      )}
+
+        <div className="flex flex-wrap items-center gap-1.5">
+          <span className="me-1 font-mono text-[10px] uppercase text-[color:var(--faint)]">{d.track.download}</span>
+          {(
+            [
+              ["mp3", version.mp3],
+              ["wav", version.wav],
+              ...(version.mp4 ? ([["mp4", version.mp4]] as const) : []),
+            ] as [string, string][]
+          ).map(([label, href]) => (
+            <a
+              key={label}
+              href={href}
+              download
+              className="rounded border border-[color:var(--border)] px-2.5 py-1.5 font-mono text-[10px] uppercase text-[color:var(--muted)] duration-200 ease-crisp [transition-property:opacity] hover:border-[color:var(--border-strong)] hover:text-[color:var(--text)]"
+            >
+              {label}
+            </a>
+          ))}
+        </div>
+      </div>
     </div>
   );
 }
@@ -345,24 +270,11 @@ function Docs() {
         </h2>
       </Reveal>
 
-      <div className="mt-8 grid gap-4 sm:grid-cols-3">
-        {d.docs.formats.map((f) => (
-          <Reveal key={f.name}>
-            <div className="panel h-full p-6">
-              <h3 className="font-mono text-sm font-bold uppercase text-[color:var(--crimson)]">{f.name}</h3>
-              <p className="mt-2.5 text-xs leading-relaxed text-[color:var(--muted)]">{f.body}</p>
-            </div>
-          </Reveal>
-        ))}
-      </div>
 
-      <div className="mt-6">
+      <div className="mt-8">
         <Reveal>
           <div className="panel clip-corner h-full p-7">
-            <h3 className="font-display text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">
-              {d.docs.creditTitle}
-            </h3>
-            <dl className="mt-4 space-y-3.5">
+            <dl className="space-y-3.5">
               {[
                 [d.docs.composer, marsCredit.composer],
                 [d.docs.written, marsCredit.written],

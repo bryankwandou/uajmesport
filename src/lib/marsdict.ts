@@ -24,24 +24,16 @@ export type MarsDict = {
     play: string;
     pause: string;
     nowPlaying: string;
-    video: string;
-    videoClose: string;
     lyrics: string;
     spec: string;
     usage: string;
     download: string;
     duration: string;
     videoQuality: string;
-    videoAbout: string;
-    videoMore: string;
-    videoLess: string;
   };
   docs: {
     kicker: string;
     title: string;
-    formatsTitle: string;
-    formats: { name: string; body: string }[];
-    creditTitle: string;
     composer: string;
     written: string;
     owner: string;
@@ -71,41 +63,16 @@ const id: MarsDict = {
     play: "Putar",
     pause: "Jeda",
     nowPlaying: "Sedang diputar",
-    video: "Video",
-    videoClose: "Tutup video",
     lyrics: "Lirik lengkap",
     spec: "Catatan aransemen",
     usage: "Penggunaan",
     download: "Unduh",
     duration: "Durasi",
     videoQuality: "1080p · 60 fps · H.264 + AAC",
-    videoAbout:
-      "Visualisasi spektrum dirender langsung dari master WAV lagu ini, lalu dialirkan dari Vercel Blob potongan demi potongan, sehingga bisa dilompati ke menit mana pun tanpa mengunduh berkasnya lebih dulu.",
-    videoMore: "Selengkapnya",
-    videoLess: "Sembunyikan",
   },
   docs: {
     kicker: "Dokumentasi",
-    title: "Berkas dan cara memakainya",
-    formatsTitle: "Format yang tersedia",
-    formats: [
-      {
-        name: "MP3",
-        body:
-          "Aliran bawaan pemutar di halaman ini. Ukurannya ringan, cocok untuk pemutaran langsung, siaran, dan konten media sosial.",
-      },
-      {
-        name: "WAV",
-        body:
-          "Master lossless untuk keperluan penyuntingan dan penayangan di acara. Ukurannya kira-kira sepuluh kali MP3, jadi hanya dimuat kalau memang dipilih.",
-      },
-      {
-        name: "MP4",
-        body:
-          "Video spektrum 1080p 60 fps dengan logo dan judul lagu di layar. Siap dipakai sebagai bumper atau layar tunggu tanpa perlu menyunting apa pun.",
-      },
-    ],
-    creditTitle: "Kredit dan hak pakai",
+    title: "Kredit dan hak pakai",
     composer: "Penulis & aransemen",
     written: "Tanggal naskah",
     owner: "Pemilik hak pakai",
@@ -135,41 +102,16 @@ const en: MarsDict = {
     play: "Play",
     pause: "Pause",
     nowPlaying: "Now playing",
-    video: "Video",
-    videoClose: "Close video",
     lyrics: "Full lyrics",
     spec: "Arrangement notes",
     usage: "Intended use",
     download: "Download",
     duration: "Length",
     videoQuality: "1080p · 60 fps · H.264 + AAC",
-    videoAbout:
-      "The spectrum visual is rendered straight from the WAV master of this song, then streamed from Vercel Blob piece by piece, so you can jump to any minute without downloading the file first.",
-    videoMore: "Show more",
-    videoLess: "Show less",
   },
   docs: {
     kicker: "Documentation",
-    title: "The files and how to use them",
-    formatsTitle: "Available formats",
-    formats: [
-      {
-        name: "MP3",
-        body:
-          "What the player on this page streams by default. Small enough for live playback, broadcast and social content.",
-      },
-      {
-        name: "WAV",
-        body:
-          "The lossless master, for editing and for playback at events. Roughly ten times the size of the MP3, so it only loads when you ask for it.",
-      },
-      {
-        name: "MP4",
-        body:
-          "A 1080p 60 fps spectrum video carrying the crest and the song title. Usable as a bumper or a standby screen with no editing at all.",
-      },
-    ],
-    creditTitle: "Credit and permitted use",
+    title: "Credit and permitted use",
     composer: "Written & arranged by",
     written: "Draft dated",
     owner: "Rights held by",
