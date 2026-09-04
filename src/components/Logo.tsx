@@ -24,7 +24,7 @@ export function Logo() {
         <div className="whitespace-nowrap font-display text-sm font-extrabold tracking-tight text-[color:var(--text)]">
           UKM<span className="text-crimson-glow"> E-SPORT</span>
         </div>
-        <div className="whitespace-nowrap text-[10px] uppercase tracking-[0.15em] text-[color:var(--faint)] xl:tracking-[0.2em]">
+        <div className="whitespace-nowrap text-[10px] uppercase tracking-[0.15em] text-[color:var(--faint)]">
           Atma Jaya Makassar
         </div>
       </div>

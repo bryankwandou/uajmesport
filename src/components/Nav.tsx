@@ -34,7 +34,7 @@ export function Nav() {
   // Close the mobile sheet once the viewport passes the breakpoint, so the
   // panel can never linger behind the desktop bar.
   useEffect(() => {
-    const mq = window.matchMedia("(min-width: 1024px)");
+    const mq = window.matchMedia("(min-width: 1280px)");
     const onChange = () => mq.matches && setOpen(false);
     mq.addEventListener("change", onChange);
     return () => mq.removeEventListener("change", onChange);
@@ -53,10 +53,12 @@ export function Nav() {
           <Logo />
         </a>
 
-        {/* Delapan tautan, merek, dan tombol daftar berbagi satu baris. Jarak
-            menyempit di lg supaya yang mengalah adalah celah antar-tautan,
-            bukan merek. */}
-        <div className="hidden min-w-0 items-center gap-4 lg:flex xl:gap-6">
+        {/* Baris ini butuh 1102px dalam bahasa Indonesia; wadahnya berhenti
+            tumbuh di 1152px (max-w-6xl). Jadi menu penuh baru muncul di xl,
+            dan jaraknya tidak pernah dilebarkan lagi di atas itu: melebarkan
+            celah tanpa tambahan ruang justru yang membuat tautan terakhir
+            menabrak pemilih bahasa. */}
+        <div className="hidden shrink-0 items-center gap-4 xl:flex">
           {items.map((i) => (
             <a
               key={i.href}
@@ -79,7 +81,7 @@ export function Nav() {
             {t.nav.register}
           </a>
           <button
-            className="grid h-[30px] w-[30px] place-items-center rounded border border-[color:var(--border)] text-[color:var(--muted)] lg:hidden"
+            className="grid h-[30px] w-[30px] place-items-center rounded border border-[color:var(--border)] text-[color:var(--muted)] xl:hidden"
             onClick={() => setOpen((v) => !v)}
             aria-label={t.nav.menu}
             aria-expanded={open}
@@ -92,7 +94,7 @@ export function Nav() {
       </nav>
 
       {open && (
-        <div className="border-t border-[color:var(--border)] bg-[color:var(--bg)] px-5 py-4 lg:hidden">
+        <div className="border-t border-[color:var(--border)] bg-[color:var(--bg)] px-5 py-4 xl:hidden">
           <div className="flex flex-col gap-3.5">
             {items.map((i) => (
               <a
