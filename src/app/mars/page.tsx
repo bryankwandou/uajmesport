@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import { Controls } from "@/components/Controls";
-import { LogoMark } from "@/components/Logo";
+import { Logo } from "@/components/Logo";
 import { Reveal } from "@/components/Reveal";
 import { useApp } from "@/components/Providers";
 import { MarsPlayerProvider, useMarsPlayer } from "@/components/mars/MarsPlayer";
@@ -37,11 +37,8 @@ function PageNav() {
   return (
     <header className="sticky top-0 z-30 border-b border-[color:var(--border)] bg-[color:var(--bg)]/85 backdrop-blur-xl">
       <nav className="mx-auto flex max-w-5xl items-center justify-between gap-3 px-5 py-3">
-        <Link href="/" className="flex min-w-0 items-center gap-2.5">
-          <LogoMark />
-          <span className="truncate font-display text-xs font-bold uppercase tracking-wide text-[color:var(--text)]">
-            {org.name}
-          </span>
+        <Link href="/" className="flex min-w-0 items-center" aria-label={org.name}>
+          <Logo />
         </Link>
         <div className="flex shrink-0 items-center gap-2">
           <Controls />
@@ -63,8 +60,9 @@ function Hero() {
   const { toggle } = useMarsPlayer();
   const main = tracks[0];
   return (
-    <section className="bg-grid border-b border-[color:var(--border)]">
-      <div className="mx-auto max-w-5xl px-5 py-20 md:py-28">
+    <section className="relative border-b border-[color:var(--border)]">
+      <div className="pointer-events-none absolute inset-0 bg-grid" aria-hidden="true" />
+      <div className="relative mx-auto max-w-5xl px-5 py-20 md:py-28">
         <Reveal>
           <span className="chip clip-corner inline-block px-3 py-1 text-xs uppercase tracking-wider text-[color:var(--muted)]">
             {d.hero.kicker}
