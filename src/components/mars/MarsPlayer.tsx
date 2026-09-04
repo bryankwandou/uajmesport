@@ -29,6 +29,10 @@ type Ctx = {
   /** Memulai (atau menjeda, kalau versi yang sama sedang berbunyi). */
   toggle: (v: MarsVersion, trackTitle: string, format?: Format) => void;
   openVideo: (v: MarsVersion, trackTitle: string) => void;
+  /* Video digambar oleh baris lagunya sendiri, bukan oleh lapisan melayang,
+     jadi keadaannya perlu terbaca dari sana. */
+  video: { version: MarsVersion; trackTitle: string } | null;
+  closeVideo: () => void;
 };
 
 const PlayerCtx = createContext<Ctx | null>(null);
@@ -207,12 +211,10 @@ export function MarsPlayerProvider({ tracks, children }: { tracks: MarsTrack[]; 
     if (!video) return;
     const onKey = (e: KeyboardEvent) => e.key === "Escape" && setVideo(null);
     window.addEventListener("keydown", onKey);
-    document.body.style.overflow = "hidden";
-    return () => {
-      window.removeEventListener("keydown", onKey);
-      document.body.style.overflow = "";
-    };
+    return () => window.removeEventListener("keydown", onKey);
   }, [video]);
+
+  const closeVideo = useCallback(() => setVideo(null), []);
 
   const seekTo = useCallback(
     (clientX: number) => {
@@ -228,7 +230,10 @@ export function MarsPlayerProvider({ tracks, children }: { tracks: MarsTrack[]; 
     [duration],
   );
 
-  const ctx = useMemo<Ctx>(() => ({ loaded, playing, toggle, openVideo }), [loaded, playing, toggle, openVideo]);
+  const ctx = useMemo<Ctx>(
+    () => ({ loaded, playing, toggle, openVideo, video, closeVideo }),
+    [loaded, playing, toggle, openVideo, video, closeVideo],
+  );
   const pct = duration ? (current / duration) * 100 : 0;
 
   return (
@@ -391,44 +396,6 @@ export function MarsPlayerProvider({ tracks, children }: { tracks: MarsTrack[]; 
         </div>
       )}
 
-      {video && (
-        <div
-          role="dialog"
-          aria-modal="true"
-          aria-label={`Video ${video.trackTitle}`}
-          className="fixed inset-0 z-50 grid place-items-center bg-black/85 p-4 backdrop-blur-sm"
-          onClick={(e) => e.target === e.currentTarget && setVideo(null)}
-        >
-          <div className="w-full max-w-4xl">
-            <div className="mb-2 flex items-center justify-between gap-3">
-              <div className="min-w-0">
-                <div className="truncate font-display text-sm font-bold uppercase tracking-wide text-white">
-                  {video.trackTitle}
-                </div>
-                <div className="truncate text-[11px] text-white/60">{video.version.label} · video spektrum 720p</div>
-              </div>
-              <button
-                type="button"
-                onClick={() => setVideo(null)}
-                className="rounded border border-white/25 px-3 py-1.5 text-xs text-white/80 hover:text-white"
-              >
-                Tutup
-              </button>
-            </div>
-            {/* preload="metadata": hanya header berkas yang diambil sampai
-                pengguna menekan putar, lalu CDN mengalirkan sisanya. */}
-            <video
-              key={video.version.id}
-              src={video.version.mp4}
-              controls
-              autoPlay
-              playsInline
-              preload="metadata"
-              className="aspect-video w-full rounded border border-white/15 bg-black"
-            />
-          </div>
-        </div>
-      )}
     </PlayerCtx.Provider>
   );
 }

@@ -25,19 +25,22 @@ export type MarsDict = {
     pause: string;
     nowPlaying: string;
     video: string;
+    videoClose: string;
     lyrics: string;
     spec: string;
     usage: string;
     download: string;
     duration: string;
+    videoQuality: string;
+    videoAbout: string;
+    videoMore: string;
+    videoLess: string;
   };
   docs: {
     kicker: string;
     title: string;
     formatsTitle: string;
     formats: { name: string; body: string }[];
-    streamTitle: string;
-    streamBody: string;
     creditTitle: string;
     composer: string;
     written: string;
@@ -69,11 +72,17 @@ const id: MarsDict = {
     pause: "Jeda",
     nowPlaying: "Sedang diputar",
     video: "Video",
+    videoClose: "Tutup video",
     lyrics: "Lirik lengkap",
     spec: "Catatan aransemen",
     usage: "Penggunaan",
     download: "Unduh",
     duration: "Durasi",
+    videoQuality: "1080p · 60 fps · H.264 + AAC",
+    videoAbout:
+      "Visualisasi spektrum dirender langsung dari master WAV lagu ini, lalu dialirkan dari Vercel Blob potongan demi potongan, sehingga bisa dilompati ke menit mana pun tanpa mengunduh berkasnya lebih dulu.",
+    videoMore: "Selengkapnya",
+    videoLess: "Sembunyikan",
   },
   docs: {
     kicker: "Dokumentasi",
@@ -93,12 +102,9 @@ const id: MarsDict = {
       {
         name: "MP4",
         body:
-          "Video spektrum 720p dengan logo dan judul lagu di layar. Siap dipakai sebagai bumper atau layar tunggu tanpa perlu menyunting apa pun.",
+          "Video spektrum 1080p 60 fps dengan logo dan judul lagu di layar. Siap dipakai sebagai bumper atau layar tunggu tanpa perlu menyunting apa pun.",
       },
     ],
-    streamTitle: "Cara halaman ini memuat lagu",
-    streamBody:
-      "Halaman ini berdiri sendiri dan tidak ikut termuat bersama beranda, sehingga beranda tetap ringan. Tidak ada satu byte audio pun yang diunduh sampai tombol putar ditekan. Setelah itu berkas dialirkan potongan demi potongan lewat CDN yang mendukung range request, jadi lagu bisa dilompati ke menit mana pun tanpa menunggu bagian sebelumnya selesai. Bagian yang sudah tersimpan terlihat sebagai bilah lebih terang di belakang penunjuk posisi.",
     creditTitle: "Kredit dan hak pakai",
     composer: "Penulis & aransemen",
     written: "Tanggal naskah",
@@ -130,11 +136,17 @@ const en: MarsDict = {
     pause: "Pause",
     nowPlaying: "Now playing",
     video: "Video",
+    videoClose: "Close video",
     lyrics: "Full lyrics",
     spec: "Arrangement notes",
     usage: "Intended use",
     download: "Download",
     duration: "Length",
+    videoQuality: "1080p · 60 fps · H.264 + AAC",
+    videoAbout:
+      "The spectrum visual is rendered straight from the WAV master of this song, then streamed from Vercel Blob piece by piece, so you can jump to any minute without downloading the file first.",
+    videoMore: "Show more",
+    videoLess: "Show less",
   },
   docs: {
     kicker: "Documentation",
@@ -154,12 +166,9 @@ const en: MarsDict = {
       {
         name: "MP4",
         body:
-          "A 720p spectrum video carrying the crest and the song title. Usable as a bumper or a standby screen with no editing at all.",
+          "A 1080p 60 fps spectrum video carrying the crest and the song title. Usable as a bumper or a standby screen with no editing at all.",
       },
     ],
-    streamTitle: "How this page loads the songs",
-    streamBody:
-      "This page stands on its own and is not bundled with the home page, so the home page stays light. Not one byte of audio is fetched until you press play. From there the file streams in pieces over a CDN that answers range requests, so you can jump to any minute without waiting for what comes before it. Whatever is already buffered shows as a lighter band behind the position marker.",
     creditTitle: "Credit and permitted use",
     composer: "Written & arranged by",
     written: "Draft dated",

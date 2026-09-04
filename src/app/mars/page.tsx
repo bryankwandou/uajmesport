@@ -1,4 +1,5 @@
 "use client";
+import { useState } from "react";
 import Link from "next/link";
 import { Controls } from "@/components/Controls";
 import { LogoMark } from "@/components/Logo";
@@ -114,7 +115,7 @@ function TrackSection({ track, index }: { track: MarsTrack; index: number }) {
           {d.track.versions}
         </h3>
         {track.versions.map((v) => (
-          <VersionRow key={v.id} version={v} trackTitle={track.title} />
+          <VersionRow key={v.id} version={v} track={track} />
         ))}
       </div>
 
@@ -164,10 +165,13 @@ function TrackSection({ track, index }: { track: MarsTrack; index: number }) {
   );
 }
 
-function VersionRow({ version, trackTitle }: { version: MarsVersion; trackTitle: string }) {
+function VersionRow({ version, track }: { version: MarsVersion; track: MarsTrack }) {
+  const trackTitle = track.title;
+  const [openDesc, setOpenDesc] = useState(false);
   const { locale } = useApp();
   const d = marsDict(locale);
-  const { loaded, playing, toggle, openVideo } = useMarsPlayer();
+  const { loaded, playing, toggle, openVideo, video, closeVideo } = useMarsPlayer();
+  const showingVideo = video?.version.id === version.id;
   const active = loaded?.version.id === version.id;
   const isPlaying = active && playing;
   const mins = Math.floor(version.duration / 60);
@@ -217,10 +221,15 @@ function VersionRow({ version, trackTitle }: { version: MarsVersion; trackTitle:
         {version.mp4 && (
           <button
             type="button"
-            onClick={() => openVideo(version, trackTitle)}
-            className="rounded border border-[color:var(--border)] px-2.5 py-1.5 font-mono text-[10px] uppercase text-[color:var(--muted)] duration-200 ease-crisp [transition-property:opacity] hover:border-[color:var(--border-strong)] hover:text-[color:var(--text)]"
+            onClick={() => (showingVideo ? closeVideo() : openVideo(version, trackTitle))}
+            aria-expanded={showingVideo}
+            className={`rounded border px-2.5 py-1.5 font-mono text-[10px] uppercase duration-200 ease-crisp [transition-property:opacity] ${
+              showingVideo
+                ? "border-[color:var(--crimson)] text-[color:var(--text)]"
+                : "border-[color:var(--border)] text-[color:var(--muted)] hover:border-[color:var(--border-strong)] hover:text-[color:var(--text)]"
+            }`}
           >
-            {d.track.video}
+            {showingVideo ? d.track.videoClose : d.track.video}
           </button>
         )}
         <span className="ms-1 font-mono text-[10px] uppercase text-[color:var(--faint)]">{d.track.download}</span>
@@ -241,6 +250,83 @@ function VersionRow({ version, trackTitle }: { version: MarsVersion; trackTitle:
           </a>
         ))}
       </div>
+
+      {/* Video diputar di tempatnya, di dalam kartu versi ini. Sebelumnya ia
+          membuka lapisan yang menutupi halaman; sekarang halaman tetap utuh dan
+          pembaca tidak kehilangan posisi bacanya.
+          preload="metadata": hanya header berkas yang diambil sampai tombol
+          putar ditekan, lalu CDN mengalirkan sisanya potongan demi potongan. */}
+      {showingVideo && version.mp4 && (
+        <div className="order-last w-full">
+          <video
+            key={version.id}
+            src={version.mp4}
+            controls
+            autoPlay
+            playsInline
+            preload="metadata"
+            aria-label={`${d.track.video} ${trackTitle} ${version.label}`}
+            className="aspect-video w-full rounded border border-[color:var(--border)] bg-black"
+          />
+
+          {/* Judul dan deskripsi disusun sendiri dari data lagu yang sudah ada,
+              jadi tidak ada naskah kedua yang harus dijaga tetap sinkron.
+              Deskripsinya terpotong dua baris dulu dan baru terbuka penuh saat
+              diminta, seperti keterangan di bawah pemutar video pada umumnya. */}
+          <div className="mt-3 rounded border border-[color:var(--border)] p-4">
+            <h4 className="font-display text-base font-extrabold uppercase tracking-tight text-[color:var(--text)] md:text-lg">
+              {track.fullTitle} — {version.label}
+            </h4>
+            <p className="mt-1.5 font-mono text-[11px] text-[color:var(--faint)]">
+              {d.track.videoQuality} · {mins}:{secs.toString().padStart(2, "0")}
+            </p>
+
+            <p
+              className={`mt-3 text-sm leading-relaxed text-[color:var(--muted)] ${
+                openDesc ? "" : "line-clamp-2"
+              }`}
+            >
+              {track.tagline} {version.note} {d.track.videoAbout}
+            </p>
+
+            {openDesc && (
+              <dl className="mt-4 space-y-3 border-t border-[color:var(--border)] pt-4">
+                {track.spec.map((sp) => (
+                  <div key={sp.label} className="grid gap-1 sm:grid-cols-[10rem_1fr] sm:gap-4">
+                    <dt className="text-[10px] uppercase tracking-[0.22em] text-[color:var(--faint)]">
+                      {sp.label}
+                    </dt>
+                    <dd className="text-sm leading-relaxed text-[color:var(--muted)]">{sp.value}</dd>
+                  </div>
+                ))}
+                <div className="grid gap-1 sm:grid-cols-[10rem_1fr] sm:gap-4">
+                  <dt className="text-[10px] uppercase tracking-[0.22em] text-[color:var(--faint)]">
+                    {d.track.usage}
+                  </dt>
+                  <dd className="text-sm leading-relaxed text-[color:var(--muted)]">{track.usage}</dd>
+                </div>
+                <div className="grid gap-1 sm:grid-cols-[10rem_1fr] sm:gap-4">
+                  <dt className="text-[10px] uppercase tracking-[0.22em] text-[color:var(--faint)]">
+                    {d.docs.composer}
+                  </dt>
+                  <dd className="text-sm leading-relaxed text-[color:var(--muted)]">
+                    {marsCredit.composer} · {marsCredit.owner}
+                  </dd>
+                </div>
+              </dl>
+            )}
+
+            <button
+              type="button"
+              onClick={() => setOpenDesc((v) => !v)}
+              aria-expanded={openDesc}
+              className="mt-3 font-mono text-[11px] uppercase tracking-wider text-[color:var(--crimson)] duration-200 ease-crisp [transition-property:opacity] hover:opacity-70"
+            >
+              {openDesc ? d.track.videoLess : d.track.videoMore}
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
@@ -270,16 +356,8 @@ function Docs() {
         ))}
       </div>
 
-      <div className="mt-6 grid gap-6 lg:grid-cols-[1.15fr_0.85fr]">
+      <div className="mt-6">
         <Reveal>
-          <div className="panel-feature clip-corner h-full p-7">
-            <h3 className="font-display text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">
-              {d.docs.streamTitle}
-            </h3>
-            <p className="mt-4 text-sm leading-relaxed text-[color:var(--muted)]">{d.docs.streamBody}</p>
-          </div>
-        </Reveal>
-        <Reveal delay={0.05}>
           <div className="panel clip-corner h-full p-7">
             <h3 className="font-display text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">
               {d.docs.creditTitle}
