@@ -1,15 +1,32 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Logo } from "./Logo";
 import { Controls } from "./Controls";
 import { useApp } from "./Providers";
 import { links } from "@/lib/content";
 import { marsDict } from "@/lib/marsdict";
 
+/* Jarak antar-tautan. Dipakai baris asli dan penggarisnya sekaligus, supaya
+   yang diukur tidak pernah berbeda dari yang ditampilkan. */
+const LINK_GAP = "gap-4";
+
 export function Nav() {
   const { t, locale } = useApp();
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
+
+  /* Hamburger hilang tepat ketika seluruh label muat utuh, bukan pada lebar
+     yang ditebak lebih dulu. Breakpoint tetap salah dua arah: xl menyembunyikan
+     menu di 1142-1279px yang sebenarnya cukup, sedangkan label yang suatu saat
+     diperpanjang akan menabrak lagi tanpa ada yang memberi tahu.
+
+     `fits` null berarti belum terukur: markup server memakai tebakan CSS agar
+     lebar besar tidak berkedip lebih dulu, lalu hasil ukur mengambil alih. */
+  const [fits, setFits] = useState<boolean | null>(null);
+  const navRef = useRef<HTMLElement | null>(null);
+  const logoRef = useRef<HTMLAnchorElement | null>(null);
+  const rightRef = useRef<HTMLDivElement | null>(null);
+  const rulerRef = useRef<HTMLDivElement | null>(null);
 
   const items = [
     { href: "#tentang", label: t.nav.about },
@@ -24,20 +41,43 @@ export function Nav() {
     { href: "/deck.html", label: t.nav.deck },
   ];
 
+  /* Penggaris di bawah mengukur lebar alami seluruh label. Ia dipakai
+     ketimbang baris aslinya karena baris asli ikut disembunyikan saat tidak
+     muat, dan sesuatu yang display:none tidak punya lebar untuk dibaca --
+     pengukurannya akan macet pada keputusan pertama. */
+  useEffect(() => {
+    const measure = () => {
+      const nav = navRef.current;
+      const logo = logoRef.current;
+      const right = rightRef.current;
+      const ruler = rulerRef.current;
+      if (!nav || !logo || !right || !ruler) return;
+      const cs = getComputedStyle(nav);
+      const inner = nav.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight);
+      const gap = parseFloat(cs.columnGap) || 0;
+      const need = logo.offsetWidth + ruler.offsetWidth + right.offsetWidth + gap * 2;
+      // Lantai desktop: di bawah ini hamburger tetap, sekalipun aritmetikanya lolos.
+      setFits(window.innerWidth >= 1024 && need <= inner);
+    };
+
+    measure();
+    const ro = new ResizeObserver(measure);
+    if (navRef.current) ro.observe(navRef.current);
+    // Label menyusut atau melebar begitu webfont menggantikan font sementara.
+    document.fonts?.ready.then(measure).catch(() => {});
+    return () => ro.disconnect();
+  }, [locale]);
+
+  // Panel tidak boleh tertinggal terbuka di belakang bilah yang sudah utuh.
+  useEffect(() => {
+    if (fits) setOpen(false);
+  }, [fits]);
+
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 24);
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
-  }, []);
-
-  // Close the mobile sheet once the viewport passes the breakpoint, so the
-  // panel can never linger behind the desktop bar.
-  useEffect(() => {
-    const mq = window.matchMedia("(min-width: 1280px)");
-    const onChange = () => mq.matches && setOpen(false);
-    mq.addEventListener("change", onChange);
-    return () => mq.removeEventListener("change", onChange);
   }, []);
 
   return (
@@ -48,17 +88,16 @@ export function Nav() {
           : "border-b border-transparent"
       }`}
     >
-      <nav className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-5 py-3.5">
-        <a href="#top" aria-label="UKM E-Sport UAJM" className="shrink-0">
+      <nav ref={navRef} className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-5 py-3.5">
+        <a ref={logoRef} href="#top" aria-label="UKM E-Sport UAJM" className="shrink-0">
           <Logo />
         </a>
 
-        {/* Baris ini butuh 1102px dalam bahasa Indonesia; wadahnya berhenti
-            tumbuh di 1152px (max-w-6xl). Jadi menu penuh baru muncul di xl,
-            dan jaraknya tidak pernah dilebarkan lagi di atas itu: melebarkan
-            celah tanpa tambahan ruang justru yang membuat tautan terakhir
-            menabrak pemilih bahasa. */}
-        <div className="hidden shrink-0 items-center gap-4 xl:flex">
+        <div
+          className={`shrink-0 items-center ${LINK_GAP} ${
+            fits === null ? "hidden xl:flex" : fits ? "flex" : "hidden"
+          }`}
+        >
           {items.map((i) => (
             <a
               key={i.href}
@@ -70,7 +109,7 @@ export function Nav() {
           ))}
         </div>
 
-        <div className="flex shrink-0 items-center gap-2">
+        <div ref={rightRef} className="flex shrink-0 items-center gap-2">
           <Controls />
           <a
             href={links.register}
@@ -81,7 +120,9 @@ export function Nav() {
             {t.nav.register}
           </a>
           <button
-            className="grid h-[30px] w-[30px] place-items-center rounded border border-[color:var(--border)] text-[color:var(--muted)] xl:hidden"
+            className={`grid h-[30px] w-[30px] place-items-center rounded border border-[color:var(--border)] text-[color:var(--muted)] ${
+              fits === null ? "xl:hidden" : fits ? "hidden" : ""
+            }`}
             onClick={() => setOpen((v) => !v)}
             aria-label={t.nav.menu}
             aria-expanded={open}
@@ -93,8 +134,23 @@ export function Nav() {
         </div>
       </nav>
 
-      {open && (
-        <div className="border-t border-[color:var(--border)] bg-[color:var(--bg)] px-5 py-4 xl:hidden">
+      {/* Penggaris: salinan label yang tidak pernah terlihat, tidak pernah
+          bisa difokus, dan tidak menempati aliran layout. Ia satu-satunya yang
+          selalu punya lebar untuk dibaca. */}
+      <div
+        ref={rulerRef}
+        aria-hidden="true"
+        className={`pointer-events-none invisible absolute left-0 top-0 flex items-center ${LINK_GAP}`}
+      >
+        {items.map((i) => (
+          <span key={i.href} className="whitespace-nowrap text-xs">
+            {i.label}
+          </span>
+        ))}
+      </div>
+
+      {open && !fits && (
+        <div className="border-t border-[color:var(--border)] bg-[color:var(--bg)] px-5 py-4">
           <div className="flex flex-col gap-3.5">
             {items.map((i) => (
               <a
