@@ -1,0 +1,165 @@
+<!doctype html>
+<meta charset="utf-8" />
+<title>JOIN US — UKM E-Sport UAJM</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Orbitron:wght@700;800;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+  /* Token disalin persis dari src/app/globals.css, tema gelap (bawaan situs). */
+  :root {
+    --bg: #070406;
+    --text: #f0e9ec;
+    --muted: rgba(240, 233, 236, 0.62);
+    --crimson: #ff2d55;
+    --ember: #ff7a18;
+    --border: rgba(255, 255, 255, 0.08);
+    --border-strong: rgba(255, 255, 255, 0.16);
+    --grid-line: rgba(255, 255, 255, 0.05);
+    --halo-1: rgba(255, 45, 85, 0.20);
+    --halo-2: rgba(255, 122, 24, 0.14);
+    --halo-3: rgba(0, 229, 255, 0.10);
+    --paper: #ffffff;
+    --ink: #150a0e;
+    --ink-muted: rgba(21, 10, 14, 0.66);
+  }
+
+  @page { size: A4; margin: 0; }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { width: 210mm; height: 297mm; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: Inter, system-ui, sans-serif;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  .sheet {
+    position: relative;
+    width: 210mm; height: 297mm;
+    overflow: hidden;
+    /* .bg-field: tiga halo radial di atas dasar gelap. */
+    background:
+      radial-gradient(55% 45% at 15% 8%, var(--halo-1), transparent 60%),
+      radial-gradient(50% 45% at 88% 12%, var(--halo-2), transparent 60%),
+      radial-gradient(45% 40% at 55% 95%, var(--halo-3), transparent 60%),
+      var(--bg);
+  }
+  /* .bg-grid: kisi HUD 48px, dilunakkan mask dari atas. */
+  .sheet::before {
+    content: ""; position: absolute; inset: 0;
+    background-image:
+      linear-gradient(var(--grid-line) 1px, transparent 1px),
+      linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
+    background-size: 12mm 12mm;
+    -webkit-mask-image: radial-gradient(ellipse 80% 60% at 50% 0%, black 40%, transparent 100%);
+    mask-image: radial-gradient(ellipse 80% 60% at 50% 0%, black 40%, transparent 100%);
+  }
+
+  /* Semua isi ditahan di dalam 14mm, jadi printer rumahan yang memangkas tepi
+     tidak pernah memakan konten; latarnya sendiri tetap full-bleed. */
+  .inner {
+    position: relative;
+    height: 100%;
+    padding: 14mm;
+    display: flex; flex-direction: column;
+  }
+
+  header { display: flex; align-items: center; gap: 4mm; }
+  header img { width: 15mm; height: 15mm; object-fit: contain; }
+  .wm1 {
+    font-family: Orbitron, sans-serif; font-weight: 800;
+    font-size: 6.2mm; letter-spacing: -0.02em; line-height: 1; white-space: nowrap;
+  }
+  .wm1 span { color: var(--crimson); }
+  .wm2 {
+    font-size: 2.7mm; letter-spacing: 0.22em; text-transform: uppercase;
+    color: var(--muted); margin-top: 1.4mm; white-space: nowrap;
+  }
+  .rule { flex: 1; height: 1px; background: var(--border-strong); }
+  .sk { font-family: "JetBrains Mono", monospace; font-size: 2.6mm; color: var(--muted); white-space: nowrap; }
+
+  .hero { flex: 1; display: flex; flex-direction: column; justify-content: center; }
+  .kicker {
+    font-family: "JetBrains Mono", monospace; font-size: 3.2mm;
+    letter-spacing: 0.34em; text-transform: uppercase; color: var(--crimson);
+  }
+  h1 {
+    font-family: Orbitron, sans-serif; font-weight: 900;
+    font-size: 39mm; line-height: 0.9; letter-spacing: -0.03em;
+    margin-top: 5mm; white-space: nowrap;
+    background: linear-gradient(100deg, var(--text) 5%, var(--ember) 45%, var(--crimson) 95%);
+    -webkit-background-clip: text; background-clip: text;
+    -webkit-text-fill-color: transparent; color: transparent;
+  }
+
+  .cards { display: grid; grid-template-columns: 1fr 1fr; gap: 10mm; }
+  /* Kartu QR selalu putih, juga di poster gelap: modul terang di atas dasar
+     gelap adalah QR terbalik, dan banyak pemindai bawaan kamera menolaknya. */
+  .card {
+    background: var(--paper); color: var(--ink);
+    padding: 7mm 7mm 6mm;
+    clip-path: polygon(0 0, 100% 0, 100% calc(100% - 9mm), calc(100% - 9mm) 100%, 0 100%);
+    display: flex; flex-direction: column; align-items: center;
+  }
+  .tag {
+    align-self: flex-start;
+    font-family: "JetBrains Mono", monospace; font-size: 2.8mm;
+    letter-spacing: 0.2em; text-transform: uppercase; color: var(--crimson);
+  }
+  .card img { width: 72mm; height: 72mm; margin-top: 5mm; display: block; }
+  .ct {
+    font-family: Orbitron, sans-serif; font-weight: 800; font-size: 5mm;
+    letter-spacing: -0.01em; margin-top: 6mm; text-align: center; color: var(--ink);
+  }
+  .cs { font-size: 3.4mm; line-height: 1.45; color: var(--ink-muted); margin-top: 2mm; text-align: center; }
+  .cu {
+    font-family: "JetBrains Mono", monospace; font-size: 2.6mm;
+    color: rgba(21, 10, 14, 0.5); margin-top: 3.5mm; word-break: break-all; text-align: center;
+  }
+
+  footer {
+    margin-top: 9mm; padding-top: 4mm; border-top: 1px solid var(--border);
+    display: flex; justify-content: space-between; align-items: center;
+    font-family: "JetBrains Mono", monospace; font-size: 2.9mm; color: var(--muted);
+  }
+</style>
+
+<div class="sheet"><div class="inner">
+  <header>
+    <img src="../public/ukm-esport-logo.png" alt="" />
+    <div>
+      <div class="wm1">UKM<span> E-SPORT</span></div>
+      <div class="wm2">Atma Jaya Makassar</div>
+    </div>
+    <div class="rule"></div>
+    <div class="sk">SK No. 001/SK/UKM-ESPORT/UAJM/VI/2025</div>
+  </header>
+
+  <div class="hero">
+    <div class="kicker">Pendaftaran terbuka</div>
+    <h1>JOIN US</h1>
+  </div>
+
+  <div class="cards">
+    <div class="card">
+      <div class="tag">01 / E-Sport</div>
+      <img src="qr-esport.svg" alt="Kode QR formulir pendaftaran anggota UKM E-Sport" />
+      <div class="ct">DAFTAR ANGGOTA</div>
+      <div class="cs">Formulir pendaftaran<br />UKM E-Sport UAJM</div>
+      <div class="cu">forms.gle/ed2zW5avK34mnLGF9</div>
+    </div>
+    <div class="card">
+      <div class="tag">02 / UAJM BCC</div>
+      <img src="qr-bcc.svg" alt="Kode QR grup WhatsApp UAJM BCC" />
+      <div class="ct">GRUP WHATSAPP</div>
+      <div class="cs">Blockchain Club<br />divisi Web3 UKM E-Sport</div>
+      <div class="cu">chat.whatsapp.com/DOItAWJVPF1KdAfshk2uoD</div>
+    </div>
+  </div>
+
+  <footer>
+    <span>uajmesport.vercel.app</span>
+    <span>uajmbcc.vercel.app</span>
+  </footer>
+</div></div>
