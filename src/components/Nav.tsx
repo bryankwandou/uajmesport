@@ -49,11 +49,14 @@ export function Nav() {
       }`}
     >
       <nav className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-5 py-3.5">
-        <a href="#top" aria-label="UKM E-Sport UAJM" className="min-w-0 shrink">
+        <a href="#top" aria-label="UKM E-Sport UAJM" className="shrink-0">
           <Logo />
         </a>
 
-        <div className="hidden items-center gap-6 lg:flex">
+        {/* Delapan tautan, merek, dan tombol daftar berbagi satu baris. Jarak
+            menyempit di lg supaya yang mengalah adalah celah antar-tautan,
+            bukan merek. */}
+        <div className="hidden min-w-0 items-center gap-4 lg:flex xl:gap-6">
           {items.map((i) => (
             <a
               key={i.href}
