@@ -110,9 +110,6 @@ function TrackSection({ track, index }: { track: MarsTrack; index: number }) {
       </Reveal>
 
       <div className="mt-8 space-y-3">
-        <h3 className="font-display text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">
-          {d.track.versions}
-        </h3>
         {track.versions.map((v) => (
           <VersionRow key={v.id} version={v} track={track} />
         ))}

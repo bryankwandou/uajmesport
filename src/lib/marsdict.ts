@@ -20,7 +20,6 @@ export type MarsDict = {
     playAll: string;
   };
   track: {
-    versions: string;
     play: string;
     pause: string;
     nowPlaying: string;
@@ -59,7 +58,6 @@ const id: MarsDict = {
     playAll: "Putar mars utama",
   },
   track: {
-    versions: "Versi rekaman",
     play: "Putar",
     pause: "Jeda",
     nowPlaying: "Sedang diputar",
@@ -98,7 +96,6 @@ const en: MarsDict = {
     playAll: "Play the main anthem",
   },
   track: {
-    versions: "Recorded versions",
     play: "Play",
     pause: "Pause",
     nowPlaying: "Now playing",
