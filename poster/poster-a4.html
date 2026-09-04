@@ -94,28 +94,47 @@
   }
 
   .cards { display: grid; grid-template-columns: 1fr 1fr; gap: 10mm; }
-  /* Kartu QR selalu putih, juga di poster gelap: modul terang di atas dasar
-     gelap adalah QR terbalik, dan banyak pemindai bawaan kamera menolaknya. */
+
+  /* Dua kartu ini harus tidak mungkin tertukar dari jarak tempel. Pembedanya
+     dibuat berlapis: warna merek, logo, dan nama organisasi sebagai baris
+     terbesar. Aksi ("formulir", "grup") turun ke baris kedua -- yang perlu
+     dikenali lebih dulu adalah miliknya siapa, bukan apa bentuknya. */
   .card {
     background: var(--paper); color: var(--ink);
-    padding: 7mm 7mm 6mm;
     clip-path: polygon(0 0, 100% 0, 100% calc(100% - 9mm), calc(100% - 9mm) 100%, 0 100%);
-    display: flex; flex-direction: column; align-items: center;
+    overflow: hidden;
   }
-  .tag {
-    align-self: flex-start;
-    font-family: "JetBrains Mono", monospace; font-size: 2.8mm;
-    letter-spacing: 0.2em; text-transform: uppercase; color: var(--crimson);
+  .card.e { --brand: #c2003a; }   /* --crimson tema terang, UKM E-Sport */
+  .card.b { --brand: #1a3fd0; }   /* --accent uajmbcc tema terang, UAJM BCC */
+
+  /* Pita warna selebar kartu: pembeda yang masih terbaca ketika teksnya
+     sudah terlalu kecil untuk dibaca. */
+  .bar { height: 3.5mm; background: var(--brand); }
+  .pad { padding: 6mm 7mm 6mm; display: flex; flex-direction: column; align-items: center; }
+
+  .brand { display: flex; align-items: center; gap: 3.5mm; align-self: stretch; }
+  .brand img { height: 11mm; width: auto; object-fit: contain; }
+  .card.b .brand img { height: 9.5mm; }
+  .bn {
+    font-family: Orbitron, sans-serif; font-weight: 800; font-size: 5.4mm;
+    letter-spacing: -0.02em; line-height: 1; color: var(--brand); white-space: nowrap;
   }
-  .card img { width: 72mm; height: 72mm; margin-top: 5mm; display: block; }
+  .bs { font-size: 2.9mm; color: var(--ink-muted); margin-top: 1.6mm; white-space: nowrap; }
+  .no {
+    margin-left: auto; font-family: "JetBrains Mono", monospace; font-size: 5mm;
+    font-weight: 500; color: var(--brand); opacity: 0.35;
+  }
+
+  .qr { width: 66mm; height: 66mm; margin-top: 5mm; display: block; }
+
   .ct {
-    font-family: Orbitron, sans-serif; font-weight: 800; font-size: 5mm;
-    letter-spacing: -0.01em; margin-top: 6mm; text-align: center; color: var(--ink);
+    font-family: Orbitron, sans-serif; font-weight: 800; font-size: 4.4mm;
+    margin-top: 5mm; text-align: center; color: var(--ink); line-height: 1.25;
+    min-height: 11mm; display: flex; align-items: center; justify-content: center;
   }
-  .cs { font-size: 3.4mm; line-height: 1.45; color: var(--ink-muted); margin-top: 2mm; text-align: center; }
   .cu {
-    font-family: "JetBrains Mono", monospace; font-size: 2.6mm;
-    color: rgba(21, 10, 14, 0.5); margin-top: 3.5mm; word-break: break-all; text-align: center;
+    font-family: "JetBrains Mono", monospace; font-size: 2.5mm;
+    color: rgba(21, 10, 14, 0.5); margin-top: 3mm; word-break: break-all; text-align: center;
   }
 
   footer {
@@ -142,19 +161,38 @@
   </div>
 
   <div class="cards">
-    <div class="card">
-      <div class="tag">01 / E-Sport</div>
-      <img src="qr-esport.svg" alt="Kode QR formulir pendaftaran anggota UKM E-Sport" />
-      <div class="ct">DAFTAR ANGGOTA</div>
-      <div class="cs">Formulir pendaftaran<br />UKM E-Sport UAJM</div>
-      <div class="cu">forms.gle/ed2zW5avK34mnLGF9</div>
+    <div class="card e">
+      <div class="bar"></div>
+      <div class="pad">
+        <div class="brand">
+          <img src="../public/ukm-esport-logo.png" alt="" />
+          <div>
+            <div class="bn">UKM E-SPORT</div>
+            <div class="bs">Unit Kegiatan Mahasiswa</div>
+          </div>
+          <div class="no">01</div>
+        </div>
+        <img class="qr" src="qr-esport.svg" alt="Kode QR formulir pendaftaran anggota UKM E-Sport" />
+        <div class="ct">Formulir pendaftaran<br />anggota</div>
+        <div class="cu">forms.gle/ed2zW5avK34mnLGF9</div>
+      </div>
     </div>
-    <div class="card">
-      <div class="tag">02 / UAJM BCC</div>
-      <img src="qr-bcc.svg" alt="Kode QR grup WhatsApp UAJM BCC" />
-      <div class="ct">GRUP WHATSAPP</div>
-      <div class="cs">Blockchain Club<br />divisi Web3 UKM E-Sport</div>
-      <div class="cu">chat.whatsapp.com/DOItAWJVPF1KdAfshk2uoD</div>
+
+    <div class="card b">
+      <div class="bar"></div>
+      <div class="pad">
+        <div class="brand">
+          <img src="../public/scc-dark.png" alt="" />
+          <div>
+            <div class="bn">UAJM BCC</div>
+            <div class="bs">Blockchain Club · divisi Web3</div>
+          </div>
+          <div class="no">02</div>
+        </div>
+        <img class="qr" src="qr-bcc.svg" alt="Kode QR grup WhatsApp UAJM BCC" />
+        <div class="ct">Grup WhatsApp</div>
+        <div class="cu">chat.whatsapp.com/DOItAWJVPF1KdAfshk2uoD</div>
+      </div>
     </div>
   </div>
 
