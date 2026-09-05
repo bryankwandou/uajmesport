@@ -131,20 +131,20 @@
   }
   .link b { color: var(--text); font-weight: 700; }
 
-  .facts { margin-top: 10mm; display: flex; gap: 3mm; }
+  /* Empat divisi resmi, disalin dari content.ts. Ini menggantikan blok angka:
+     "15+ anggota" pada poster rekrutmen membaca sebagai pengakuan kecil, bukan
+     bukti sosial, dan keempat nama ini menjawab "apa yang saya dapat" dengan
+     hal yang benar-benar terdokumentasi. */
+  .dlabel {
+    margin-top: 10mm; font-family: "JetBrains Mono", monospace; font-size: 2.8mm;
+    letter-spacing: 0.28em; text-transform: uppercase; color: var(--crimson);
+  }
+  .facts { margin-top: 3.5mm; display: flex; gap: 3mm; }
   .chip {
-    flex: 1; border: 1px solid var(--border-strong); padding: 3.5mm 3mm;
-    text-align: center;
+    flex: 1; border: 1px solid var(--border-strong); padding: 4mm 2.5mm;
+    text-align: center; font-size: 3.1mm; line-height: 1.35; color: var(--text);
+    display: flex; align-items: center; justify-content: center;
   }
-  .fv {
-    font-family: Orbitron, sans-serif; font-weight: 800; font-size: 6.5mm;
-    line-height: 1; color: var(--text);
-  }
-  .fl {
-    font-family: "JetBrains Mono", monospace; font-size: 2.7mm; margin-top: 2mm;
-    letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted);
-  }
-  .fs { font-size: 2.7mm; margin-top: 1.2mm; color: var(--faint); opacity: 0.75; }
 
   footer {
     margin-top: auto; padding-top: 5mm; border-top: 1px solid var(--border);
@@ -173,10 +173,12 @@
       komunitas lintas fakultas dan <b>divisi Web3 UAJM BCC</b>.
     </p>
 
+    <div class="dlabel">Empat divisi aktif</div>
     <div class="facts">
-      <div class="chip"><div class="fv">15+</div><div class="fl">Anggota terdaftar</div><div class="fs">3 fakultas</div></div>
-      <div class="chip"><div class="fv">6</div><div class="fl">Sertifikat terdokumentasi</div><div class="fs">turnamen &amp; pelatihan</div></div>
-      <div class="chip"><div class="fv">4</div><div class="fl">Divisi aktif</div><div class="fs">struktur resmi</div></div>
+      <div class="chip">Turnamen &amp;<br />Kompetisi</div>
+      <div class="chip">Pelatihan &amp;<br />Pengembangan</div>
+      <div class="chip">Kreatif &amp;<br />Konten Digital</div>
+      <div class="chip">Humas &amp;<br />Relasi</div>
     </div>
   </div>
 
