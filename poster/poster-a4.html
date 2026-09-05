@@ -59,9 +59,14 @@
   /* Semua isi ditahan di dalam 14mm, jadi printer rumahan yang memangkas tepi
      tidak pernah memakan konten; latarnya sendiri tetap full-bleed. */
   .emblem {
-    position: absolute; right: -52mm; top: 96mm;
-    width: 185mm; height: 185mm; opacity: 0.13;
+    position: absolute; right: -34mm; top: 54mm;
+    width: 152mm; height: 152mm; opacity: 0.26;
     background: url("../public/ukm-esport-logo.png") center/contain no-repeat;
+    filter: drop-shadow(0 0 7mm rgba(255, 45, 85, 0.55)) saturate(1.35);
+    /* Mati sebelum baris kartu QR: di bawah 60% tinggi lambang, kontras teks
+       putih di atas latar gelap lebih penting daripada hiasan. */
+    -webkit-mask-image: linear-gradient(to bottom, black 0%, black 52%, transparent 86%);
+    mask-image: linear-gradient(to bottom, black 0%, black 52%, transparent 86%);
   }
   /* Sapuan sudut, meminjam clip-corner dan gradasi merek. */
   .streak {
@@ -87,20 +92,21 @@
   }
   .wm1 span { color: var(--crimson); }
   .wm2 {
-    font-size: 2.7mm; letter-spacing: 0.22em; text-transform: uppercase;
+    font-size: 2.9mm; letter-spacing: 0.22em; text-transform: uppercase;
     color: var(--muted); margin-top: 1.4mm; white-space: nowrap;
   }
   .rule { flex: 1; height: 1px; background: var(--border-strong); }
-  .sk { font-family: "JetBrains Mono", monospace; font-size: 2.6mm; color: var(--muted); white-space: nowrap; }
+  .sk { font-family: "JetBrains Mono", monospace; font-size: 2.9mm; color: var(--muted); white-space: nowrap; }
 
   .hero { flex: 1; display: flex; flex-direction: column; justify-content: center; }
   .kicker {
-    font-family: "JetBrains Mono", monospace; font-size: 3.2mm;
+    margin-top: 7mm;
+    font-family: "JetBrains Mono", monospace; font-size: 3.6mm;
     letter-spacing: 0.34em; text-transform: uppercase; color: var(--crimson);
   }
   h1 {
     font-family: Orbitron, sans-serif; font-weight: 900;
-    font-size: 39mm; line-height: 0.9; letter-spacing: -0.03em;
+    font-size: 30mm; line-height: 0.9; letter-spacing: -0.03em;
     margin-top: 5mm; white-space: nowrap;
     background: linear-gradient(100deg, var(--text) 5%, var(--ember) 45%, var(--crimson) 95%);
     -webkit-background-clip: text; background-clip: text;
@@ -110,7 +116,11 @@
   /* Nama organisasi keluar dari kartu supaya bisa dibesarkan. Warnanya pakai
      aksen TEMA GELAP masing-masing situs: #1a3fd0 milik BCC terlalu gelap di
      atas latar hitam, sedangkan #7aa5ff memang token untuk dasar gelap. */
-  .cols { display: grid; grid-template-columns: 1fr 1fr; gap: 12mm; }
+  .cols {
+    display: grid; grid-template-columns: 1fr 1fr;
+    grid-template-rows: repeat(5, auto); column-gap: 12mm;
+  }
+  .col { display: grid; grid-template-rows: subgrid; grid-row: span 5; }
   .col.e { --brand: #ff2d55; }
   .col.b { --brand: #7aa5ff; }
 
@@ -119,37 +129,57 @@
     letter-spacing: -0.03em; line-height: 1; color: var(--brand); white-space: nowrap;
   }
   .bs {
-    font-size: 3.4mm; color: var(--muted); margin-top: 2.5mm;
+    font-size: 3.9mm; line-height: 1.35; color: var(--muted); margin-top: 2.5mm;
     padding-bottom: 3.5mm; border-bottom: 1.2mm solid var(--brand);
   }
 
   /* Kartu menyusut ke QR-nya saja. Padding tipis sekadar bingkai; zona sunyi
      empat modul sudah ada di dalam gambar QR, jadi tidak diambil dari sini. */
   .card {
-    background: var(--paper); margin-top: 6mm; padding: 4mm; width: 60mm;
+    background: var(--paper); align-self: start; margin-top: 6mm; padding: 4mm; width: 60mm;
     clip-path: polygon(0 0, 100% 0, 100% calc(100% - 7mm), calc(100% - 7mm) 100%, 0 100%);
   }
   .qr { width: 100%; height: auto; display: block; }
 
   .ct {
-    font-family: Orbitron, sans-serif; font-weight: 800; font-size: 5mm;
-    margin-top: 5mm; color: var(--text); line-height: 1.2;
+    font-family: Orbitron, sans-serif; font-weight: 800; font-size: 5.4mm;
+    margin-top: 4mm; color: var(--text); line-height: 1.2;
   }
   /* Cadangan yang bisa diketik. Bukan URL acak: string 22 karakter tidak
      pernah disalin orang dari dinding, sebesar apa pun hurufnya. */
-  .cu { font-size: 3.2mm; color: var(--muted); margin-top: 2.5mm; margin-bottom: 5mm; }
-  .cu i { font-style: normal; font-family: "JetBrains Mono", monospace; font-size: 3.4mm; color: var(--brand); }
+  .cu { font-size: 3.6mm; color: var(--muted); margin-top: 2.5mm; margin-bottom: 2mm; }
+  .cu i { font-style: normal; font-family: "JetBrains Mono", monospace; font-size: 3.9mm; color: var(--brand); }
 
   .link {
-    margin-top: 8mm; font-size: 3.6mm; line-height: 1.5; color: var(--muted);
-    border-left: 0.8mm solid var(--crimson); padding-left: 4mm;
+    margin-top: 5mm; border-left: 1mm solid var(--crimson); padding-left: 5mm;
   }
-  .link b { color: var(--text); font-weight: 700; }
+  .punch {
+    font-family: Orbitron, sans-serif; font-weight: 800; font-size: 6.4mm;
+    line-height: 1.22; color: var(--text); letter-spacing: -0.01em;
+  }
+  .punch i { font-style: normal; color: var(--crimson); }
+  .link small { display: block; font-size: 3.9mm; line-height: 1.45; color: var(--muted); margin-top: 3mm; }
 
   /* Empat divisi resmi, disalin dari content.ts. Ini menggantikan blok angka:
      "15+ anggota" pada poster rekrutmen membaca sebagai pengakuan kecil, bukan
      bukti sosial, dan keempat nama ini menjawab "apa yang saya dapat" dengan
      hal yang benar-benar terdokumentasi. */
+  .wins { margin-top: 3.5mm; width: 112mm; }
+  .win {
+    display: flex; gap: 5mm; align-items: baseline;
+    padding: 2.2mm 0; border-top: 1px solid var(--border-strong);
+  }
+  .win:last-child { border-bottom: 1px solid var(--border-strong); }
+  .wn {
+    font-family: "JetBrains Mono", monospace; font-size: 3.2mm;
+    color: var(--crimson); flex: none; width: 7mm;
+  }
+  .wl {
+    font-family: Orbitron, sans-serif; font-weight: 800; font-size: 4.4mm;
+    line-height: 1.1; color: var(--text); white-space: nowrap;
+  }
+  .wp { font-size: 3.5mm; line-height: 1.35; color: var(--muted); margin-top: 1.6mm; }
+
   .dlabel {
     margin-top: 10mm; font-family: "JetBrains Mono", monospace; font-size: 2.8mm;
     letter-spacing: 0.28em; text-transform: uppercase; color: var(--crimson);
@@ -163,9 +193,9 @@
   .cx { font-size: 3.1mm; line-height: 1.35; color: var(--text); margin-top: 2.5mm; }
 
   footer {
-    margin-top: auto; padding-top: 5mm; border-top: 1px solid var(--border);
+    margin-top: auto; padding-top: 4mm; border-top: 1px solid var(--border);
     display: flex; justify-content: space-between; align-items: center;
-    font-family: "JetBrains Mono", monospace; font-size: 3.2mm; color: var(--muted);
+    font-family: "JetBrains Mono", monospace; font-size: 3.6mm; color: var(--muted);
   }
 </style>
 
@@ -188,10 +218,34 @@
     <div class="kicker">Pendaftaran terbuka</div>
     <h1>JOIN US</h1>
 
-    <p class="link">
-      <b>UKM pertama yang lahir dari mahasiswa FTI.</b><br />
-      Resmi, terstruktur, kompetitif.
-    </p>
+    <div class="link">
+      <div class="punch">Dulu cuma tim iseng.<br />Sekarang punya SK. <i>Giliranmu.</i></div>
+      <small>UKM pertama yang lahir dari mahasiswa FTI. Resmi, terstruktur, kompetitif.</small>
+    </div>
+
+    <div class="wins">
+      <div class="win">
+        <div class="wn">01</div>
+        <div>
+          <div class="wl">Turnamen &amp; Kompetisi</div>
+          <div class="wp">Empat gelar terdokumentasi, dari 1v1 Mobile Legends sampai Maung ID Cup Bandung.</div>
+        </div>
+      </div>
+      <div class="win">
+        <div class="wn">02</div>
+        <div>
+          <div class="wl">Pelatihan &amp; Pengembangan</div>
+          <div class="wp">Divisi latihannya berdiri sendiri. Anggota lintas tiga fakultas, delapan judul game.</div>
+        </div>
+      </div>
+      <div class="win">
+        <div class="wn">03</div>
+        <div>
+          <div class="wl">Jaringan Web3</div>
+          <div class="wp">UAJM Blockchain Club bernaung langsung di bawah UKM ini, bukan komunitas terpisah.</div>
+        </div>
+      </div>
+    </div>
 
   </div>
 
