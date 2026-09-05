@@ -14,10 +14,10 @@
     --ember: #ff7a18;
     --border: rgba(255, 255, 255, 0.08);
     --border-strong: rgba(255, 255, 255, 0.16);
-    --grid-line: rgba(255, 255, 255, 0.05);
-    --halo-1: rgba(255, 45, 85, 0.20);
-    --halo-2: rgba(255, 122, 24, 0.14);
-    --halo-3: rgba(0, 229, 255, 0.10);
+    --grid-line: rgba(255, 255, 255, 0.085);
+    --halo-1: rgba(255, 45, 85, 0.38);
+    --halo-2: rgba(255, 122, 24, 0.30);
+    --halo-3: rgba(0, 229, 255, 0.18);
     --paper: #ffffff;
     --ink: #150a0e;
     --ink-muted: rgba(21, 10, 14, 0.66);
@@ -52,12 +52,26 @@
       linear-gradient(var(--grid-line) 1px, transparent 1px),
       linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
     background-size: 12mm 12mm;
-    -webkit-mask-image: radial-gradient(ellipse 80% 60% at 50% 0%, black 40%, transparent 100%);
-    mask-image: radial-gradient(ellipse 80% 60% at 50% 0%, black 40%, transparent 100%);
+    -webkit-mask-image: radial-gradient(ellipse 100% 88% at 50% 0%, black 45%, transparent 100%);
+    mask-image: radial-gradient(ellipse 100% 88% at 50% 0%, black 45%, transparent 100%);
   }
 
   /* Semua isi ditahan di dalam 14mm, jadi printer rumahan yang memangkas tepi
      tidak pernah memakan konten; latarnya sendiri tetap full-bleed. */
+  .emblem {
+    position: absolute; right: -52mm; top: 96mm;
+    width: 185mm; height: 185mm; opacity: 0.13;
+    background: url("../public/ukm-esport-logo.png") center/contain no-repeat;
+  }
+  /* Sapuan sudut, meminjam clip-corner dan gradasi merek. */
+  .streak {
+    position: absolute; left: 0; right: 0; height: 26mm;
+    background: linear-gradient(100deg, transparent 8%, var(--crimson) 45%, var(--ember) 70%, transparent 96%);
+    opacity: 0.16; transform: skewY(-4deg);
+  }
+  .s1 { top: 128mm; }
+  .s2 { top: 216mm; opacity: 0.09; transform: skewY(3deg); }
+
   .inner {
     position: relative;
     height: 100%;
@@ -112,7 +126,7 @@
   /* Kartu menyusut ke QR-nya saja. Padding tipis sekadar bingkai; zona sunyi
      empat modul sudah ada di dalam gambar QR, jadi tidak diambil dari sini. */
   .card {
-    background: var(--paper); margin-top: 6mm; padding: 4mm; width: 74mm;
+    background: var(--paper); margin-top: 6mm; padding: 4mm; width: 60mm;
     clip-path: polygon(0 0, 100% 0, 100% calc(100% - 7mm), calc(100% - 7mm) 100%, 0 100%);
   }
   .qr { width: 100%; height: auto; display: block; }
@@ -123,7 +137,8 @@
   }
   /* Cadangan yang bisa diketik. Bukan URL acak: string 22 karakter tidak
      pernah disalin orang dari dinding, sebesar apa pun hurufnya. */
-  .cu { font-family: "JetBrains Mono", monospace; font-size: 3.6mm; color: var(--brand); margin-top: 2.5mm; margin-bottom: 5mm; }
+  .cu { font-size: 3.2mm; color: var(--muted); margin-top: 2.5mm; margin-bottom: 5mm; }
+  .cu i { font-style: normal; font-family: "JetBrains Mono", monospace; font-size: 3.4mm; color: var(--brand); }
 
   .link {
     margin-top: 8mm; font-size: 3.6mm; line-height: 1.5; color: var(--muted);
@@ -139,12 +154,13 @@
     margin-top: 10mm; font-family: "JetBrains Mono", monospace; font-size: 2.8mm;
     letter-spacing: 0.28em; text-transform: uppercase; color: var(--crimson);
   }
-  .facts { margin-top: 3.5mm; display: flex; gap: 3mm; }
-  .chip {
-    flex: 1; border: 1px solid var(--border-strong); padding: 4mm 2.5mm;
-    text-align: center; font-size: 3.1mm; line-height: 1.35; color: var(--text);
-    display: flex; align-items: center; justify-content: center;
+  .facts { margin-top: 4mm; display: flex; gap: 6mm; }
+  .chip { flex: 1; border-top: 0.9mm solid var(--crimson); padding-top: 3mm; }
+  .cn {
+    font-family: Orbitron, sans-serif; font-weight: 800; font-size: 4.6mm;
+    line-height: 1; color: var(--crimson); opacity: 0.5;
   }
+  .cx { font-size: 3.1mm; line-height: 1.35; color: var(--text); margin-top: 2.5mm; }
 
   footer {
     margin-top: auto; padding-top: 5mm; border-top: 1px solid var(--border);
@@ -153,7 +169,11 @@
   }
 </style>
 
-<div class="sheet"><div class="inner">
+<div class="sheet">
+  <div class="emblem"></div>
+  <div class="streak s1"></div>
+  <div class="streak s2"></div>
+  <div class="inner">
   <header>
     <img src="../public/ukm-esport-logo.png" alt="" />
     <div>
@@ -169,17 +189,10 @@
     <h1>JOIN US</h1>
 
     <p class="link">
-      UKM E-Sport pertama yang lahir dari mahasiswa FTI, kini menaungi
-      komunitas lintas fakultas dan <b>divisi Web3 UAJM BCC</b>.
+      <b>UKM pertama yang lahir dari mahasiswa FTI.</b><br />
+      Resmi, terstruktur, kompetitif.
     </p>
 
-    <div class="dlabel">Empat divisi aktif</div>
-    <div class="facts">
-      <div class="chip">Turnamen &amp;<br />Kompetisi</div>
-      <div class="chip">Pelatihan &amp;<br />Pengembangan</div>
-      <div class="chip">Kreatif &amp;<br />Konten Digital</div>
-      <div class="chip">Humas &amp;<br />Relasi</div>
-    </div>
   </div>
 
   <div class="cols">
@@ -187,16 +200,16 @@
       <div class="bn">UKM E-SPORT</div>
       <div class="bs">Unit Kegiatan Mahasiswa · Periode 2025/2026</div>
       <div class="card"><img class="qr" src="qr-esport.svg" alt="Kode QR formulir pendaftaran anggota UKM E-Sport" /></div>
-      <div class="ct">Formulir pendaftaran</div>
-      <div class="cu">uajmesport.vercel.app</div>
+      <div class="ct">Pindai &rarr; formulir pendaftaran</div>
+      <div class="cu">Tanpa kamera, ketik <i>uajmesport.vercel.app</i></div>
     </div>
 
     <div class="col b">
       <div class="bn">UAJM BCC</div>
       <div class="bs">Blockchain Club · divisi Web3 UKM E-Sport</div>
       <div class="card"><img class="qr" src="qr-bcc.svg" alt="Kode QR grup WhatsApp UAJM BCC" /></div>
-      <div class="ct">Grup WhatsApp</div>
-      <div class="cu">uajmbcc.vercel.app</div>
+      <div class="ct">Pindai &rarr; grup WhatsApp</div>
+      <div class="cu">Tanpa kamera, ketik <i>uajmbcc.vercel.app</i></div>
     </div>
   </div>
 
