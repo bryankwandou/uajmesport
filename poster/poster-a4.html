@@ -9,7 +9,7 @@
   :root {
     --bg: #070406;
     --text: #f0e9ec;
-    --muted: rgba(240, 233, 236, 0.62);
+    --muted: rgba(240, 233, 236, 0.82);
     --crimson: #ff2d55;
     --ember: #ff7a18;
     --border: rgba(255, 255, 255, 0.08);
@@ -100,13 +100,13 @@
 
   .hero { flex: 1; display: flex; flex-direction: column; justify-content: center; }
   .kicker {
-    margin-top: 7mm;
+    margin-top: 3mm;
     font-family: "JetBrains Mono", monospace; font-size: 3.6mm;
     letter-spacing: 0.34em; text-transform: uppercase; color: var(--crimson);
   }
   h1 {
     font-family: Orbitron, sans-serif; font-weight: 900;
-    font-size: 29mm; line-height: 0.9; letter-spacing: -0.03em;
+    font-size: 22mm; line-height: 0.9; letter-spacing: -0.03em;
     margin-top: 5mm; white-space: nowrap;
     background: linear-gradient(100deg, var(--text) 5%, var(--ember) 45%, var(--crimson) 95%);
     -webkit-background-clip: text; background-clip: text;
@@ -136,7 +136,7 @@
   /* Kartu menyusut ke QR-nya saja. Padding tipis sekadar bingkai; zona sunyi
      empat modul sudah ada di dalam gambar QR, jadi tidak diambil dari sini. */
   .card {
-    background: var(--paper); align-self: start; margin-top: 6mm; padding: 4mm; width: 60mm;
+    background: var(--paper); align-self: start; margin-top: 4mm; padding: 4mm; width: 60mm;
     clip-path: polygon(0 0, 100% 0, 100% calc(100% - 7mm), calc(100% - 7mm) 100%, 0 100%);
   }
   .qr { width: 100%; height: auto; display: block; }
@@ -147,18 +147,18 @@
   }
   /* Cadangan yang bisa diketik. Bukan URL acak: string 22 karakter tidak
      pernah disalin orang dari dinding, sebesar apa pun hurufnya. */
-  .cu { font-size: 3.6mm; color: var(--muted); margin-top: 2.5mm; margin-bottom: 2mm; }
+  .cu { font-size: 3.6mm; color: var(--muted); margin-top: 2.5mm; margin-bottom: 0.5mm; }
   .cu i { font-style: normal; font-family: "JetBrains Mono", monospace; font-size: 3.9mm; color: var(--brand); }
 
   .link {
     margin-top: 5mm; border-left: 1mm solid var(--crimson); padding-left: 5mm;
   }
   .punch {
-    font-family: Orbitron, sans-serif; font-weight: 800; font-size: 6.4mm;
+    font-family: Orbitron, sans-serif; font-weight: 800; font-size: 5.8mm;
     line-height: 1.22; color: var(--text); letter-spacing: -0.01em;
   }
   .punch i { font-style: normal; color: var(--crimson); }
-  .link small { display: block; font-size: 3.9mm; line-height: 1.45; color: var(--muted); margin-top: 3mm; }
+  .link small { display: block; font-size: 3.9mm; line-height: 1.45; color: var(--muted); margin-top: 2.2mm; }
 
   /* Empat divisi resmi, disalin dari content.ts. Ini menggantikan blok angka:
      "15+ anggota" pada poster rekrutmen membaca sebagai pengakuan kecil, bukan
@@ -167,7 +167,7 @@
   .wins { margin-top: 2mm; width: 112mm; }
   .win {
     display: flex; gap: 5mm; align-items: baseline;
-    padding: 1.9mm 0; border-top: 1px solid var(--border-strong);
+    padding: 1.5mm 0; border-top: 1px solid var(--border-strong);
   }
   .win:last-child { border-bottom: 1px solid var(--border-strong); }
   .wn {
@@ -175,10 +175,10 @@
     color: var(--crimson); flex: none; width: 7mm;
   }
   .wl {
-    font-family: Orbitron, sans-serif; font-weight: 800; font-size: 4.4mm;
+    font-family: Orbitron, sans-serif; font-weight: 800; font-size: 4.9mm;
     line-height: 1.1; color: var(--text); white-space: nowrap;
   }
-  .wp { font-size: 3.5mm; line-height: 1.35; color: var(--muted); margin-top: 1.6mm; }
+  .wp { font-size: 4mm; line-height: 1.35; color: var(--muted); margin-top: 1.6mm; }
 
   .dlabel {
     margin-top: 10mm; font-family: "JetBrains Mono", monospace; font-size: 2.8mm;
@@ -193,7 +193,7 @@
   .cx { font-size: 3.1mm; line-height: 1.35; color: var(--text); margin-top: 2.5mm; }
 
   footer {
-    margin-top: auto; padding-top: 4mm; border-top: 1px solid var(--border);
+    margin-top: auto; padding-top: 2.4mm; border-top: 1px solid var(--border);
     display: flex; justify-content: space-between; align-items: center;
     font-family: "JetBrains Mono", monospace; font-size: 3.6mm; color: var(--muted);
   }
