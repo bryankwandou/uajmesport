@@ -93,54 +93,62 @@
     -webkit-text-fill-color: transparent; color: transparent;
   }
 
-  .cards { display: grid; grid-template-columns: 1fr 1fr; gap: 10mm; }
+  /* Nama organisasi keluar dari kartu supaya bisa dibesarkan. Warnanya pakai
+     aksen TEMA GELAP masing-masing situs: #1a3fd0 milik BCC terlalu gelap di
+     atas latar hitam, sedangkan #7aa5ff memang token untuk dasar gelap. */
+  .cols { display: grid; grid-template-columns: 1fr 1fr; gap: 12mm; }
+  .col.e { --brand: #ff2d55; }
+  .col.b { --brand: #7aa5ff; }
 
-  /* Dua kartu ini harus tidak mungkin tertukar dari jarak tempel. Pembedanya
-     dibuat berlapis: warna merek, logo, dan nama organisasi sebagai baris
-     terbesar. Aksi ("formulir", "grup") turun ke baris kedua -- yang perlu
-     dikenali lebih dulu adalah miliknya siapa, bukan apa bentuknya. */
-  .card {
-    background: var(--paper); color: var(--ink);
-    clip-path: polygon(0 0, 100% 0, 100% calc(100% - 9mm), calc(100% - 9mm) 100%, 0 100%);
-    overflow: hidden;
-  }
-  .card.e { --brand: #c2003a; }   /* --crimson tema terang, UKM E-Sport */
-  .card.b { --brand: #1a3fd0; }   /* --accent uajmbcc tema terang, UAJM BCC */
-
-  /* Pita warna selebar kartu: pembeda yang masih terbaca ketika teksnya
-     sudah terlalu kecil untuk dibaca. */
-  .bar { height: 3.5mm; background: var(--brand); }
-  .pad { padding: 6mm 7mm 6mm; display: flex; flex-direction: column; align-items: center; }
-
-  .brand { display: flex; align-items: center; gap: 3.5mm; align-self: stretch; }
-  .brand img { height: 11mm; width: auto; object-fit: contain; }
-  .card.b .brand img { height: 9.5mm; }
   .bn {
-    font-family: Orbitron, sans-serif; font-weight: 800; font-size: 5.4mm;
-    letter-spacing: -0.02em; line-height: 1; color: var(--brand); white-space: nowrap;
+    font-family: Orbitron, sans-serif; font-weight: 900; font-size: 9mm;
+    letter-spacing: -0.03em; line-height: 1; color: var(--brand); white-space: nowrap;
   }
-  .bs { font-size: 2.9mm; color: var(--ink-muted); margin-top: 1.6mm; white-space: nowrap; }
-  .no {
-    margin-left: auto; font-family: "JetBrains Mono", monospace; font-size: 5mm;
-    font-weight: 500; color: var(--brand); opacity: 0.35;
+  .bs {
+    font-size: 3.4mm; color: var(--muted); margin-top: 2.5mm;
+    padding-bottom: 3.5mm; border-bottom: 1.2mm solid var(--brand);
   }
 
-  .qr { width: 66mm; height: 66mm; margin-top: 5mm; display: block; }
+  /* Kartu menyusut ke QR-nya saja. Padding tipis sekadar bingkai; zona sunyi
+     empat modul sudah ada di dalam gambar QR, jadi tidak diambil dari sini. */
+  .card {
+    background: var(--paper); margin-top: 6mm; padding: 4mm; width: 74mm;
+    clip-path: polygon(0 0, 100% 0, 100% calc(100% - 7mm), calc(100% - 7mm) 100%, 0 100%);
+  }
+  .qr { width: 100%; height: auto; display: block; }
 
   .ct {
-    font-family: Orbitron, sans-serif; font-weight: 800; font-size: 4.4mm;
-    margin-top: 5mm; text-align: center; color: var(--ink); line-height: 1.25;
-    min-height: 11mm; display: flex; align-items: center; justify-content: center;
+    font-family: Orbitron, sans-serif; font-weight: 800; font-size: 5mm;
+    margin-top: 5mm; color: var(--text); line-height: 1.2;
   }
-  .cu {
-    font-family: "JetBrains Mono", monospace; font-size: 2.5mm;
-    color: rgba(21, 10, 14, 0.5); margin-top: 3mm; word-break: break-all; text-align: center;
+  /* Cadangan yang bisa diketik. Bukan URL acak: string 22 karakter tidak
+     pernah disalin orang dari dinding, sebesar apa pun hurufnya. */
+  .cu { font-family: "JetBrains Mono", monospace; font-size: 3.6mm; color: var(--brand); margin-top: 2.5mm; margin-bottom: 5mm; }
+
+  .link {
+    margin-top: 7mm; font-size: 3.6mm; line-height: 1.5; color: var(--muted);
+    border-left: 0.8mm solid var(--crimson); padding-left: 4mm;
+  }
+  .link b { color: var(--text); font-weight: 700; }
+
+  .facts { margin-top: 7mm; display: flex; gap: 3mm; }
+  .chip {
+    flex: 1; border: 1px solid var(--border-strong); padding: 3.5mm 3mm;
+    text-align: center;
+  }
+  .fv {
+    font-family: Orbitron, sans-serif; font-weight: 800; font-size: 6.5mm;
+    line-height: 1; color: var(--text);
+  }
+  .fl {
+    font-family: "JetBrains Mono", monospace; font-size: 2.7mm; margin-top: 2mm;
+    letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted);
   }
 
   footer {
-    margin-top: 9mm; padding-top: 4mm; border-top: 1px solid var(--border);
+    margin-top: auto; padding-top: 5mm; border-top: 1px solid var(--border);
     display: flex; justify-content: space-between; align-items: center;
-    font-family: "JetBrains Mono", monospace; font-size: 2.9mm; color: var(--muted);
+    font-family: "JetBrains Mono", monospace; font-size: 3.2mm; color: var(--muted);
   }
 </style>
 
@@ -158,46 +166,39 @@
   <div class="hero">
     <div class="kicker">Pendaftaran terbuka</div>
     <h1>JOIN US</h1>
+
+    <p class="link">
+      <b>UAJM BCC adalah divisi Web3 di bawah UKM E-Sport.</b><br />
+      Dua pintu masuk di bawah ini, satu organisasi yang sama.
+    </p>
+
+    <div class="facts">
+      <div class="chip"><div class="fv">15+</div><div class="fl">Anggota · 3 fakultas</div></div>
+      <div class="chip"><div class="fv">6</div><div class="fl">Sertifikat resmi</div></div>
+      <div class="chip"><div class="fv">4</div><div class="fl">Divisi aktif</div></div>
+    </div>
   </div>
 
-  <div class="cards">
-    <div class="card e">
-      <div class="bar"></div>
-      <div class="pad">
-        <div class="brand">
-          <img src="../public/ukm-esport-logo.png" alt="" />
-          <div>
-            <div class="bn">UKM E-SPORT</div>
-            <div class="bs">Unit Kegiatan Mahasiswa</div>
-          </div>
-          <div class="no">01</div>
-        </div>
-        <img class="qr" src="qr-esport.svg" alt="Kode QR formulir pendaftaran anggota UKM E-Sport" />
-        <div class="ct">Formulir pendaftaran<br />anggota</div>
-        <div class="cu">forms.gle/ed2zW5avK34mnLGF9</div>
-      </div>
+  <div class="cols">
+    <div class="col e">
+      <div class="bn">UKM E-SPORT</div>
+      <div class="bs">Unit Kegiatan Mahasiswa · Periode 2025/2026</div>
+      <div class="card"><img class="qr" src="qr-esport.svg" alt="Kode QR formulir pendaftaran anggota UKM E-Sport" /></div>
+      <div class="ct">Formulir pendaftaran</div>
+      <div class="cu">uajmesport.vercel.app</div>
     </div>
 
-    <div class="card b">
-      <div class="bar"></div>
-      <div class="pad">
-        <div class="brand">
-          <img src="../public/scc-dark.png" alt="" />
-          <div>
-            <div class="bn">UAJM BCC</div>
-            <div class="bs">Blockchain Club · divisi Web3</div>
-          </div>
-          <div class="no">02</div>
-        </div>
-        <img class="qr" src="qr-bcc.svg" alt="Kode QR grup WhatsApp UAJM BCC" />
-        <div class="ct">Grup WhatsApp</div>
-        <div class="cu">chat.whatsapp.com/DOItAWJVPF1KdAfshk2uoD</div>
-      </div>
+    <div class="col b">
+      <div class="bn">UAJM BCC</div>
+      <div class="bs">Blockchain Club · divisi Web3 UKM E-Sport</div>
+      <div class="card"><img class="qr" src="qr-bcc.svg" alt="Kode QR grup WhatsApp UAJM BCC" /></div>
+      <div class="ct">Grup WhatsApp</div>
+      <div class="cu">uajmbcc.vercel.app</div>
     </div>
   </div>
 
   <footer>
-    <span>uajmesport.vercel.app</span>
-    <span>uajmbcc.vercel.app</span>
+    <span>@uajm_esport</span>
+    <span>@uajm_bcc</span>
   </footer>
 </div></div>
