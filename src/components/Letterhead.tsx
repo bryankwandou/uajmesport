@@ -1,6 +1,8 @@
 import Image from "next/image";
 import { Reveal } from "./Reveal";
 import { letterhead, legal } from "@/lib/content";
+import { useApp } from "./Providers";
+import { withPeriod } from "@/lib/period";
 
 /* Reproduction of the official UKM E-Sport letterhead (kop surat) exactly as it
    appears on the SK and AD/ART documents: two official logos flanking the three
@@ -8,6 +10,7 @@ import { letterhead, legal } from "@/lib/content";
    secretariat address is shown separately and labelled by its actual source
    rather than presented as part of the letterhead. */
 export function Letterhead() {
+  const { period } = useApp();
   return (
     <section id="legalitas" className="mx-auto max-w-6xl px-5 py-24">
       <div className="mx-auto max-w-2xl text-center">
@@ -68,7 +71,7 @@ export function Letterhead() {
           {legal.map((l) => (
             <div key={l.label} className="panel-quiet flex items-baseline justify-between gap-4 p-4">
               <span className="text-[10px] uppercase tracking-widest text-[color:var(--faint)]">{l.label}</span>
-              <span className="text-end font-mono text-[11px] text-[color:var(--muted)]">{l.value}</span>
+              <span className="text-end font-mono text-[11px] text-[color:var(--muted)]">{withPeriod(l.value, period)}</span>
             </div>
           ))}
         </div>

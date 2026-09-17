@@ -26,6 +26,8 @@ const securityHeaders = [
 
 const nextConfig = {
   reactStrictMode: true,
+  // Dipakai src/lib/period.ts sebagai tahun awal selama hidrasi.
+  env: { NEXT_PUBLIC_BUILD_TIME: new Date().toISOString() },
   poweredByHeader: false,
   async headers() {
     return [{ source: "/:path*", headers: securityHeaders }];

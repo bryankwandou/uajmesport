@@ -55,6 +55,34 @@ await sql`CREATE INDEX IF NOT EXISTS certificates_site_created_idx ON certificat
 // is declared with text_pattern_ops.
 await sql`CREATE INDEX IF NOT EXISTS certificates_key_prefix_idx ON certificates (site, identity_key text_pattern_ops)`;
 
+// Izin akun dan galeri dokumentasi. Route API juga membuatnya sendiri
+// (src/lib/perms.ts), jadi langkah ini hanya untuk database baru.
+await sql`
+  CREATE TABLE IF NOT EXISTS admin_perms (
+    site TEXT NOT NULL, username TEXT NOT NULL,
+    gallery TEXT NOT NULL DEFAULT 'full', cert TEXT NOT NULL DEFAULT 'full',
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+    PRIMARY KEY (site, username)
+  )
+`;
+await sql`
+  CREATE TABLE IF NOT EXISTS gallery_posts (
+    id UUID PRIMARY KEY, site TEXT NOT NULL,
+    caption TEXT NOT NULL DEFAULT '', category TEXT NOT NULL DEFAULT 'kegiatan',
+    taken_at TEXT NOT NULL DEFAULT '', author TEXT NOT NULL DEFAULT '',
+    images INTEGER NOT NULL DEFAULT 0, width INTEGER NOT NULL DEFAULT 0, height INTEGER NOT NULL DEFAULT 0,
+    created_at BIGINT NOT NULL, updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
+  )
+`;
+await sql`CREATE INDEX IF NOT EXISTS gallery_posts_site_idx ON gallery_posts (site, created_at DESC)`;
+await sql`
+  CREATE TABLE IF NOT EXISTS gallery_images (
+    post_id UUID NOT NULL REFERENCES gallery_posts(id) ON DELETE CASCADE,
+    idx INTEGER NOT NULL, mime TEXT NOT NULL, data TEXT NOT NULL,
+    PRIMARY KEY (post_id, idx)
+  )
+`;
+
 const [{ count }] = await sql`SELECT count(*)::int AS count FROM certificates`;
 const [{ version }] = await sql`SELECT version()`;
 console.log("schema ready on", version.split(",")[0]);

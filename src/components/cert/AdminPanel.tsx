@@ -17,6 +17,9 @@ import {
 } from "@/lib/certstore";
 import { saveBlob } from "@/lib/convert";
 import { fill, type CertDict } from "@/lib/certdict";
+import { Workspace } from "@/components/admin/Workspace";
+import { LogoMark } from "@/components/Logo";
+import { can, type Perms } from "@/lib/adminclient";
 
 /* Board dashboard.
  *
@@ -93,7 +96,16 @@ export function AdminPanel({
   }, [onClose]);
 
   return session ? (
-    <Dashboard d={d} session={session} onChanged={onChanged} onSignOut={signOut} />
+    <Workspace
+      session={session}
+      onSession={signIn}
+      onSignOut={signOut}
+      siteName="UKM E-Sport UAJM"
+      brand={{ name: "UKM E-Sport UAJM", handle: "uajm_esport", avatar: <LogoMark size={40} /> }}
+      cert={(perms) => (
+        <Dashboard d={d} session={session} perms={perms} onChanged={onChanged} onSignOut={signOut} />
+      )}
+    />
   ) : (
     <SignIn d={d} onSignedIn={signIn} onClose={onClose} />
   );
@@ -172,14 +184,19 @@ function SignIn({
 function Dashboard({
   d,
   session,
+  perms,
   onChanged,
   onSignOut,
 }: {
   d: CertDict;
   session: Session;
+  perms: Perms;
   onChanged: () => void;
   onSignOut: () => void;
 }) {
+  // "Terbitkan saja": boleh menambah dan melampirkan berkas, tidak mengubah
+  // atau menghapus yang sudah terbit. Server menegakkan aturan yang sama.
+  const full = can(perms, "cert", "full");
   const [records, setRecords] = useState<CertRecord[]>([]);
   const [bytes, setBytes] = useState(0);
   const [draft, setDraft] = useState<Draft>(emptyDraft);
@@ -455,7 +472,7 @@ function Dashboard({
         <ToolButton onClick={exportFiles} disabled={busy || records.length === 0}>
           {d.admin.exportFiles}
         </ToolButton>
-        <ToolButton onClick={() => importRef.current?.click()}>{d.admin.importJson}</ToolButton>
+        {full && <ToolButton onClick={() => importRef.current?.click()}>{d.admin.importJson}</ToolButton>}
         {/* No seed button and no bulk wipe. This registry holds documents the
             organisation has actually issued: a one-click injector of sample
             rows has no business next to them, and a button that deletes every
@@ -620,6 +637,7 @@ function Dashboard({
                         {d.admin.download}
                       </button>
                     )}
+                    {(full || !hasFile(r)) && (
                     <button
                       type="button"
                       onClick={() => edit(r)}
@@ -627,8 +645,10 @@ function Dashboard({
                     >
                       {d.admin.edit.split(" ")[0]}
                     </button>
+                    )}
                     {/* The destructive one is set off by a rule, so it is never the
                         thing a hurried thumb lands on next to Ubah. */}
+                    {full && (
                     <button
                       type="button"
                       onClick={() => remove(r)}
@@ -636,6 +656,7 @@ function Dashboard({
                     >
                       {d.admin.del}
                     </button>
+                    )}
                   </div>
                 </li>
               ))}

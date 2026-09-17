@@ -1,9 +1,11 @@
-import { db, SITE, unauthorized, verifyToken } from "@/lib/db";
+import { db, SITE } from "@/lib/db";
+import { guard } from "@/lib/perms";
 
 export const dynamic = "force-dynamic";
 
 export async function DELETE(req: Request, ctx: { params: Promise<{ id: string }> }) {
-  if (!verifyToken(req.headers.get("authorization"))) return unauthorized();
+  const g = await guard(req, "cert", "full");
+  if (g instanceof Response) return g;
   const { id } = await ctx.params;
   try {
     await db()`DELETE FROM certificates WHERE site = ${SITE} AND id = ${id}`;

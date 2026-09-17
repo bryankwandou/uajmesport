@@ -1,4 +1,5 @@
-import { adminShape, db, SITE, unauthorized, verifyToken, type Row } from "@/lib/db";
+import { adminShape, db, forbidden, SITE, type Row } from "@/lib/db";
+import { atLeast, guard } from "@/lib/perms";
 
 export const dynamic = "force-dynamic";
 
@@ -6,7 +7,8 @@ export const dynamic = "force-dynamic";
 const MAX_FILE_BYTES = 8 * 1024 * 1024;
 
 export async function GET(req: Request) {
-  if (!verifyToken(req.headers.get("authorization"))) return unauthorized();
+  const g = await guard(req, "cert", "post");
+  if (g instanceof Response) return g;
   try {
     const sql = db();
     const rows = (await sql`
@@ -30,7 +32,8 @@ export async function GET(req: Request) {
    an update keeps whatever file is already stored, which is what the edit form
    does when the board only fixes a spelling. */
 export async function POST(req: Request) {
-  if (!verifyToken(req.headers.get("authorization"))) return unauthorized();
+  const g = await guard(req, "cert", "post");
+  if (g instanceof Response) return g;
   try {
     const b = (await req.json()) as {
       id: string;
@@ -54,6 +57,18 @@ export async function POST(req: Request) {
       return Response.json({ error: "Berkas melebihi 8 MB." }, { status: 413 });
     }
     const sql = db();
+    /* Izin "terbitkan saja" boleh membuat baris baru dan melampirkan berkas
+       ke baris yang belum terbit, tetapi tidak menyentuh sertifikat yang sudah
+       terbit. */
+    if (!atLeast(g.perms.cert, "full")) {
+      const existing = (await sql`
+        SELECT (data IS NOT NULL) AS published FROM certificates
+        WHERE site = ${SITE} AND id = ${b.id}
+      `) as unknown as { published: boolean }[];
+      if (existing[0]?.published) {
+        return forbidden("Akun ini hanya boleh menerbitkan, tidak mengubah sertifikat yang sudah terbit.");
+      }
+    }
     await sql`
       INSERT INTO certificates
         (id, site, identity_key, full_name, nim, title, event, issued_at, ref,

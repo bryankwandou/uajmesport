@@ -647,6 +647,21 @@ var EN = {
 var EN_COVER = "Student Activity Unit<br>E-Sport";
 </script>
 <script>
+/* Periode otomatis: berganti setiap 1 Agustus (WITA), sama dengan
+   src/lib/period.ts. Dijalankan sebelum kamus EN dibaca, jadi kunci
+   terjemahan ikut diperbarui. */
+(function(){
+  var d=new Date(Date.now()+8*3600e3), y=d.getUTCFullYear();
+  var s=d.getUTCMonth()>=7?y:y-1;
+  var map={"2025/2026":(s-1)+"/"+s,"2026/2027":s+"/"+(s+1)};
+  var re=/2025\/2026|2026\/2027/g;
+  function fix(v){return v.replace(re,function(m){return map[m];});}
+  var w=document.createTreeWalker(document.getElementById("stage")||document.body,NodeFilter.SHOW_TEXT);
+  var n; while((n=w.nextNode())){ if(re.test(n.nodeValue)){ re.lastIndex=0; n.nodeValue=fix(n.nodeValue);} re.lastIndex=0; }
+  var out={}; for(var k in EN){ out[fix(k)]=fix(EN[k]); } EN=out;
+})();
+</script>
+<script>
 (function(){
   [["a1","uajm"],["a2","eagle"],["a3","scc"],["k1","uajm"],["k2","eagle"],
    ["z1","uajm"],["z2","eagle"],

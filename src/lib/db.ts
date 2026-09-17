@@ -1,5 +1,5 @@
 import { neon } from "@neondatabase/serverless";
-import { createHash } from "node:crypto";
+import { createHash, scryptSync, timingSafeEqual } from "node:crypto";
 
 /* Server side of the certificate registry.
  *
@@ -37,7 +37,7 @@ export function db() {
    CERT_ACCOUNTS is "user:pass:role,user:pass:role". Keeping it in the
    environment rather than the bundle is the point: the passwords are no
    longer readable in the page source. */
-export type Role = "lead" | "sekretaris" | "pembina";
+export type Role = "lead" | "sekretaris" | "pembina" | "super";
 export type Account = { user: string; pass: string; role: Role };
 
 export function accounts(): Account[] {
@@ -50,6 +50,22 @@ export function accounts(): Account[] {
       return { user, pass, role: (role as Role) ?? "lead" };
     })
     .filter((a) => a.user && a.pass);
+}
+
+/* ── pengelola izin ────────────────────────────────────────────────────────
+   Satu akun khusus yang hanya mengatur izin akun lain. Namanya dicocokkan tanpa
+   peduli huruf besar/kecil dan spasi ganda; kata sandinya hanya disimpan
+   sebagai hash scrypt, jadi kode sumber tidak memuat kata sandi aslinya. */
+export const SUPER_USER = "superadmin";
+const SUPER_NAME = "vincentius bryan kwandou";
+const SUPER_SALT = "3ace0c26ebde5dc56d263280227521bb";
+const SUPER_HASH = "d21da6cda4166638d8bd5235bdd42fb02e816781ab30d32f039f537d7722392a";
+const superAccount: Account = { user: SUPER_USER, pass: SUPER_HASH, role: "super" };
+
+export function matchSuper(user: string, pass: string): Account | null {
+  if (user.trim().toLowerCase().replace(/\s+/g, " ") !== SUPER_NAME) return null;
+  const got = scryptSync(pass, SUPER_SALT, 32);
+  return timingSafeEqual(got, Buffer.from(SUPER_HASH, "hex")) ? superAccount : null;
 }
 
 /* A stateless bearer token: the account name plus a digest of the password and
@@ -70,13 +86,17 @@ export function verifyToken(header: string | null): Account | null {
   const at = token.lastIndexOf(".");
   if (at < 1) return null;
   const user = token.slice(0, at);
-  const found = accounts().find((a) => a.user === user);
+  const found = user === SUPER_USER ? superAccount : accounts().find((a) => a.user === user);
   if (!found) return null;
   return token === issueToken(found) ? found : null;
 }
 
 export function unauthorized() {
   return Response.json({ error: "Tidak berwenang." }, { status: 401 });
+}
+
+export function forbidden(msg = "Akun ini tidak punya izin untuk tindakan tersebut.") {
+  return Response.json({ error: msg }, { status: 403 });
 }
 
 /* Everything the claim page is allowed to see.

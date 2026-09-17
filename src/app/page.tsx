@@ -7,6 +7,8 @@ import { Letterhead } from "@/components/Letterhead";
 import { Certificates } from "@/components/Certificates";
 import { LogoMark } from "@/components/Logo";
 import { useApp } from "@/components/Providers";
+import { GalleryFeed } from "@/components/gallery/GalleryFeed";
+import { withPeriod } from "@/lib/period";
 import {
   org, vision, missions, trophies, games, ranks, faculties, timeline, structure, values, links,
   contact, certificates,
@@ -20,6 +22,7 @@ export default function Home() {
       <Marquee />
       <About />
       <Prestasi />
+      <Galeri />
       <Komunitas />
       <Journey />
       <Pengurus />
@@ -107,6 +110,26 @@ function Prestasi() {
         sub={a.sub}
       />
       <Certificates note={a.note} attrib={a.attrib} />
+    </section>
+  );
+}
+
+/* Dokumentasi kegiatan, prestasi dan medsos. Isinya dikelola dari dasbor
+   pengurus (/sertifikat → Masuk pengurus → Galeri), bukan dari kode. */
+function Galeri() {
+  const { t, period } = useApp();
+  const g = t.gallery;
+  return (
+    <section id="galeri" className="mx-auto max-w-6xl px-5 py-24">
+      <SectionHead
+        kicker={`${g.kicker} · ${period.term}`}
+        title={<>{g.title} <span className="gradient-text">{g.titleEm}</span></>}
+        sub={g.sub}
+      />
+      <GalleryFeed
+        brand={{ name: "uajm_esport", avatar: <LogoMark size={28} /> }}
+        labels={{ all: g.all, more: g.more, less: g.less, empty: g.empty }}
+      />
     </section>
   );
 }
@@ -275,7 +298,7 @@ function CTA() {
 }
 
 function Footer() {
-  const { t } = useApp();
+  const { t, period } = useApp();
   const f = t.footer;
   return (
     <footer id="kontak" className="border-t border-[color:var(--border)] px-5 py-14">
@@ -323,7 +346,7 @@ function Footer() {
         </div>
       </div>
       <div className="mx-auto mt-10 max-w-6xl border-t border-[color:var(--border)] pt-6 text-center text-xs text-[color:var(--faint)]">
-        © {new Date().getFullYear()} {org.full}. {org.period}.
+        © {new Date().getFullYear()} {org.full}. {withPeriod(org.period, period)}.
       </div>
     </footer>
   );

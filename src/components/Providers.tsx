@@ -3,6 +3,7 @@ import {
   createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode,
 } from "react";
 import { DEFAULT_LOCALE, DICTS, dirFor, isLocale, type Dict, type Locale } from "@/lib/i18n";
+import { periodFrom, usePeriodStart, withPeriod, type Period } from "@/lib/period";
 
 type Theme = "dark" | "light";
 
@@ -12,6 +13,7 @@ type Ctx = {
   locale: Locale;
   setLocale: (l: Locale) => void;
   t: Dict;
+  period: Period;
 };
 
 const AppCtx = createContext<Ctx | null>(null);
@@ -79,10 +81,13 @@ export function Providers({ children }: { children: ReactNode }) {
     }
   }, []);
 
-  const value = useMemo<Ctx>(
-    () => ({ theme, setTheme, locale, setLocale, t: DICTS[locale] }),
-    [theme, setTheme, locale, setLocale],
-  );
+  // Setiap {REG}/{TERM}/{TERM_NO} di kamus diisi dari kalender.
+  const start = usePeriodStart();
+  const value = useMemo<Ctx>(() => {
+    const period = periodFrom(start);
+    const t = JSON.parse(withPeriod(JSON.stringify(DICTS[locale]), period)) as Dict;
+    return { theme, setTheme, locale, setLocale, t, period };
+  }, [theme, setTheme, locale, setLocale, start]);
 
   return <AppCtx.Provider value={value}>{children}</AppCtx.Provider>;
 }

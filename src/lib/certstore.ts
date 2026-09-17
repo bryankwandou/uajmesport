@@ -177,7 +177,12 @@ export function newId(): string {
 }
 
 /* ── authenticated dashboard calls ─────────────────────────────────────── */
-export type Session = { token: string; role: "lead" | "sekretaris" | "pembina" };
+export type Session = {
+  token: string;
+  role: import("@/lib/adminclient").Role;
+  user?: string;
+  perms?: import("@/lib/adminclient").Perms;
+};
 
 export async function login(user: string, pass: string): Promise<Session | null> {
   const res = await fetch("/api/admin/login", {

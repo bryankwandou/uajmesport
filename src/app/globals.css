@@ -46,6 +46,24 @@
   color-scheme: light;
 }
 
+/* Token netral untuk komponen bersama (galeri, dasbor izin). Nama yang sama
+   dipakai di situs UAJM BCC, jadi komponennya bisa disalin apa adanya. */
+:root {
+  --ui-bg: var(--bg);
+  --ui-surface: var(--bg);
+  --ui-surface-2: var(--surface);
+  --ui-text: var(--text);
+  --ui-muted: var(--muted);
+  --ui-line: var(--border);
+  --ui-line-strong: var(--border-strong);
+  --ui-accent: var(--crimson);
+  --ui-on-accent: #ffffff;
+  /* Warna ujung gradasi "lihat lebih banyak": putih di tema terang,
+     latar halaman di tema gelap supaya tidak jadi pita putih. */
+  --ui-fade: var(--bg);
+}
+:root[data-theme="light"] { --ui-surface: #ffffff; --ui-fade: #ffffff; }
+
 * { border-color: var(--border); }
 html { scroll-behavior: smooth; }
 

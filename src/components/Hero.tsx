@@ -3,9 +3,10 @@ import { motion } from "framer-motion";
 import { org, stats, trophies, links } from "@/lib/content";
 import { CountUp } from "./CountUp";
 import { useApp } from "./Providers";
+import { withPeriod } from "@/lib/period";
 
 export function Hero() {
-  const { t } = useApp();
+  const { t, period } = useApp();
   const h = t.hero;
   return (
     <section id="top" className="relative overflow-hidden pt-36 pb-20 md:pt-44 md:pb-28">
@@ -19,7 +20,7 @@ export function Hero() {
             className="chip inline-flex items-center gap-2 px-3 py-1.5 text-xs text-[color:var(--muted)]"
           >
             <span className="h-1.5 w-1.5 rounded-full bg-crimson-glow shadow-[0_0_8px_2px_rgba(255,45,85,0.8)]" />
-            {org.period}
+            {withPeriod(org.period, period)}
           </motion.div>
 
           <motion.h1

@@ -8,7 +8,8 @@ export const org = {
   short: "UAJM E-Sport",
   tagline: "UKM pertama yang lahir dari mahasiswa FTI. Resmi, terstruktur, kompetitif.",
   location: "Universitas Atma Jaya Makassar, Sulawesi Selatan",
-  period: "Periode 2025/2026, kepengurusan ke-2",
+  // Token diisi otomatis dari kalender (src/lib/period.ts).
+  period: "Periode {TERM}, kepengurusan ke-{TERM_NO}",
   sk: "SK No. 001/SK/UKM-ESPORT/UAJM/VI/2025",
   domainBcc: "uajmbcc.vercel.app",
 };
@@ -95,7 +96,7 @@ export const links = {
   instagram: "https://instagram.com/uajm_esport",
   instagramBcc: "https://instagram.com/uajm_bcc",
   campus: "https://uajm.ac.id",
-  // Membership registration, UKM E-Sport #2, period 2026/2027.
+  // Membership registration form; the period label is computed, see period.ts.
   register: "https://forms.gle/ed2zW5avK34mnLGF9",
 };
 
@@ -118,7 +119,7 @@ export const legal = [
   { label: "SK Kepengurusan", value: "Nomor 001/SK/UKM-ESPORT/UAJM/VI/2025" },
   { label: "SK Penetapan AD/ART", value: "Nomor 002/SK/UKM-E-SPORT/UAJM/XII/2025" },
   { label: "Proposal Pembentukan", value: "Disahkan 10 Juni 2025" },
-  { label: "Periode Kepengurusan", value: "2025/2026" },
+  { label: "Periode Kepengurusan", value: "{TERM}" },
 ];
 
 // Alamat dan email resmi UKM diambil dari kop surat resmi UKM E-Sport.
