@@ -1,15 +1,17 @@
-/* Replaces every generated sheet with the certificate the board actually
- * issued.
+/* Replaces every sheet in the registry with the signed certificate the board
+ * issued for Periode I.
  *
- * The organisation had already designed and signed these — two logos, the
- * chair's signature, the faculty supervisor's name — and my generated PDFs
- * were a stand-in built before I had seen them. A stand-in must not outlive
- * the real document, so this overwrites rather than adds.
+ * The first import carried the designed sheet but no letter number: the
+ * documents had not been numbered yet. This revision does, and it is signed by
+ * both the chair and the faculty supervisor, so it supersedes what is stored.
+ * The letter number goes into `ref`, which the claim card prints — a member
+ * checking their certificate can now read the same number off the page and off
+ * the sheet.
  *
- * The mapping below is read off the sheets themselves, not guessed from the
- * file numbering. Files 23 and 26 are blank spares and 24 and 25 duplicate the
- * chair under a different heading, so all four are skipped: a registry should
- * hold one issued document per person.
+ * The mapping is read off the sheets themselves. Sheet N carries letter number
+ * NNN/ANG/UKM-E-SPORT/UAJM/2026, verified against sheets 1, 8, 15 and 22.
+ * Files 23 and beyond are blank spares and duplicate headings, so they are
+ * skipped: the registry holds one issued document per person.
  *
  *   node scripts/import-real-certificates.mjs "<folder of png files>"
  */
@@ -21,6 +23,9 @@ const SITE = "uajmesport";
 const TITLE = "Sertifikat Keanggotaan";
 const PERIOD = "UKM E-Sport UAJM, Periode I (Tahun Akademik 2025/2026)";
 const ISSUED = "Tahun Akademik 2025/2026";
+
+/** The letter number printed under the heading of sheet n. */
+const refFor = (n) => `${String(n).padStart(3, "0")}/ANG/UKM-E-SPORT/UAJM/2026`;
 
 /** file number -> [name as printed on the sheet, role as printed on the sheet] */
 const SHEETS = [
@@ -92,7 +97,7 @@ for (const [n, name, role] of SHEETS) {
       title      = ${TITLE},
       event      = ${role + " · " + PERIOD},
       issued_at  = ${ISSUED},
-      ref        = NULL,
+      ref        = ${refFor(n)},
       file_name  = ${"sertifikat-" + normName(name).replace(/ /g, "-") + ".png"},
       mime       = 'image/png',
       size       = ${png.length},
@@ -112,6 +117,6 @@ if (unmatched.length) {
 }
 
 const left = await sql`
-  SELECT count(*)::int AS n FROM certificates WHERE site = ${SITE} AND mime <> 'image/png'
+  SELECT count(*)::int AS n FROM certificates WHERE site = ${SITE} AND ref IS NULL
 `;
-console.log("rows still holding a generated stand-in:", left[0].n);
+console.log("rows still without a letter number:", left[0].n);
