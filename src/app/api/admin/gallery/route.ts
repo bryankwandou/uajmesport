@@ -1,6 +1,6 @@
 import { db, SITE } from "@/lib/db";
 import { guard } from "@/lib/perms";
-import { bad, fail, isCategory, listPosts, postShape } from "@/lib/galleryserver";
+import { bad, dropStaleDrafts, fail, isCategory, listPosts, postShape, uploadQuota } from "@/lib/galleryserver";
 
 export const dynamic = "force-dynamic";
 
@@ -32,6 +32,9 @@ export async function POST(req: Request) {
   if (!isCategory(b.category)) return bad("Kategori tidak sah.");
   const id = crypto.randomUUID();
   try {
+    await dropStaleDrafts();
+    const over = await uploadQuota(g.account.user);
+    if (over) return bad(over, 429);
     await db()`
       INSERT INTO gallery_posts (id, site, caption, category, taken_at, author, images, width, height, created_at)
       VALUES (${id}, ${SITE}, ${(b.caption ?? "").slice(0, 2200)}, ${b.category},

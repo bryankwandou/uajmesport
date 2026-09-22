@@ -1,5 +1,4 @@
 import { neon } from "@neondatabase/serverless";
-import { createHash, scryptSync, timingSafeEqual } from "node:crypto";
 
 /* Server side of the certificate registry.
  *
@@ -33,63 +32,8 @@ export function db() {
   return neon(url);
 }
 
-/* ── accounts ──────────────────────────────────────────────────────────────
-   CERT_ACCOUNTS is "user:pass:role,user:pass:role". Keeping it in the
-   environment rather than the bundle is the point: the passwords are no
-   longer readable in the page source. */
-export type Role = "lead" | "sekretaris" | "pembina" | "super";
-export type Account = { user: string; pass: string; role: Role };
-
-export function accounts(): Account[] {
-  return (process.env.CERT_ACCOUNTS ?? "")
-    .split(",")
-    .map((entry) => entry.trim())
-    .filter(Boolean)
-    .map((entry) => {
-      const [user, pass, role] = entry.split(":");
-      return { user, pass, role: (role as Role) ?? "lead" };
-    })
-    .filter((a) => a.user && a.pass);
-}
-
-/* ── pengelola izin ────────────────────────────────────────────────────────
-   Satu akun khusus yang hanya mengatur izin akun lain. Namanya dicocokkan tanpa
-   peduli huruf besar/kecil dan spasi ganda; kata sandinya hanya disimpan
-   sebagai hash scrypt, jadi kode sumber tidak memuat kata sandi aslinya. */
-export const SUPER_USER = "superadmin";
-const SUPER_NAME = "vincentius bryan kwandou";
-const SUPER_SALT = "3ace0c26ebde5dc56d263280227521bb";
-const SUPER_HASH = "d21da6cda4166638d8bd5235bdd42fb02e816781ab30d32f039f537d7722392a";
-const superAccount: Account = { user: SUPER_USER, pass: SUPER_HASH, role: "super" };
-
-export function matchSuper(user: string, pass: string): Account | null {
-  if (user.trim().toLowerCase().replace(/\s+/g, " ") !== SUPER_NAME) return null;
-  const got = scryptSync(pass, SUPER_SALT, 32);
-  return timingSafeEqual(got, Buffer.from(SUPER_HASH, "hex")) ? superAccount : null;
-}
-
-/* A stateless bearer token: the account name plus a digest of the password and
-   a server-only secret. It cannot be forged without one of the two, and it
-   needs no session table. */
-function digest(a: Account): string {
-  const secret = process.env.DATABASE_URL ?? "";
-  return createHash("sha256").update(`${a.user}:${a.pass}:${secret}`).digest("hex");
-}
-
-export function issueToken(a: Account): string {
-  return `${a.user}.${digest(a)}`;
-}
-
-export function verifyToken(header: string | null): Account | null {
-  if (!header) return null;
-  const token = header.replace(/^Bearer\s+/i, "").trim();
-  const at = token.lastIndexOf(".");
-  if (at < 1) return null;
-  const user = token.slice(0, at);
-  const found = user === SUPER_USER ? superAccount : accounts().find((a) => a.user === user);
-  if (!found) return null;
-  return token === issueToken(found) ? found : null;
-}
+/* Akun, kata sandi dan token sesi ada di src/lib/accounts.ts. Tidak ada
+   kredensial di file ini maupun di bagian lain kode sumber. */
 
 export function unauthorized() {
   return Response.json({ error: "Tidak berwenang." }, { status: 401 });

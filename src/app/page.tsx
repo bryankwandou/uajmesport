@@ -1,4 +1,5 @@
 "use client";
+import { useRegisterUrl } from "@/lib/registerlink";
 import Link from "next/link";
 import { Nav } from "@/components/Nav";
 import { Hero } from "@/components/Hero";
@@ -265,6 +266,7 @@ function Pengurus() {
 
 function CTA() {
   const { t } = useApp();
+  const registerUrl = useRegisterUrl(links.register);
   const c = t.cta;
   return (
     <section className="mx-auto max-w-6xl px-5 py-20">
@@ -280,7 +282,7 @@ function CTA() {
               {c.lede}
             </p>
             <div className="mt-8 flex flex-wrap justify-center gap-3">
-              <a href={links.register} target="_blank" rel="noopener noreferrer" className="btn-primary clip-corner px-6 py-3 text-sm">
+              <a href={registerUrl} target="_blank" rel="noopener noreferrer" className="btn-primary clip-corner px-6 py-3 text-sm">
                 {c.register}
               </a>
               <a href={links.instagram} target="_blank" rel="noopener" className="clip-corner border border-[color:var(--border)] px-6 py-3 text-sm text-[color:var(--text)] [transition-property:opacity] duration-200 hover:border-[color:var(--border)] hover:text-[color:var(--text)]">
@@ -299,6 +301,7 @@ function CTA() {
 
 function Footer() {
   const { t, period } = useApp();
+  const registerUrl = useRegisterUrl(links.register);
   const f = t.footer;
   return (
     <footer id="kontak" className="border-t border-[color:var(--border)] px-5 py-14">
@@ -338,7 +341,7 @@ function Footer() {
         <div>
           <div className="text-[10px] uppercase tracking-[0.2em] text-[color:var(--faint)]">{f.links}</div>
           <div className="mt-3 flex flex-col gap-2 text-sm text-[color:var(--muted)]">
-            <a href={links.register} target="_blank" rel="noopener noreferrer" className="hover:text-[color:var(--text)]">{t.cta.register}</a>
+            <a href={registerUrl} target="_blank" rel="noopener noreferrer" className="hover:text-[color:var(--text)]">{t.cta.register}</a>
             <a href={links.instagram} target="_blank" rel="noopener noreferrer" className="hover:text-[color:var(--text)]">Instagram @uajm_esport</a>
             <a href={`https://${org.domainBcc}`} target="_blank" rel="noopener noreferrer" className="hover:text-[color:var(--text)]">UAJM BCC ↗</a>
             <Link href="/sertifikat" className="hover:text-[color:var(--text)]">Klaim sertifikat anggota</Link>

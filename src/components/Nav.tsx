@@ -1,4 +1,5 @@
 "use client";
+import { useRegisterUrl } from "@/lib/registerlink";
 import { useEffect, useRef, useState } from "react";
 import { Logo } from "./Logo";
 import { Controls } from "./Controls";
@@ -12,6 +13,7 @@ const LINK_GAP = "gap-4";
 
 export function Nav() {
   const { t, locale } = useApp();
+  const registerUrl = useRegisterUrl(links.register);
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
 
@@ -112,7 +114,7 @@ export function Nav() {
         <div ref={rightRef} className="flex shrink-0 items-center gap-2">
           <Controls />
           <a
-            href={links.register}
+            href={registerUrl}
             target="_blank"
             rel="noopener noreferrer"
             className="btn-primary clip-corner hidden px-4 py-2 text-xs sm:inline-block"

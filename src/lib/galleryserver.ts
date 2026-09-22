@@ -64,6 +64,42 @@ export async function getPost(id: string): Promise<PostRow | null> {
   return rows[0] ?? null;
 }
 
+/* Isi berkas diperiksa dari byte awalnya, bukan dari label yang dikirim
+   browser. Yang bukan JPEG/PNG/WebP asli ditolak, jadi route foto tidak bisa
+   dipakai untuk menaruh HTML, SVG atau skrip. */
+export function sniffMime(b64: string): string | null {
+  const head = Buffer.from(b64.slice(0, 24), "base64");
+  if (head[0] === 0xff && head[1] === 0xd8 && head[2] === 0xff) return "image/jpeg";
+  if (head.subarray(0, 8).equals(Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]))) return "image/png";
+  if (head.subarray(0, 4).toString("latin1") === "RIFF" && head.subarray(8, 12).toString("latin1") === "WEBP") return "image/webp";
+  return null;
+}
+
+/* Batas unggah. Satu akun yang dibobol tetap tidak bisa membanjiri galeri:
+   paling banyak POSTS_PER_DAY post per akun per 24 jam, dan galeri satu situs
+   tidak menampung lebih dari MAX_POSTS post. */
+export const POSTS_PER_DAY = 20;
+export const MAX_POSTS = 1500;
+
+export async function uploadQuota(author: string): Promise<string | null> {
+  await ensureSchema();
+  const since = Date.now() - 24 * 3600 * 1000;
+  const [r] = (await db()`
+    SELECT count(*) FILTER (WHERE author = ${author} AND created_at > ${since})::int AS mine,
+           count(*)::int AS total
+    FROM gallery_posts WHERE site = ${SITE}
+  `) as unknown as { mine: number; total: number }[];
+  if (r.mine >= POSTS_PER_DAY) return `Batas ${POSTS_PER_DAY} post per akun per 24 jam tercapai.`;
+  if (r.total >= MAX_POSTS) return `Galeri sudah berisi ${MAX_POSTS} post. Hapus yang lama dulu.`;
+  return null;
+}
+
+/* Unggahan yang tidak pernah selesai lebih dari sehari dibuang. */
+export async function dropStaleDrafts() {
+  const before = Date.now() - 24 * 3600 * 1000;
+  await db()`DELETE FROM gallery_posts WHERE site = ${SITE} AND images = 0 AND created_at < ${before}`;
+}
+
 export function bad(msg: string, status = 400) {
   return Response.json({ error: msg }, { status });
 }

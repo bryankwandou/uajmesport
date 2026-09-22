@@ -190,9 +190,14 @@ export async function login(user: string, pass: string): Promise<Session | null>
     headers: { "content-type": "application/json" },
     body: JSON.stringify({ user, pass }),
   });
-  if (!res.ok) return null;
+  if (res.status === 401) return null;
+  // Terkunci setelah terlalu banyak percobaan, atau server bermasalah: tampilkan
+  // pesan dari server, bukan "kata sandi salah".
+  if (!res.ok) throw new LoginError((await res.json().catch(() => ({}))).error ?? `Login gagal (${res.status}).`);
   return (await res.json()) as Session;
 }
+
+export class LoginError extends Error {}
 
 function auth(token: string) {
   return { authorization: `Bearer ${token}`, "content-type": "application/json" };

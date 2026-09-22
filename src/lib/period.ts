@@ -3,17 +3,20 @@ import { useSyncExternalStore } from "react";
 
 /* Periode organisasi, dihitung dari kalender — tidak pernah diketik tangan.
  *
- * Tahun kepengurusan berganti setiap 1 Agustus (WITA). Mulai Agustus tahun Y:
- *   - pendaftaran anggota  → Y/Y+1   (Agustus 2026 → 2026/2027)
- *   - kepengurusan berjalan → Y-1/Y  (Agustus 2026 → 2025/2026)
+ * Tahun ajaran berganti setiap 1 September pukul 00:00 WITA. Mulai
+ * September tahun Y:
+ *   - pendaftaran anggota  → Y/Y+1   (Sep 2026 → 2026/2027, Sep 2510 → 2510/2511)
+ *   - kepengurusan berjalan → Y-1/Y  (Sep 2026 → 2025/2026)
  *   - kepengurusan ke-N     → Y-2024 (2026 → ke-2)
- * Aritmetika murni, jadi berlaku untuk tahun berapa pun tanpa perlu diubah.
+ * Aritmetika murni tanpa tabel dan tanpa batas tahun: berlaku selama situs
+ * ini hidup (Date JavaScript sah sampai tahun 275760). Untuk memindahkan hari
+ * pergantian, ubah ROLLOVER_MONTH saja.
  *
  * Teks memakai token {REG}, {TERM} dan {TERM_NO}; Providers menggantinya di
  * seluruh kamus, dan `withPeriod` dipakai untuk string di luar kamus.
  */
 
-export const ROLLOVER_MONTH = 7; // 0-based: Agustus
+export const ROLLOVER_MONTH = 8; // 0-based: September
 const TZ_OFFSET_MS = 8 * 3600 * 1000; // Asia/Makassar, tanpa DST
 const FIRST_TERM_START = 2024; // kepengurusan ke-1 = periode 2024/2025
 

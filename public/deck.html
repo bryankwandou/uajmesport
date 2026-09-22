@@ -404,7 +404,7 @@ td .lk{font-family:"IBM Plex Mono";font-size:16px;color:var(--cyan);white-space:
             <span class="pill">Formulir</span>
             <h3 style="margin-top:16px">Anggota UKM E-Sport</h3>
             <p>Pendaftaran anggota periode 2026/2027 melalui formulir resmi.</p>
-            <p class="mono" style="font-size:18px;margin-top:16px">forms.gle/ed2zW5avK34mnLGF9</p>
+            <p class="mono" id="reg-link" style="font-size:18px;margin-top:16px">forms.gle/ed2zW5avK34mnLGF9</p>
           </div>
           <div class="box fill f-l">
             <span class="pill">Tanpa formulir</span>
@@ -647,18 +647,27 @@ var EN = {
 var EN_COVER = "Student Activity Unit<br>E-Sport";
 </script>
 <script>
-/* Periode otomatis: berganti setiap 1 Agustus (WITA), sama dengan
+/* Periode otomatis: berganti setiap 1 September (WITA), sama dengan
    src/lib/period.ts. Dijalankan sebelum kamus EN dibaca, jadi kunci
    terjemahan ikut diperbarui. */
 (function(){
   var d=new Date(Date.now()+8*3600e3), y=d.getUTCFullYear();
-  var s=d.getUTCMonth()>=7?y:y-1;
+  var s=d.getUTCMonth()>=8?y:y-1;
   var map={"2025/2026":(s-1)+"/"+s,"2026/2027":s+"/"+(s+1)};
   var re=/2025\/2026|2026\/2027/g;
   function fix(v){return v.replace(re,function(m){return map[m];});}
   var w=document.createTreeWalker(document.getElementById("stage")||document.body,NodeFilter.SHOW_TEXT);
   var n; while((n=w.nextNode())){ if(re.test(n.nodeValue)){ re.lastIndex=0; n.nodeValue=fix(n.nodeValue);} re.lastIndex=0; }
   var out={}; for(var k in EN){ out[fix(k)]=fix(EN[k]); } EN=out;
+})();
+/* Link pendaftaran mengikuti setelan dasbor pengurus (segmen Pendaftaran). */
+(function(){
+  var el=document.getElementById("reg-link"); if(!el||!window.fetch) return;
+  fetch("/api/settings").then(function(r){return r.ok?r.json():null;}).then(function(b){
+    if(b&&typeof b.registerUrl==="string"&&/^https:\/\//.test(b.registerUrl)){
+      el.textContent=b.registerUrl.replace(/^https:\/\//,"");
+    }
+  }).catch(function(){});
 })();
 </script>
 <script>

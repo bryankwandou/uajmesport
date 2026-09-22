@@ -6,6 +6,7 @@ import {
   fileToBase64,
   hasFile,
   login,
+  LoginError,
   newId,
   publishedFileName,
   recordBytes,
@@ -19,7 +20,8 @@ import { saveBlob } from "@/lib/convert";
 import { fill, type CertDict } from "@/lib/certdict";
 import { Workspace } from "@/components/admin/Workspace";
 import { LogoMark } from "@/components/Logo";
-import { can, type Perms } from "@/lib/adminclient";
+import { can, roleName, type Perms } from "@/lib/adminclient";
+import { links } from "@/lib/content";
 
 /* Board dashboard.
  *
@@ -101,6 +103,7 @@ export function AdminPanel({
       onSession={signIn}
       onSignOut={signOut}
       siteName="UKM E-Sport UAJM"
+      registerFallback={links.register}
       brand={{ name: "UKM E-Sport UAJM", handle: "uajm_esport", avatar: <LogoMark size={40} /> }}
       cert={(perms) => (
         <Dashboard d={d} session={session} perms={perms} onChanged={onChanged} onSignOut={signOut} />
@@ -133,8 +136,8 @@ function SignIn({
       const s = await login(user.trim(), pass);
       if (s?.token) onSignedIn(s);
       else setError(d.admin.wrong);
-    } catch {
-      setError(d.err.generic);
+    } catch (e) {
+      setError(e instanceof LoginError ? e.message : d.err.generic);
     } finally {
       setBusy(false);
     }
@@ -676,7 +679,8 @@ function Dashboard({
 function roleLabel(d: CertDict, role: Session["role"]): string {
   if (role === "lead") return d.admin.roleLead;
   if (role === "sekretaris") return d.admin.roleSekretaris;
-  return d.admin.rolePembina;
+  if (role === "pembina") return d.admin.rolePembina;
+  return roleName(role);
 }
 
 const inputCls =

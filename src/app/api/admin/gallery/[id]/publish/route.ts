@@ -1,5 +1,5 @@
 import { db, SITE } from "@/lib/db";
-import { guard } from "@/lib/perms";
+import { atLeast, guard } from "@/lib/perms";
 import { bad, fail, UUID_RE } from "@/lib/galleryserver";
 
 export const dynamic = "force-dynamic";
@@ -15,6 +15,7 @@ export async function POST(req: Request, ctx: { params: Promise<{ id: string }> 
       UPDATE gallery_posts
       SET images = (SELECT count(*) FROM gallery_images WHERE post_id = ${id}), updated_at = now()
       WHERE site = ${SITE} AND id = ${id}
+        AND (${atLeast(g.perms.gallery, "full")} OR (author = ${g.account.user} AND images = 0))
       RETURNING images
     `) as unknown as { images: number }[];
     if (!rows[0]) return bad("Post tidak ditemukan.", 404);

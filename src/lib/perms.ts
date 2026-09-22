@@ -1,44 +1,25 @@
-import { accounts, db, forbidden, SITE, unauthorized, verifyToken, type Account } from "@/lib/db";
+import { db, forbidden, unauthorized } from "@/lib/db";
+import { atLeast, ensureAccounts, verifyToken, type Account, type Level, type Module } from "@/lib/accounts";
 
-/* Izin per akun, diatur oleh pengelola izin dari dasbornya sendiri.
+export { atLeast, isLevel } from "@/lib/accounts";
+export type { Level, Module, Perms } from "@/lib/accounts";
+
+/* Izin per akun, diatur pengelola izin dari dasbornya sendiri.
  *
  * Tiap modul punya tiga tingkat:
- *   none  – modul tidak tampil sama sekali
+ *   none  – modul tidak tampil dan setiap route-nya menolak (403)
  *   post  – boleh menerbitkan yang baru saja
  *   full  – boleh menerbitkan, mengubah dan menghapus
- * Akun yang belum pernah diatur tetap "full", jadi akun lama bekerja persis
- * seperti sebelum fitur ini ada.
+ * Izin dibaca dari database pada SETIAP permintaan, jadi mencabut izin berlaku
+ * seketika, termasuk untuk sesi yang sedang terbuka.
  */
-export type Level = "none" | "post" | "full";
-export type Perms = { gallery: Level; cert: Level };
-export type Module = keyof Perms;
 
-const DEFAULT: Perms = { gallery: "full", cert: "full" };
-const LEVELS: Level[] = ["none", "post", "full"];
-
-export function isLevel(v: unknown): v is Level {
-  return typeof v === "string" && (LEVELS as string[]).includes(v);
-}
-
-export function atLeast(have: Level, need: Level): boolean {
-  return LEVELS.indexOf(have) >= LEVELS.indexOf(need);
-}
-
-/* Tabel dibuat sendiri pada permintaan pertama tiap instance, jadi deploy baru
-   tidak butuh langkah migrasi manual. Semua pernyataan idempoten. */
+/* Tabel galeri dibuat sendiri pada permintaan pertama tiap instance. */
 let schemaReady: Promise<void> | null = null;
 export function ensureSchema(): Promise<void> {
   schemaReady ??= (async () => {
+    await ensureAccounts();
     const sql = db();
-    await sql`
-      CREATE TABLE IF NOT EXISTS admin_perms (
-        site       TEXT NOT NULL,
-        username   TEXT NOT NULL,
-        gallery    TEXT NOT NULL DEFAULT 'full',
-        cert       TEXT NOT NULL DEFAULT 'full',
-        updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
-        PRIMARY KEY (site, username)
-      )`;
     await sql`
       CREATE TABLE IF NOT EXISTS gallery_posts (
         id         UUID PRIMARY KEY,
@@ -69,50 +50,21 @@ export function ensureSchema(): Promise<void> {
   return schemaReady;
 }
 
-export async function permsFor(a: Account): Promise<Perms> {
-  if (a.role === "super") return { gallery: "none", cert: "none" };
-  await ensureSchema();
-  const rows = (await db()`
-    SELECT gallery, cert FROM admin_perms WHERE site = ${SITE} AND username = ${a.user}
-  `) as unknown as { gallery: string; cert: string }[];
-  const r = rows[0];
-  return {
-    gallery: isLevel(r?.gallery) ? r.gallery : DEFAULT.gallery,
-    cert: isLevel(r?.cert) ? r.cert : DEFAULT.cert,
-  };
-}
-
-export type AccountPerms = { user: string; role: string; perms: Perms };
-
-export async function listPerms(): Promise<AccountPerms[]> {
-  const out: AccountPerms[] = [];
-  for (const a of accounts()) out.push({ user: a.user, role: a.role, perms: await permsFor(a) });
-  return out;
-}
-
-export async function setPerms(user: string, p: Perms): Promise<void> {
-  await ensureSchema();
-  await db()`
-    INSERT INTO admin_perms (site, username, gallery, cert)
-    VALUES (${SITE}, ${user}, ${p.gallery}, ${p.cert})
-    ON CONFLICT (site, username) DO UPDATE SET
-      gallery = EXCLUDED.gallery, cert = EXCLUDED.cert, updated_at = now()
-  `;
-}
-
-/* Satu pintu untuk setiap route admin: token sah, lalu tingkat izin cukup.
-   Mengembalikan akun + izinnya, atau Response penolakan yang siap dikirim. */
+/* Satu pintu untuk setiap route admin: token sah dan belum dicabut, lalu
+   tingkat izin cukup. Mengembalikan akun, atau Response penolakan. */
 export async function guard(
   req: Request,
   module: Module | "super",
   need: Level = "post",
-): Promise<{ account: Account; perms: Perms } | Response> {
-  const account = verifyToken(req.headers.get("authorization"));
-  if (!account) return unauthorized();
-  if (module === "super") {
-    return account.role === "super" ? { account, perms: DEFAULT } : forbidden();
+): Promise<{ account: Account; perms: Account["perms"] } | Response> {
+  let account: Account | null;
+  try {
+    account = await verifyToken(req.headers.get("authorization"));
+  } catch (e) {
+    return Response.json({ error: e instanceof Error ? e.message : "Sesi tidak dapat diperiksa." }, { status: 500 });
   }
-  const perms = await permsFor(account);
-  if (!atLeast(perms[module], need)) return forbidden();
-  return { account, perms };
+  if (!account) return unauthorized();
+  if (module === "super") return account.role === "super" ? { account, perms: account.perms } : forbidden();
+  if (account.role === "super" || !atLeast(account.perms[module], need)) return forbidden();
+  return { account, perms: account.perms };
 }

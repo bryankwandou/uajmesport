@@ -1,19 +1,26 @@
 "use client";
-import { useEffect, useState, type ReactNode } from "react";
+import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
 import { Segments } from "@/components/ui/Segments";
 import { GalleryEditor } from "@/components/gallery/GalleryEditor";
-import { PermissionsPanel } from "./PermissionsPanel";
-import { can, fetchMe, FULL, type Perms } from "@/lib/adminclient";
+import { SuperPanel } from "./SuperPanel";
+import { RegisterPanel } from "./RegisterPanel";
+import { can, fetchMe, NONE, type Perms } from "@/lib/adminclient";
 import type { Session } from "@/lib/certstore";
 
 /* Pembungkus dasbor setelah masuk.
  *
- * Pengelola izin langsung mendapat panel izin, tanpa tab lain. Akun pengurus
- * mendapat bar segmen di puncak halaman — Sertifikat | Galeri — dan hanya
- * segmen yang diizinkan yang tampil. Izin dibaca ulang dari server setiap
- * dasbor dibuka, jadi perubahan dari pengelola izin langsung terasa. */
-type Tab = "cert" | "gallery";
+ * Pengelola izin langsung mendapat panelnya sendiri, tanpa tab lain. Akun
+ * pengurus mendapat bar segmen — Sertifikat | Galeri | Pendaftaran — berisi
+ * hanya segmen yang diizinkan.
+ *
+ * Izin TIDAK pernah diambil dari salinan di browser. Tidak ada modul yang
+ * dirender sebelum server menjawab, dan izin ditanyakan ulang tiap 15 detik
+ * serta setiap kali tab kembali aktif. Begitu pengelola izin mematikan sebuah
+ * sakelar, segmennya hilang dari layar akun itu — dan server sudah menolak
+ * permintaannya sejak detik yang sama. */
+type Tab = "cert" | "gallery" | "form";
 const TAB_KEY = "admin.tab";
+const POLL_MS = 15_000;
 
 export function Workspace({
   session,
@@ -21,6 +28,7 @@ export function Workspace({
   onSignOut,
   siteName,
   brand,
+  registerFallback,
   cert,
 }: {
   session: Session;
@@ -28,49 +36,84 @@ export function Workspace({
   onSignOut: () => void;
   siteName: string;
   brand: { name: string; handle: string; avatar: ReactNode };
+  registerFallback: string;
   cert: (perms: Perms) => ReactNode;
 }) {
-  const [perms, setPerms] = useState<Perms>(session.perms ?? FULL);
+  const [perms, setPerms] = useState<Perms | null>(null);
+  const [role, setRole] = useState(session.role);
   const [tab, setTab] = useState<Tab>("cert");
-  const [checked, setChecked] = useState(false);
+  const [offline, setOffline] = useState(false);
+  const [notice, setNotice] = useState("");
+  const last = useRef<string>("");
+  const sessionRef = useRef(session);
+  sessionRef.current = session;
 
   useEffect(() => {
     try {
       const t = sessionStorage.getItem(TAB_KEY);
-      if (t === "cert" || t === "gallery") setTab(t);
+      if (t === "cert" || t === "gallery" || t === "form") setTab(t);
     } catch {
       /* tab bawaan */
     }
   }, []);
 
-  useEffect(() => {
-    let live = true;
-    fetchMe(session.token)
-      .then((me) => {
-        if (!live) return;
-        if (!me) return onSignOut();
-        setPerms(me.perms);
-        if (JSON.stringify(me.perms) !== JSON.stringify(session.perms) || me.role !== session.role) {
-          onSession({ ...session, role: me.role, user: me.user, perms: me.perms });
-        }
-      })
-      .catch(() => {
-        /* jaringan putus: pakai izin dari sesi */
-      })
-      .finally(() => live && setChecked(true));
-    return () => {
-      live = false;
-    };
+  const check = useCallback(async () => {
+    try {
+      const me = await fetchMe(session.token);
+      if (!me) return onSignOut();
+      setOffline(false);
+      const sig = JSON.stringify([me.role, me.perms]);
+      if (last.current && last.current !== sig) setNotice("Izin akun ini baru saja diubah oleh pengelola izin.");
+      last.current = sig;
+      setRole(me.role);
+      setPerms(me.perms);
+      const s = sessionRef.current;
+      if (JSON.stringify(s.perms) !== JSON.stringify(me.perms) || s.role !== me.role || s.user !== me.user) {
+        onSession({ ...s, role: me.role, user: me.user, perms: me.perms });
+      }
+    } catch {
+      setOffline(true);
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [session.token]);
 
-  if (session.role === "super") {
-    return <PermissionsPanel token={session.token} siteName={siteName} onSignOut={onSignOut} />;
+  useEffect(() => {
+    check();
+    const t = window.setInterval(check, POLL_MS);
+    const onVis = () => document.visibilityState === "visible" && check();
+    document.addEventListener("visibilitychange", onVis);
+    window.addEventListener("focus", onVis);
+    return () => {
+      window.clearInterval(t);
+      document.removeEventListener("visibilitychange", onVis);
+      window.removeEventListener("focus", onVis);
+    };
+  }, [check]);
+
+  useEffect(() => {
+    if (!notice) return;
+    const t = window.setTimeout(() => setNotice(""), 4000);
+    return () => window.clearTimeout(t);
+  }, [notice]);
+
+  if (perms === null) {
+    return (
+      <Centered>
+        <p className="text-sm">{offline ? "Server tidak terjangkau. Mencoba lagi…" : "Memeriksa izin akun…"}</p>
+        <SignOut onClick={onSignOut} />
+      </Centered>
+    );
   }
 
+  if (role === "super") {
+    return <SuperPanel token={session.token} siteName={siteName} onSignOut={onSignOut} />;
+  }
+
+  const p = perms ?? NONE;
   const tabs = [
-    ...(can(perms, "cert", "post") ? [{ id: "cert" as Tab, label: "Sertifikat" }] : []),
-    ...(can(perms, "gallery", "post") ? [{ id: "gallery" as Tab, label: "Galeri" }] : []),
+    ...(can(p, "cert", "post") ? [{ id: "cert" as Tab, label: "Sertifikat" }] : []),
+    ...(can(p, "gallery", "post") ? [{ id: "gallery" as Tab, label: "Galeri" }] : []),
+    ...(can(p, "form", "full") ? [{ id: "form" as Tab, label: "Pendaftaran" }] : []),
   ];
   const current = tabs.some((t) => t.id === tab) ? tab : tabs[0]?.id;
 
@@ -85,31 +128,51 @@ export function Workspace({
 
   if (!current) {
     return (
-      <div className="mx-auto max-w-md rounded-xl border border-[color:var(--ui-line)] p-7 text-center text-[color:var(--ui-text)]">
-        <p className="text-sm">
-          {checked ? "Akun ini belum diberi izin apa pun. Hubungi pengelola izin." : "Memeriksa izin…"}
-        </p>
-        <button
-          type="button"
-          onClick={onSignOut}
-          className="mt-5 rounded-lg border border-[color:var(--ui-line-strong)] px-4 py-2 text-xs"
-        >
-          Keluar
-        </button>
-      </div>
+      <Centered>
+        <p className="text-sm">Akun ini belum diberi izin apa pun. Hubungi pengelola izin.</p>
+        <SignOut onClick={onSignOut} />
+      </Centered>
     );
   }
 
   return (
     <div>
-      {tabs.length > 1 && (
-        <Segments items={tabs} value={current} onChange={choose} label="Bagian dasbor" className="mb-10 [justify-content:safe_center]" />
+      <Segments items={tabs} value={current} onChange={choose} label="Bagian dasbor" className="mb-10 [justify-content:safe_center]" />
+      {current === "cert" && cert(p)}
+      {current === "gallery" && (
+        <GalleryEditor key={p.gallery} token={session.token} perms={p} brand={brand} onSignOut={onSignOut} />
       )}
-      {current === "cert" ? (
-        cert(perms)
-      ) : (
-        <GalleryEditor token={session.token} perms={perms} brand={brand} onSignOut={onSignOut} />
+      {current === "form" && (
+        <RegisterPanel token={session.token} fallback={registerFallback} onSignOut={onSignOut} />
+      )}
+      {(notice || offline) && (
+        <div
+          role="status"
+          className="fixed bottom-6 left-1/2 z-[120] -translate-x-1/2 rounded-lg bg-[#262626] px-4 py-3 text-sm text-white shadow-lg"
+        >
+          {offline ? "Koneksi terputus — perubahan izin akan diterapkan saat tersambung lagi." : notice}
+        </div>
       )}
     </div>
+  );
+}
+
+function Centered({ children }: { children: ReactNode }) {
+  return (
+    <div className="mx-auto max-w-md rounded-xl border border-[color:var(--ui-line)] p-7 text-center text-[color:var(--ui-text)]">
+      {children}
+    </div>
+  );
+}
+
+function SignOut({ onClick }: { onClick: () => void }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className="mt-5 rounded-lg border border-[color:var(--ui-line-strong)] px-4 py-2 text-xs"
+    >
+      Keluar
+    </button>
   );
 }

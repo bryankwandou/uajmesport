@@ -23,9 +23,11 @@ export async function GET(req: Request) {
     const bytes = Buffer.from(row.data, "base64");
     return new Response(new Uint8Array(bytes), {
       headers: {
-        "content-type": row.mime,
+        "content-type": ["image/jpeg", "image/png", "image/webp"].includes(row.mime) ? row.mime : "application/octet-stream",
         "content-length": String(bytes.length),
         "cache-control": "public, max-age=31536000, immutable",
+        "x-content-type-options": "nosniff",
+        "content-security-policy": "default-src 'none'; sandbox",
       },
     });
   } catch (e) {

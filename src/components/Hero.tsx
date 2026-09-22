@@ -1,4 +1,5 @@
 "use client";
+import { useRegisterUrl } from "@/lib/registerlink";
 import { motion } from "framer-motion";
 import { org, stats, trophies, links } from "@/lib/content";
 import { CountUp } from "./CountUp";
@@ -7,6 +8,7 @@ import { withPeriod } from "@/lib/period";
 
 export function Hero() {
   const { t, period } = useApp();
+  const registerUrl = useRegisterUrl(links.register);
   const h = t.hero;
   return (
     <section id="top" className="relative overflow-hidden pt-36 pb-20 md:pt-44 md:pb-28">
@@ -49,7 +51,7 @@ export function Hero() {
             transition={{ duration: 0.7, delay: 0.2 }}
             className="mt-8 flex flex-wrap items-center gap-3"
           >
-            <a href={links.register} target="_blank" rel="noopener noreferrer" className="btn-primary clip-corner px-6 py-3 text-sm">
+            <a href={registerUrl} target="_blank" rel="noopener noreferrer" className="btn-primary clip-corner px-6 py-3 text-sm">
               {h.ctaPrimary}
             </a>
             <a
