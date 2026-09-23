@@ -286,7 +286,12 @@ const btn =
 const primary =
   "rounded-lg bg-[color:var(--ui-accent)] px-4 py-2 text-xs font-semibold text-[color:var(--ui-on-accent)] disabled:opacity-40";
 
-type Run = (user: string, label: string, op: () => Promise<unknown>) => Promise<unknown>;
+type Run = (
+  user: string,
+  label: string,
+  op: () => Promise<unknown>,
+  optimistic?: (rows: AccountRow[]) => AccountRow[],
+) => Promise<unknown>;
 
 function Accounts({ rows, busy, token, run }: { rows: AccountRow[]; busy: Set<string>; token: string; run: Run }) {
   const [user, setUser] = useState("");
@@ -373,7 +378,12 @@ function AccountItem({ row, busy, token, run }: { row: AccountRow; busy: boolean
     e.preventDefault();
     if (mode === "pass") await run(row.user, `Kata sandi ${row.user} diganti. Sesi lamanya ditutup.`, () => changePassword(token, row.user, value));
     if (mode === "rename") await run(row.user, `Akun diganti nama menjadi ${value.trim()}.`, () => renameAccount(token, row.user, value));
-    if (mode === "delete") await run(row.user, `Akun ${row.user} dihapus.`, () => deleteAccount(token, row.user, purge));
+    // Baris langsung hilang; kalau penghapusan gagal, pembacaan ulang di
+    // `run` memunculkannya kembali bersama pesan kesalahan.
+    if (mode === "delete")
+      await run(row.user, `Akun ${row.user} dihapus.`, () => deleteAccount(token, row.user, purge), (rows) =>
+        rows.filter((r) => r.user !== row.user),
+      );
     setMode("");
   }
 
